@@ -1,7 +1,7 @@
 <?php
 require_once('./PSWebServiceLibrary.php'); // Must be in the same directory.
-
-class ManipulationEngine{
+require_once('./manipulationEngine.php');
+class PrestashopManipulationEngine implements manipulationEngine {
 	
 	protected $prestashopWebService; // PrestaShopWebService object.
 
@@ -119,7 +119,7 @@ class ManipulationEngine{
 /*
 EXAMPLE:
 // Replace path and key with your own.
-$myEngine = new ManipulationEngine('http://myShop.com', 'YourKey');
+$myEngine = new PrestashopManipulationEngine('http://myShop.com', 'YourKey');
 $myEngine->createData(
 						array(
 							  'lastname' => 'Laglak',
