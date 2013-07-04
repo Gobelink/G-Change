@@ -72,7 +72,7 @@ class PrestashopManipulationEngine implements manipulationEngine {
 				echo '</table>';
 			}
 		}catch(PrestaShopWebserviceException $e){
-			echo 'Error while retrieving ' . $entityResource . 'data: <br/>' . $e->getMessage();
+			echo 'Error while retrieving ' . $entityResource . ' data: <br/>' . $e->getMessage();
 		}
 	}
 
