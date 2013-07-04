@@ -1,7 +1,7 @@
 <?php
-require_once('./PSWebServiceLibrary.php'); // Must be in the same directory.
-require_once('./manipulationEngine.php');
-class AdvancedManipulationEngine implements manipulationEngine {
+require_once('lib/PSWebServiceLibrary.php'); // Must be in the same directory.
+require_once('interfaces/manipulationEngine.php');
+class PrestashopManipulationEngine implements manipulationEngine {
 	
 	protected $prestashopWebService; // PrestaShopWebService object.
 
@@ -62,7 +62,14 @@ class AdvancedManipulationEngine implements manipulationEngine {
 			
 			foreach ($resources as $parentResource){
 				$resource = $parentResource->children();
-				return $resource;
+				echo '<table border="5">';
+				
+				foreach ($resource as $key => $value){
+					echo '<tr>';
+					echo '<th>' . $key . '</th><td>' . $value .'</td>';
+					echo '</tr>';
+				}
+				echo '</table>';
 			}
 		}catch(PrestaShopWebserviceException $e){
 			echo 'Error while retrieving ' . $entityResource . ' data: <br/>' . $e->getMessage();
