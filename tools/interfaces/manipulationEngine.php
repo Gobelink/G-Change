@@ -1,4 +1,5 @@
 <?php
+// Standard interface for interactig with a REST API
 interface manipulationEngine {
 	public function createData($entity, $entityResource);
 
