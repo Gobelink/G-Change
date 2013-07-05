@@ -9,18 +9,6 @@ class AdvancedManipulationEngine implements manipulationEngine {
 	
 	protected $key; // Key to the web service.
 	
-	function __construct($shopURL, $key){
-		
-		$this->shopURL = $shopURL;
-		$this->key = $key;
-
-		try{
-			$this->prestashopWebService = new PrestaShopWebservice($shopURL, $key, false);
-		}catch(PrestaShopWebserviceException $e){
-			echo 'Error while building object: <br/>' . $e->getMessage();
-		}
-	}
-	
 	public function createData($entity, $entityResource){
 
 		try{
@@ -48,22 +36,43 @@ class AdvancedManipulationEngine implements manipulationEngine {
 		}
 	}
 
-	public function retrieveData($entityResource){
+	public function retrieveData($entityResource, $entityId, $entityFilter){
 		
 		try{
 			// We will retrieve every node for every customer thanks to "display = full" option.
 			$opt = array(
     		'resource' => $entityResource,
-    		'display' => 'full'
     		);
-
+    		
+    		if(isset($entityId)){
+				$opt['id'] = $entityId;
+    		}
+    		if(isset($entityFilter)){
+    			foreach ($entityFilter as $filterName => $filterValue) {
+    				$opt['filter[$filterName]']  = $filterValue;
+    			}
+    		}	
 			$xml = $this->prestashopWebService->get($opt);
 			$resources = $this->getGrandChildren($xml);
-			
+			echo '<table border="5">';
+			foreach ($resources as $key => $value){
+					echo '<tr>';
+					echo '<th>' . $key . '</th><td>' . $value .'</td>';
+					echo '</tr>';
+				}
+			echo '</table>';
+			/*
 			foreach ($resources as $parentResource){
 				$resource = $parentResource->children();
-				return $resource;
-			}
+				echo '<table border="5">';
+				
+				foreach ($resource as $key => $value){
+					echo '<tr>';
+					echo '<th>' . $key . '</th><td>' . $value .'</td>';
+					echo '</tr>';
+				}
+				echo '</table>';
+			}*/
 		}catch(PrestaShopWebserviceException $e){
 			echo 'Error while retrieving ' . $entityResource . ' data: <br/>' . $e->getMessage();
 		}
@@ -107,6 +116,19 @@ class AdvancedManipulationEngine implements manipulationEngine {
 	public function getGrandChildren($xml){
 		return $xml->children()->children();
 	}
+
+	function __construct($shopURL, $key){
+		
+		$this->shopURL = $shopURL;
+		$this->key = $key;
+
+		try{
+			$this->prestashopWebService = new PrestaShopWebservice($shopURL, $key, false);
+		}catch(PrestaShopWebserviceException $e){
+				echo 'Error while building object: <br/>' . $e->getMessage();
+		}
+	}
+
 }
 
 /*
