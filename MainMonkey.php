@@ -1,5 +1,6 @@
 <?php 
 require_once("./tools/AdvancedManipulationEngine.php");
+require_once("./tools/CustomersMonkey.php");
 include("./tools/Constants.php");
 // Replace path and key with your own.
 $myEngine = new AdvancedManipulationEngine(CSTS::getShopAddress(), CSTS::getWebServiceKey());
@@ -27,7 +28,37 @@ $myEngine->createData(
 //$myEngine->deleteData('7','customers');
 
 // For the moment, displays customers with one table per customer.
-$myEngine->retrieveData('addresses','2', NULL);
+/*$xml = $myEngine->retrieveData('addresses', NULL, NULL);
+$resources = $xml->children()->children();
+if(sizeof($resources) > 1){
+	echo sizeof($resources);
+	//$resources = $resources->children();
+	foreach ($resources as $singleResource){
+		$attributes = $singleResource->children();
+		echo '<table border="5">';
+				
+		foreach ($singleResource as $key => $value){
+				echo '<tr>';
+				echo '<th>' . $key . '</th><td>' . $value .'</td>';
+				echo '</tr>';
+		}
+		echo '</table>';
+	}
+}else{
+	echo sizeof($resources);
+	$resource = $resources->children();
+	echo '<table border="5">';
+	foreach ($resource as $key => $value){
+		echo '<tr>';
+		echo '<th>' . $key . '</th><td>' . $value .'</td>';
+		echo '</tr>';
+	}
+	echo '</table>';
+}*/
+$c = new PDO(CSTS::getSQLServerConnectionString(), CSTS::getDataBaseUsername(), CSTS::getDataBasePassword());
+$myCMonkey = new CustomersMonkey($myEngine);
+$myCMonkey->synchronizeAll($c, 'Site A', 555, 555);
+
 /*/function get_Datetime_Now() {
     $tz_object = new DateTimeZone('Brazil/East');
     //date_default_timezone_set('Brazil/East'); 

@@ -46,22 +46,20 @@ class AdvancedManipulationEngine implements manipulationEngine {
     		
     		if(isset($entityId)){
 				$opt['id'] = $entityId;
+    		}else{
+    			$opt['display'] = 'full';
     		}
     		if(isset($entityFilter)){
+
     			foreach ($entityFilter as $filterName => $filterValue) {
-    				$opt['filter[$filterName]']  = $filterValue;
+    				$opt['filter[' . $filterName . ']']  = (string)$filterValue;
     			}
-    		}	
+    		}
 			$xml = $this->prestashopWebService->get($opt);
-			$resources = $this->getGrandChildren($xml);
-			echo '<table border="5">';
-			foreach ($resources as $key => $value){
-					echo '<tr>';
-					echo '<th>' . $key . '</th><td>' . $value .'</td>';
-					echo '</tr>';
-				}
-			echo '</table>';
-			/*
+			return $xml;
+			
+			/*$resources = $this->getGrandChildren($xml);
+			
 			foreach ($resources as $parentResource){
 				$resource = $parentResource->children();
 				echo '<table border="5">';
