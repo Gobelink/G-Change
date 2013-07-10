@@ -1,6 +1,7 @@
 <?php 
 require_once("./tools/AdvancedManipulationEngine.php");
 require_once("./tools/CustomersMonkey.php");
+require_once("./tools/OrdersMonkey.php");
 include("./tools/Constants.php");
 // Replace path and key with your own.
 $myEngine = new AdvancedManipulationEngine(CSTS::getShopAddress(), CSTS::getWebServiceKey());
@@ -55,14 +56,22 @@ if(sizeof($resources) > 1){
 	}
 	echo '</table>';
 }*/
-$c = new PDO(CSTS::getSQLServerConnectionString(), CSTS::getDataBaseUsername(), CSTS::getDataBasePassword());
 
-$myCMonkey = new CustomersMonkey($myEngine, 1130, 1130);
+
+/*
+$c = new PDO(CSTS::getSQLServerConnectionString(), CSTS::getDataBaseUsername(), CSTS::getDataBasePassword());
+$myCMonkey = new CustomersMonkey($myEngine, 1130, 2000);
 //$myCMonkey->synchronizeAll($c, 'Site A');
 //$myCMonkey->getCustomerAddress();
 //$customersHavingClosedOrdersArray = $myCMonkey->customersConfirmedOrders();
 //var_dump($myCMonkey->hasAConfirmedOrder(555, $customersHavingClosedOrdersArray));
 $myCMonkey->synchronizeAll($c, 'Site A');
+*/
+
+
+$myOrdersMonkey = new OrdersMonkey($myEngine, 555, 560);
+var_dump($myOrdersMonkey->getOrders());
+
 /*/function get_Datetime_Now() {
     $tz_object = new DateTimeZone('Brazil/East');
     //date_default_timezone_set('Brazil/East'); 

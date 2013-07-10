@@ -74,7 +74,7 @@ class CustomersMonkey{
 
 	public function hasAConfirmedOrder($idCustomer, $customersHavingClosedOrdersArray){
 
-		return (in_array($idCustomer, $customersHavingClosedOrdersArray)); // True if list of orders is not null
+		return (in_array($idCustomer, $customersHavingClosedOrdersArray)); // True if the ID of this customer is contained in the table
 	}
 
 	public function synchronizeAll($sqlServerConnection, $origin){
