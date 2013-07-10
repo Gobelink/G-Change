@@ -3,7 +3,7 @@
 interface manipulationEngine {
 	public function createData($entity, $entityResource);
 
-	public function retrieveData($entityResource, $entityId, $entityFilter);
+	public function retrieveData($entityResource, $entityId, $displayPreference, $entityFilter);
 
 	public function updateData($entity, $entityResource);
 

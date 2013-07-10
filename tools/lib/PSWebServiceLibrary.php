@@ -267,6 +267,7 @@ class PrestaShopWebservice
 						$url_params[$k] = $options[$k];
 			if (count($url_params) > 0)
 				$url .= '?'.http_build_query($url_params);
+				echo $url . '<br/>';
 		}
 		else
 			throw new PrestaShopWebserviceException('Bad parameters given');

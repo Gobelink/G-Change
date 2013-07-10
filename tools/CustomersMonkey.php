@@ -10,26 +10,34 @@ class CustomersMonkey{
 		$this->myAdvancedManipulationEngine = $advancedManipulationEngine;
 	}
 
-	public function getCustomerAddress($customerId){
+	public function getCustomerAddress($from, $to){
 		
-			$addresses = $this->myAdvancedManipulationEngine->retrieveData('addresses', 
-				NULL, array('id_customer' => $customerId));
-			$CustomerAddresses;
-			$attribute = $addresses->children()->children()->children();
-			foreach ($attribute as $key => $value) {
+		$addresses = $this->myAdvancedManipulationEngine->retrieveData('addresses', 
+			NULL, array('id_customer, address1', 'address2') , array('id_customer' => '[' . $from . ',' . $to . ']'));
+		$CustomerAddresses;
+		$address = $addresses->children()->children();
+		$customersAddressesHashmap;
+		$customersAddressesHashmapKey;
+		$addressesArray;
+		
+		foreach ($address as $key => $values) {
+			foreach ($values as $key => $value) {
 					switch ($key) {
+						case  'id_customer':
+						$customersAddressesHashmapKey = $value;
 						case 'address1':
-							$CustomerAddresses['address1'] = $value;
+							$addressesArray['address1'] = $value;
 							break;
 						case 'address2':
-							$CustomerAddresses['address2'] = $value;
+							$addressesArray['address2'] = $value;
 							break;
 						default:
 							break;
-					}
 				}
-			return $CustomerAddresses; // Returns an array containing the customers two first addresses
-		
+			}
+			$customersAddressesHashmap[(string)$customersAddressesHashmapKey] = $addressesArray;		
+		}
+		return $customersAddressesHashmap;
 	}
 
 	public function hasAConfirmedOrder($customerId){
@@ -44,6 +52,8 @@ class CustomersMonkey{
 	public function synchronizeAll($sqlServerConnection, $origin, $from, $to){
 
 		$xml = $this->myAdvancedManipulationEngine->retrieveData('customers', NULL, array('id'	=> '[' . $from . ',' . $to . ']'));
+		
+		$customersAdresses = $this->getCustomerAddress($from, $to);
 		
 		$customers = $xml;
 		$customer = $customers->children()->children();
@@ -181,11 +191,12 @@ class CustomersMonkey{
  				
 			}
 			if($this->hasAConfirmedOrder($idCustomer)){
-				$customerAddress = $this->getCustomerAddress($idCustomer);
 				
-					$address1 = $customerAddress['address1'] ;
+				$customerAddresses = $customersAdresses[$idCustomer];
+				
+				$address1 = $customerAddresses['address1'] ;
 
-					$address2 = $customerAddress['address2'] ;
+				$address2 = $customerAddresses['address2'] ;
 
 				$statement = $sqlServerConnection->prepare('PrestaClient '
 								. $idCustomer . ','
