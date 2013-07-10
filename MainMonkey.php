@@ -57,7 +57,9 @@ if(sizeof($resources) > 1){
 }*/
 $c = new PDO(CSTS::getSQLServerConnectionString(), CSTS::getDataBaseUsername(), CSTS::getDataBasePassword());
 $myCMonkey = new CustomersMonkey($myEngine);
-$myCMonkey->synchronizeAll($c, 'Site A', 555, 555);
+if(isset($_GET['from']) && isset($_GET['to'])){
+	$myCMonkey->synchronizeAll($c, 'Site A', $_GET['from'], $_GET['to']);
+}
 
 /*/function get_Datetime_Now() {
     $tz_object = new DateTimeZone('Brazil/East');

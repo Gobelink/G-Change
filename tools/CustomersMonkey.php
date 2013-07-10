@@ -226,6 +226,8 @@ class CustomersMonkey{
 				if(!$statement->execute()){
 					$statement->debugDumpParams();
 					print_r($statement->errorInfo());
+				}else{
+					echo 'Succès, client remonté : ' . $firstname . ' | ' . $lastname . ' | ' . $address1 . ' | ' . $address2 . '<br/>';
 				}
 			}
 		}
