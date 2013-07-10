@@ -5,52 +5,96 @@ class CustomersMonkey{
 	
 	protected $myAdvancedManipulationEngine;
 
-	function __construct($advancedManipulationEngine){
+	protected $from;
+	protected $to;
+
+	function __construct($advancedManipulationEngine, $from, $to){
 	
 		$this->myAdvancedManipulationEngine = $advancedManipulationEngine;
+
+		$this->from = $from;
+		$this->to = $to;
 	}
 
-	public function getCustomerAddress($customerId){
+	public function getCustomerAddress(){
 		
-			$addresses = $this->myAdvancedManipulationEngine->retrieveData('addresses', 
-				NULL, array('id_customer' => $customerId));
-			$CustomerAddresses;
-			$attribute = $addresses->children()->children()->children();
-			foreach ($attribute as $key => $value) {
+		$addresses = $this->myAdvancedManipulationEngine->retrieveData(
+			'addresses', 
+			NULL,
+			array('id_customer, address1', 'address2'), 
+			array('id_customer' => '[' . $this->from . ',' . $this->to . ']')
+			);
+
+		$address = $addresses->children()->children();
+		
+		$customersAddressesHashmap;
+		$customersAddressesHashmapKey;
+		$addressesArray;
+		
+		foreach ($address as $key => $values) {
+			foreach ($values as $key => $value) {
 					switch ($key) {
+						case  'id_customer':
+						$customersAddressesHashmapKey = $value;
 						case 'address1':
-							$CustomerAddresses['address1'] = $value;
+							$addressesArray['address1'] = $value;
 							break;
 						case 'address2':
-							$CustomerAddresses['address2'] = $value;
+							$addressesArray['address2'] = $value;
 							break;
 						default:
 							break;
-					}
 				}
-			return $CustomerAddresses; // Returns an array containing the customers two first addresses
-		
+			}
+			$customersAddressesHashmap[(string)$customersAddressesHashmapKey] = $addressesArray;		
+		}
+		return $customersAddressesHashmap;
 	}
 
-	public function hasAConfirmedOrder($customerId){
-		$orders = $this->myAdvancedManipulationEngine->retrieveData('orders',
+	public function customersConfirmedOrders(){
+		$orders = $this->myAdvancedManipulationEngine->retrieveData(
+			'orders',
 			NULL,
-			array('id_customer'	=>
-			 $customerId));
-		
-		return ($orders->children()->children()->count() > 0); // True if list of orders is not null
+			array('id_customer'),
+			array('id_customer' => '[' . $this->from . ',' . $this->to . ']')
+			);
+
+		$customersHavingClosedOrdersArray = array();
+		$order = $orders->children()->children();
+
+		foreach ($order as $key => $singleOrderAttributes) {
+			foreach ($singleOrderAttributes as $key => $value) {
+				if($key == 'id_customer') {
+					$customersHavingClosedOrdersArray[] = $value;
+				}
+			}
+		}
+		return $customersHavingClosedOrdersArray;
 	}
 
-	public function synchronizeAll($sqlServerConnection, $origin, $from, $to){
+	public function hasAConfirmedOrder($idCustomer, $customersHavingClosedOrdersArray){
 
-		$xml = $this->myAdvancedManipulationEngine->retrieveData('customers', NULL, array('id'	=> '[' . $from . ',' . $to . ']'));
+		return (in_array($idCustomer, $customersHavingClosedOrdersArray)); // True if list of orders is not null
+	}
+
+	public function synchronizeAll($sqlServerConnection, $origin){
+
+		$xml = $this->myAdvancedManipulationEngine->retrieveData(
+			'customers',
+			NULL,
+			NULL,
+			array('id'	=> '[' . $this->from . ',' . $this->to . ']')
+			);
+		
+		$customersAdresses = $this->getCustomerAddress();
+		$customersHavingClosedOrdersArray = $this->customersConfirmedOrders();
 		
 		$customers = $xml;
 		$customer = $customers->children()->children();
 
 		foreach ($customer as $keyCus => $valueCus){
-			// Only one customer returned
-			$idCustomer = 'NULL';
+			// Browsing every single customer fetched from the PrestaShop boutique.
+			$idCustomer = NULL;
 			$idShopGroup = 'NULL';
    			$idShop = 'NULL';
 			$idGender = 'NULL';
@@ -180,12 +224,14 @@ class CustomersMonkey{
 				}
  				
 			}
-			if($this->hasAConfirmedOrder($idCustomer)){
-				$customerAddress = $this->getCustomerAddress($idCustomer);
-				
-					$address1 = $customerAddress['address1'] ;
 
-					$address2 = $customerAddress['address2'] ;
+			if($this->hasAConfirmedOrder((int) $idCustomer, $customersHavingClosedOrdersArray)){
+
+				$customerAddresses = $customersAdresses[(int)$idCustomer];
+				
+				$address1 = $customerAddresses['address1'] ;
+
+				$address2 = $customerAddresses['address2'] ;
 
 				$statement = $sqlServerConnection->prepare('PrestaClient '
 								. $idCustomer . ','
@@ -227,7 +273,7 @@ class CustomersMonkey{
 					$statement->debugDumpParams();
 					print_r($statement->errorInfo());
 				}else{
-					echo 'Succès, client remonté : ' . $firstname . ' | ' . $lastname . ' | ' . $address1 . ' | ' . $address2 . '<br/>';
+					echo $idCustomer . '<br/>';
 				}
 			}
 		}

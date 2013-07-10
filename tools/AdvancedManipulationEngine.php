@@ -36,24 +36,37 @@ class AdvancedManipulationEngine implements manipulationEngine {
 		}
 	}
 
-	public function retrieveData($entityResource, $entityId, $entityFilter){
+	public function retrieveData($entityResource, $entityId, $displayAttributes, $entityFilter){
 		
 		try{
-			// We will retrieve every node for every customer thanks to "display = full" option.
 			$opt = array(
     		'resource' => $entityResource,
     		);
     		
     		if(isset($entityId)){
 				$opt['id'] = $entityId;
-    		}else{
-    			$opt['display'] = 'full';
     		}
+
+    		$doNotDisplayFull = false; // We want to display full data.
+
     		if(isset($entityFilter)){
 
     			foreach ($entityFilter as $filterName => $filterValue) {
-    				$opt['filter[' . $filterName . ']']  = (string)$filterValue;
+    				$opt['filter[' . $filterName . ']']  = (string) $filterValue;
     			}
+    		}
+
+    		// If not given an array with the rows to display.
+    		if($displayAttributes == NULL || sizeof($displayAttributes) == 0){
+    			$opt['display'] = 'full';
+    		}else{
+    			$displayValue = '';
+    			foreach ($displayAttributes as $key => $value) {
+    				$displayValue = $displayValue . ',' . $value;
+    			}
+    			;
+    			$displayValue = trim($displayValue, ',');
+    			$opt['display'] = '[' . $displayValue . ']';
     		}
 			$xml = $this->prestashopWebService->get($opt);
 			return $xml;
