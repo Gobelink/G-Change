@@ -55,10 +55,13 @@ if(sizeof($resources) > 1){
 	}
 	echo '</table>';
 }*/
-//$c = new PDO(CSTS::getSQLServerConnectionString(), CSTS::getDataBaseUsername(), CSTS::getDataBasePassword());
-$myCMonkey = new CustomersMonkey($myEngine);
-//$myCMonkey->synchronizeAll($c, 'Site A', 555, 555);
-$myCMonkey->getCustomerAddress(700,702);
+$c = new PDO(CSTS::getSQLServerConnectionString(), CSTS::getDataBaseUsername(), CSTS::getDataBasePassword());
+$myCMonkey = new CustomersMonkey($myEngine, 1130, 1130);
+//$myCMonkey->synchronizeAll($c, 'Site A');
+//$myCMonkey->getCustomerAddress();
+//$customersHavingClosedOrdersArray = $myCMonkey->customersConfirmedOrders();
+//var_dump($myCMonkey->hasAConfirmedOrder(555, $customersHavingClosedOrdersArray));
+$myCMonkey->synchronizeAll($c, 'Site A');
 /*/function get_Datetime_Now() {
     $tz_object = new DateTimeZone('Brazil/East');
     //date_default_timezone_set('Brazil/East'); 
