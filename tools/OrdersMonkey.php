@@ -20,7 +20,7 @@ class OrdersMonkey{
 			'orders',
 			NULL,
 			NULL,
-			NULL
+			array('id' => '[' . $this->from . ',' . $this->to . ']')
 			);
 
 		$ordersHashmap;
@@ -45,7 +45,10 @@ class OrdersMonkey{
 						break;
 					case 'id_currency':
 						$ordersArray['id_currency'] = $value;
-						break;	
+						break;
+					case 'id_lang':
+						$ordersArray['id_currency'] = $value;
+						break;
 					default:
 						break;
 				}

@@ -2,6 +2,7 @@
 require_once("./tools/AdvancedManipulationEngine.php");
 require_once("./tools/CustomersMonkey.php");
 require_once("./tools/OrdersMonkey.php");
+require_once("./tools/ProductsMonkey.php");
 include("./tools/Constants.php");
 // Replace path and key with your own.
 $myEngine = new AdvancedManipulationEngine(CSTS::getShopAddress(), CSTS::getWebServiceKey());
@@ -69,8 +70,8 @@ $myCMonkey->synchronizeAll($c, 'Site A');
 */
 
 
-$myOrdersMonkey = new OrdersMonkey($myEngine, 555, 560);
-var_dump($myOrdersMonkey->getOrders());
+$myProductsMonkey = new ProductsMonkey($myEngine, 555, 560);
+var_dump($myProductsMonkey->getProducts());
 
 /*/function get_Datetime_Now() {
     $tz_object = new DateTimeZone('Brazil/East');
