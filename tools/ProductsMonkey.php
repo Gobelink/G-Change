@@ -18,29 +18,40 @@ class productsMonkey{
 		$this->sqlServerConnection = $sqlServerConnection;
 	}
 
-	public function getProductOptionsValuesNames($productOptionValueIdsArray){
-		$ids = '';
-		foreach ($productOptionValueIdsArray as $key => $value) {
-			$ids = $ids . $value . '|';
-		}
-		$ids = trim($ids, '|');
+	public function getProductOptionsValuesNames(){
+		
 		$productOptionsValuesRawXml = $this->myAdvancedManipulationEngine->retrieveData(
 			'product_option_values',
 			NULL,
-			array('name'),
-			array('id' => '[' . $ids . ']' )
+			array('id','name'),
+			NULL
 			);
+
 		$productOptionsValues = $productOptionsValuesRawXml->children()->children();
+
+		$optionsValuesNamesByIds;
+
+		$hashmapKey;
+		$hashmapValue;
 		
-		$optionsValuesNames = array();
 		foreach ($productOptionsValues as $productOptionsValueKey => $productOptionsValue) {
 			foreach ($productOptionsValue as $nameKey => $nameValue) {
-				foreach ($nameValue as $languageKey => $languageValue) {
-					$optionsValuesNames[] = $languageValue;
-				}
+				switch ($nameKey) {
+					case 'id':
+						$hashmapKey = $nameValue;
+						break;
+					case 'name':
+						foreach ($nameValue as $languageKey => $languageValue) {
+							$hashmapValue = $languageValue;
+						}
+						break;
+					default:
+						break;
+				}	
 			}
+			$optionsValuesNamesByIds[(string)$hashmapKey] = (string)$hashmapValue;
 		}
-		return $optionsValuesNames;
+		return $optionsValuesNamesByIds;
 	}
 
 	public function getProductsFromPrestashop(){
@@ -57,7 +68,7 @@ class productsMonkey{
 		$productsArray;
 		
 		$product = $products->children()->children();
-		//$ProductOptionsValuesNames = $this->getProductOptionsValuesNames();
+		$productOptionsValuesNames = $this->getProductOptionsValuesNames();
 		foreach ($product as $key => $singleProductAttributes) {
 			foreach ($singleProductAttributes as $key => $value) {
 
@@ -197,14 +208,11 @@ class productsMonkey{
 					case 'associations':
 						foreach ($value as $keyOfAssociation => $valueOfAssociation){
 							if((string)$keyOfAssociation == 'product_option_values'){
-								$currentProductOptionValuesIdArray = array();
 								foreach ($valueOfAssociation as $keyOfProductOptionValues => $valueOfProductOptionValues) {
 									foreach ($valueOfProductOptionValues as $productsOptionValuesId => $productsOptionValuesIdvalue) {
-										$currentProductOptionValuesIdArray[] = $productsOptionValuesIdvalue;
- 										//$productsArray['product_option_values'][] = $ProductOptionsValuesNames[(int)$productsOptionValuesIdvalue];
+ 										$productsArray['product_option_values'][] = $productOptionsValuesNames[(int)$productsOptionValuesIdvalue];
 									}
 								}
-								$productsArray['product_option_values'] = $this->getProductOptionsValuesNames($currentProductOptionValuesIdArray);
 							}
 						}
 						break;
@@ -213,7 +221,7 @@ class productsMonkey{
 				}
 			}
 			$productsHashmap[(string)$productsHashmapKey] = $productsArray;
-			//$productsArray = array(); // Emptying the array for the next iteration.
+			$productsArray = array();
 		}
 		return $productsHashmap;
 	}

@@ -70,9 +70,26 @@ $myCMonkey->synchronizeAll($c, 'Site A');
 */
 
 
-$myProductsMonkey = new ProductsMonkey($c, $myEngine, 100, 150);
-$myProductsMonkey->synchronizeAll();
+$myProductsMonkey = new ProductsMonkey($c, $myEngine, 100, 100);
 
+$productOptionsValuesNames = $myProductsMonkey->getProductOptionsValuesNames();
+echo ($productOptionsValuesNames[5696]);
+/*
+foreach ($myProductsMonkey->getProductsFromPrestashop() as $key => $product) {
+	echo $key . '<br/>';
+	foreach ($product as $productAttributeKey => $productAttributeValue) {
+		if($productAttributeKey == 'product_option_values'){
+			foreach ($productAttributeValue as $key => $optionName) {
+				echo $optionName . '<br/>';
+			}
+		}else{
+			//echo $productAttributeKey . ' : ' . $productAttributeValue . '<br/>';
+		}
+	}
+	echo "_________________________________________________________________________________________________________________ <br/>";
+}
+//$myProductsMonkey->synchronizeAll();
+*/
 /*/function get_Datetime_Now() {
     $tz_object = new DateTimeZone('Brazil/East');
     //date_default_timezone_set('Brazil/East'); 
