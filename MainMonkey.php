@@ -70,8 +70,8 @@ $myCMonkey->synchronizeAll($c, 'Site A');
 */
 
 
-$myProductsMonkey = new ProductsMonkey($myEngine, 95, 96);
-$myProductsMonkey->synchronizeAll($c);
+$myProductsMonkey = new ProductsMonkey($c, $myEngine, 100, 150);
+$myProductsMonkey->synchronizeAll();
 
 /*/function get_Datetime_Now() {
     $tz_object = new DateTimeZone('Brazil/East');

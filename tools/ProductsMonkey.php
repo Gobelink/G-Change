@@ -7,11 +7,15 @@ class productsMonkey{
 	protected $from;
 	protected $to;
 
-	function __construct($advancedManipulationEngine, $from, $to){
+	protected $sqlServerConnection;
+
+	function __construct($sqlServerConnection, $advancedManipulationEngine, $from, $to){
 		$this->myAdvancedManipulationEngine = $advancedManipulationEngine;
 
 		$this->from = $from;
 		$this->to = $to;
+
+		$this->sqlServerConnection = $sqlServerConnection;
 	}
 
 	public function getProductOptionsValuesNames($productOptionValueIdsArray){
@@ -214,7 +218,8 @@ class productsMonkey{
 		return $productsHashmap;
 	}
 
-	public function synchronizeAll($sqlServerConnection){
+	public function synchronizePrestashopToGestimum(){
+
 		// Retrieving the products with the variables $from, $to.
 		$products = $this->getProductsFromPrestashop();
 		
@@ -265,7 +270,6 @@ class productsMonkey{
 		$dateUpd = 'NULL';
 		$advancedStockManagement = 'NULL';
 		$productOptionValues = array();
-		$vSql = 'NULL';
 		foreach ($products as $idProduct => $productArray) {
 			foreach ($productArray as $attribute => $value) {
 				switch ($attribute) {
@@ -409,64 +413,74 @@ class productsMonkey{
 					default:
 						break;
 				}
-
 			}
-		}
 
-		$statement = $sqlServerConnection->prepare('PrestaArticles '
-			. $idProduct . ','
-			/*. $idSupplier . ','
-			. $idManufacturer . ','*/
-			. $idCategoryDefault . ','
-			/*. $idShopDefault . ','
-			. $idTaxRulesGroup . ','
-			. (int) $onSale . ','
-			. (int) $onlineOnly . ','*/
-			. $ean13 . ','
-			/*. $upc . ','
-			. $ecotax . ','
-			. $quantity . ','*/
-			. $minimalQuantit . ','
-			/*. $price . ','
-			. $wholesalePrice . ','
-			. $unity . ','
-			. $unitPriceRatio . ','
-			. $additionalShippingCost . ','*/
-			. $reference . ','
-			/*. $supplierReference . ','
-			. $location . ','*/
-			. $width . ','
-			. $height . ','
-			/*. $depth . ','*/
-			. $weight . ','
-			/*. $outOfStock . ','
-			. (int) $quantityDiscount . ','
-			. (int) $customizable . ','
-			. (int) $uploadableFiles . ','
-			. (int) $textFields . ','
-			. (int) $active . ','
-			. (int) $availableForOrder . ','
-			. '\'' . $availableDate . '\','
-			. $condition . ','
-			. $showPrice . ','
-			. $indexed . ','
-			. $visibility . ','
-			. (int) $cacheIsPack . ','
-			. (int) $cacheHasAttachments . ','
-			. (int) $isVirtual . ','
-			. $cacheDefaultAttribute . ','*/
-			. '\'' . $dateAdd . '\','
-			. '\'' . $dateUpd . '\','
-			/*. (int) $advancedStockManagement . ','*/
-			. $productOptionValues . '\', :vSql'
-			);
-		$statement->bindParam(':vSql', $return_value, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 4000);
-		if(!$statement->execute()){
+			if(sizeof($productOptionValues) == 0){
+				// The product has no declension (option value)
+				$productOptionValues[] = 'NULL';
+			}
+
+			foreach ($productOptionValues as $key => $declension) {
+				$statement = $this->sqlServerConnection->prepare('PrestaArticles '
+					. $idProduct . ','
+					. $idSupplier . ','
+					. $idManufacturer . ','
+					. $idCategoryDefault . ','
+					. $idShopDefault . ','
+					. $idTaxRulesGroup . ','
+					. (int) $onSale . ','
+					. (int) $onlineOnly . ','
+					. $ean13 . ','
+					. $upc . ','
+					. $ecotax . ','
+					. $quantity . ','
+					. $minimalQuantit . ','
+					. $price . ','
+					. $wholesalePrice . ','
+					. $unity . ','
+					. $unitPriceRatio . ','
+					. $additionalShippingCost . ','
+					. $reference . ','
+					. $supplierReference . ','
+					. $location . ','
+					. $width . ','
+					. $height . ','
+					. $depth . ','
+					. $weight . ','
+					. $outOfStock . ','
+					. (int) $quantityDiscount . ','
+					. (int) $customizable . ','
+					. (int) $uploadableFiles . ','
+					. (int) $textFields . ','
+					. (int) $active . ','
+					. (int) $availableForOrder . ','
+					. '\'' . $availableDate . '\','
+					. $condition . ','
+					. $showPrice . ','
+					. $indexed . ','
+					. $visibility . ','
+					. (int) $cacheIsPack . ','
+					. (int) $cacheHasAttachments . ','
+					. (int) $isVirtual . ','
+					. $cacheDefaultAttribute . ','
+					. '\'' . $dateAdd . '\','
+					. '\'' . $dateUpd . '\','
+					. (int) $advancedStockManagement . ','
+					. '\'' . preg_replace('/\'/','\'\'',$declension) . '\''
+					);
+				
+				if(!$statement->execute()){
 					$statement->debugDumpParams();
 					print_r($statement->errorInfo());
-				}else{
-					echo $idProduct . '<br/>';
+					echo '<br/>';
 				}
-				echo '<p>' . $vSql . '</p>';
+			}
+			echo $idProduct . '<br/>';
+		
+		}
+	}
+
+	public function synchronizeAll(){
+		$this->synchronizePrestashopToGestimum();
 	}
 }
