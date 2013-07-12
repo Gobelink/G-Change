@@ -58,9 +58,9 @@ if(sizeof($resources) > 1){
 	echo '</table>';
 }*/
 
-
-/*
 $c = new PDO(CSTS::getSQLServerConnectionString(), CSTS::getDataBaseUsername(), CSTS::getDataBasePassword());
+/*
+
 $myCMonkey = new CustomersMonkey($myEngine, 1130, 2000);
 //$myCMonkey->synchronizeAll($c, 'Site A');
 //$myCMonkey->getCustomerAddress();
@@ -70,8 +70,8 @@ $myCMonkey->synchronizeAll($c, 'Site A');
 */
 
 
-$myProductsMonkey = new ProductsMonkey($myEngine, 555, 560);
-var_dump($myProductsMonkey->getProducts());
+$myProductsMonkey = new ProductsMonkey($myEngine, 95, 96);
+$myProductsMonkey->synchronizeAll($c);
 
 /*/function get_Datetime_Now() {
     $tz_object = new DateTimeZone('Brazil/East');
