@@ -40,7 +40,7 @@ class productsMonkey implements monkey{
 						break;
 					case 'name':
 						foreach ($nameValue as $languageKey => $languageValue) {
-							$hashmapValue = $languageValue;
+							$hashmapValue = $languageValue; // I am sure that there are at most and at least 1 language value
 						}
 						break;
 					default:

@@ -51,7 +51,8 @@ class CustomersMonkey implements monkey{
 							break;
 				}
 			}
-			$customersAddressesHashmap[(string)$customersAddressesHashmapKey] = $addressesArray;		
+			$customersAddressesHashmap[(string)$customersAddressesHashmapKey] = $addressesArray;
+			$addressesArray = array();
 		}
 		return $customersAddressesHashmap;
 	}

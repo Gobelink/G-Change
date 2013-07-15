@@ -32,6 +32,6 @@ $myEngine->createData(
 
 $c = new PDO(CSTS::getSQLServerConnectionString(), CSTS::getDataBaseUsername(), CSTS::getDataBasePassword());
 
-$myCustomersMonkey = new CustomersMonkey($c, $myEngine, 100, 700, 'Site A');
+$myOrdersMonkey = new OrdersMonkey($myEngine, 100, 105);
 
-$myCustomersMonkey->synchronizeAll();
+$myOrdersMonkey->synchronizeAll();
