@@ -1,32 +1,37 @@
 <?php
-require_once("./tools/AdvancedManipulationEngine.php");
 
-class CustomersMonkey{
+class CustomersMonkey implements monkey{
 	
 	protected $myAdvancedManipulationEngine;
 
 	protected $from;
 	protected $to;
 
-	function __construct($advancedManipulationEngine, $from, $to){
+	protected $sqlServerConnection;
+
+	protected $origin;
+
+	function __construct($sqlServerConnection, $advancedManipulationEngine, $from, $to, $origin){
 	
 		$this->myAdvancedManipulationEngine = $advancedManipulationEngine;
 
 		$this->from = $from;
 		$this->to = $to;
+
+		$this->sqlServerConnection = $sqlServerConnection;
+
+		$this->origin = $origin; // To see from where does the client come from
 	}
 
 	public function getCustomerAddress(){
 		
-		$addresses = $this->myAdvancedManipulationEngine->retrieveData(
+		$address = $this->myAdvancedManipulationEngine->retrieveData(
 			'addresses', 
 			NULL,
 			array('id_customer, address1', 'address2'), 
 			array('id_customer' => '[' . $this->from . ',' . $this->to . ']')
 			);
 
-		$address = $addresses->children()->children();
-		
 		$customersAddressesHashmap;
 		$customersAddressesHashmapKey;
 		$addressesArray;
@@ -52,7 +57,7 @@ class CustomersMonkey{
 	}
 
 	public function customersConfirmedOrders(){
-		$orders = $this->myAdvancedManipulationEngine->retrieveData(
+		$order = $this->myAdvancedManipulationEngine->retrieveData(
 			'orders',
 			NULL,
 			array('id_customer'),
@@ -60,7 +65,6 @@ class CustomersMonkey{
 			);
 
 		$customersHavingClosedOrdersArray = array();
-		$order = $orders->children()->children();
 
 		foreach ($order as $key => $singleOrderAttributes) {
 			foreach ($singleOrderAttributes as $key => $value) {
@@ -77,9 +81,9 @@ class CustomersMonkey{
 		return (in_array($idCustomer, $customersHavingClosedOrdersArray)); // True if the ID of this customer is contained in the table
 	}
 
-	public function synchronizeAll($sqlServerConnection, $origin){
+	public function synchronizeAll(){
 
-		$xml = $this->myAdvancedManipulationEngine->retrieveData(
+		$customer = $this->myAdvancedManipulationEngine->retrieveData(
 			'customers',
 			NULL,
 			NULL,
@@ -88,9 +92,6 @@ class CustomersMonkey{
 		
 		$customersAdresses = $this->getCustomerAddress();
 		$customersHavingClosedOrdersArray = $this->customersConfirmedOrders();
-		
-		$customers = $xml;
-		$customer = $customers->children()->children();
 
 		foreach ($customer as $keyCus => $valueCus){
 			// Browsing every single customer fetched from the PrestaShop boutique.
@@ -233,7 +234,7 @@ class CustomersMonkey{
 
 				$address2 = $customerAddresses['address2'] ;
 
-				$statement = $sqlServerConnection->prepare('PrestaClient '
+				$statement = $this->sqlServerConnection->prepare('PrestaClient '
 								. $idCustomer . ','
 								. $idShopGroup . ','
    								. $idShop . ','
@@ -268,7 +269,7 @@ class CustomersMonkey{
 								. '\'' . preg_replace('/\'/','\'\'',$address2) . '\','
 								. '\'' . $phone . '\','
    								. '\'' . $phoneMobile . '\','
-								. '\'' . $origin .  '\'');
+								. '\'' . $this->origin .  '\'');
 				if(!$statement->execute()){
 					$statement->debugDumpParams();
 					print_r($statement->errorInfo());

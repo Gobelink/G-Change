@@ -1,5 +1,6 @@
 <?php 
 require_once("./tools/AdvancedManipulationEngine.php");
+require_once("./monkeys/interfaces/monkey.php");
 require_once("./monkeys/CustomersMonkey.php");
 require_once("./monkeys/OrdersMonkey.php");
 require_once("./monkeys/ProductsMonkey.php");
@@ -31,6 +32,6 @@ $myEngine->createData(
 
 $c = new PDO(CSTS::getSQLServerConnectionString(), CSTS::getDataBaseUsername(), CSTS::getDataBasePassword());
 
-$myProductsMonkey = new ProductsMonkey($c, $myEngine, 100, 150);
+$myCustomersMonkey = new CustomersMonkey($c, $myEngine, 100, 700, 'Site A');
 
-$myProductsMonkey->synchronizeAll();
+$myCustomersMonkey->synchronizeAll();

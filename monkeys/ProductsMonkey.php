@@ -1,6 +1,6 @@
 <?php
 
-class productsMonkey{
+class productsMonkey implements monkey{
 	
 	protected $myAdvancedManipulationEngine;
 
@@ -20,14 +20,12 @@ class productsMonkey{
 
 	public function getProductOptionsValuesNames(){
 		
-		$productOptionsValuesRawXml = $this->myAdvancedManipulationEngine->retrieveData(
+		$productOptionsValues = $this->myAdvancedManipulationEngine->retrieveData(
 			'product_option_values',
 			NULL,
 			array('id','name'),
 			NULL
 			);
-
-		$productOptionsValues = $productOptionsValuesRawXml->children()->children();
 
 		$optionsValuesNamesByIds;
 
@@ -56,7 +54,7 @@ class productsMonkey{
 
 	public function getProductsFromPrestashop(){
 
-		$products = $this->myAdvancedManipulationEngine->retrieveData(
+		$product = $this->myAdvancedManipulationEngine->retrieveData(
 			'products',
 			NULL,
 			NULL,
@@ -66,8 +64,7 @@ class productsMonkey{
 		$productsHashmap;
 		$productsHashmapKey;
 		$productsArray;
-		
-		$product = $products->children()->children();
+
 		$productOptionsValuesNames = $this->getProductOptionsValuesNames();
 		foreach ($product as $key => $singleProductAttributes) {
 			foreach ($singleProductAttributes as $key => $value) {
@@ -278,7 +275,7 @@ class productsMonkey{
 		$dateUpd = 'NULL';
 		$advancedStockManagement = 'NULL';
 		$productOptionValues = array();
-		
+
 		foreach ($products as $idProduct => $productArray) {
 			foreach ($productArray as $attribute => $value) {
 				switch ($attribute) {

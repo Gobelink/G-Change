@@ -69,7 +69,7 @@ class AdvancedManipulationEngine implements manipulationEngine {
     			$opt['display'] = '[' . $displayValue . ']';
     		}
 			$xml = $this->prestashopWebService->get($opt);
-			return $xml;
+			return $this->getGrandChildren($xml);
 			
 			/*$resources = $this->getGrandChildren($xml);
 			

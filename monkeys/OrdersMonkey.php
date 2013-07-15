@@ -1,6 +1,6 @@
 <?php
 
-class OrdersMonkey{
+class OrdersMonkey implements monkey{
 	
 	protected $myAdvancedManipulationEngine;
 
@@ -16,7 +16,7 @@ class OrdersMonkey{
 
 	public function getOrders(){
 
-		$orders = $this->myAdvancedManipulationEngine->retrieveData(
+		$order = $this->myAdvancedManipulationEngine->retrieveData(
 			'orders',
 			NULL,
 			NULL,
@@ -27,7 +27,6 @@ class OrdersMonkey{
 		$ordersHashmapKey;
 		$ordersArray;
 		
-		$order = $orders->children()->children();
 		foreach ($order as $key => $singleOrderAttributes) {
 			foreach ($singleOrderAttributes as $key => $value) {
 
