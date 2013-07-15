@@ -49,7 +49,7 @@ class productsMonkey{
 						break;
 				}	
 			}
-			$optionsValuesNamesByIds[(string)$hashmapKey] = (string)$hashmapValue;
+			$optionsValuesNamesByIds[(int)$hashmapKey] = (string)$hashmapValue;
 		}
 		return $optionsValuesNamesByIds;
 	}
