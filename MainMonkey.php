@@ -1,8 +1,8 @@
 <?php 
 require_once("./tools/AdvancedManipulationEngine.php");
-require_once("./tools/CustomersMonkey.php");
-require_once("./tools/OrdersMonkey.php");
-require_once("./tools/ProductsMonkey.php");
+require_once("./monkeys/CustomersMonkey.php");
+require_once("./monkeys/OrdersMonkey.php");
+require_once("./monkeys/ProductsMonkey.php");
 include("./tools/Constants.php");
 // Replace path and key with your own.
 $myEngine = new AdvancedManipulationEngine(CSTS::getShopAddress(), CSTS::getWebServiceKey());

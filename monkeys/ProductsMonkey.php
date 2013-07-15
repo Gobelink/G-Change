@@ -278,6 +278,7 @@ class productsMonkey{
 		$dateUpd = 'NULL';
 		$advancedStockManagement = 'NULL';
 		$productOptionValues = array();
+		
 		foreach ($products as $idProduct => $productArray) {
 			foreach ($productArray as $attribute => $value) {
 				switch ($attribute) {
@@ -474,7 +475,7 @@ class productsMonkey{
 					. '\'' . $dateAdd . '\','
 					. '\'' . $dateUpd . '\','
 					. (int) $advancedStockManagement . ','
-					. '\'' . preg_replace('/\'/','\'\'',$declension) . '\''
+					. '\'' . preg_replace('/\'/','\'\'', $declension) . '\''
 					);
 				
 				if(!$statement->execute()){
