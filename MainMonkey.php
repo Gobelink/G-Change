@@ -1,12 +1,7 @@
 <?php 
-require_once("./tools/AdvancedManipulationEngine.php");
-require_once("./monkeys/interfaces/monkey.php");
-require_once("./monkeys/CustomersMonkey.php");
-require_once("./monkeys/OrdersMonkey.php");
-require_once("./monkeys/ProductsMonkey.php");
-include("./tools/Constants.php");
+include('./tools/autoloader.php');
 // Replace path and key with your own.
-$myEngine = new AdvancedManipulationEngine(CSTS::getShopAddress(), CSTS::getWebServiceKey());
+$myEngine = new AdvancedManipulationEngine(Constants::getShopAddress(), Constants::getWebServiceKey());
 /*
 $myEngine->createData(
 						array(
@@ -30,7 +25,7 @@ $myEngine->createData(
 					 );*/
 //$myEngine->deleteData('7','customers');
 
-$c = new PDO(CSTS::getSQLServerConnectionString(), CSTS::getDataBaseUsername(), CSTS::getDataBasePassword());
+$c = new PDO(Constants::getSQLServerConnectionString(), Constants::getDataBaseUsername(), Constants::getDataBasePassword());
 
 $myOrdersMonkey = new OrdersMonkey($myEngine, 100, 105);
 

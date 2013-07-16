@@ -107,7 +107,7 @@ class OrdersMonkey implements monkey{
 
 	public function synchronizeAll(){
 		
-		/*foreach ($this->getOrders() as $key => $value) {
+		foreach ($this->getOrders() as $key => $value) {
 			foreach ($value as $singleOrderkey => $singleOrdervalue) {
 				switch ($singleOrderkey) {
 					case 'delivery_address':
@@ -126,6 +126,6 @@ class OrdersMonkey implements monkey{
 						break;
 				}
 			}
-		}*/
+		}
 	}
 }

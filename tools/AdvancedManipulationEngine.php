@@ -1,6 +1,4 @@
 <?php
-require_once('lib/PSWebServiceLibrary.php'); // Must be in the same directory.
-require_once('interfaces/manipulationEngine.php');
 class AdvancedManipulationEngine implements manipulationEngine {
 	
 	protected $prestashopWebService; // PrestaShopWebService object.
