@@ -19,7 +19,7 @@ class AdvancedManipulationEngine implements manipulationEngine {
 														)
 													);
 			
-			$resources = $this->getGrandChildren($xml);
+			$resources = self::getgRandcHildren($xml);
 			foreach ($resources as $nodeKey => $node){
 				if(array_key_exists($nodeKey, $entity)) // PHP >= 4.0.7
 					$resources->$nodeKey = $entity[$nodeKey];
@@ -67,9 +67,9 @@ class AdvancedManipulationEngine implements manipulationEngine {
     			$opt['display'] = '[' . $displayValue . ']';
     		}
 			$xml = $this->prestashopWebService->get($opt);
-			return $this->getGrandChildren($xml);
+			return self::getgRandcHildren($xml);
 			
-			/*$resources = $this->getGrandChildren($xml);
+			/*$resources = self::getgRandcHildren($xml);
 			
 			foreach ($resources as $parentResource){
 				$resource = $parentResource->children();
@@ -96,7 +96,7 @@ class AdvancedManipulationEngine implements manipulationEngine {
 			$opt = array('resource' => $entityResource);
 			$opt['id'] = $entity['id'];
 			$xml = $this->prestashopWebService->get($opt);
-			$resources = $this->getGrandChildren($xml);
+			$resources = self::getgRandcHildren($xml);
 				
 			foreach ($resources as $nodeKey => $node){
 				if(array_key_exists($nodeKey, $entity)){ // PHP >= 4.0.7
@@ -122,7 +122,7 @@ class AdvancedManipulationEngine implements manipulationEngine {
 		}
 	}
 
-	public function getGrandChildren($xml){
+	public static function getGrandChildren($xml){
 		return $xml->children()->children();
 	}
 

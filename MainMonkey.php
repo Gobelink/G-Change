@@ -27,6 +27,6 @@ $myEngine->createData(
 
 $c = new PDO(Constants::getSQLServerConnectionString(), Constants::getDataBaseUsername(), Constants::getDataBasePassword());
 
-$myOrdersMonkey = new OrdersMonkey($myEngine, 100, 105);
+$myOrdersMonkey = new OrdersMonkey($myEngine, 100, 700);
 
 $myOrdersMonkey->synchronizeAll();
