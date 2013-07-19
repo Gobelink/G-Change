@@ -24,12 +24,8 @@ $myEngine->createData(
 						'customers'
 					 );*/
 //$myEngine->deleteData('7','customers');
-$server = 'SRV-DS\SQLSERVER2012';
-$database = 'AGRIINDUS_TP';
-$user = 'sa';
-$password = '@Gestimum78';
 
-$c = odbc_connect("Driver={SQL Server Native Client 10.0};Server=$server;Database=$database;", $user, $password);
+$c = odbc_connect(Constants::getSQLServerConnectionString(),Constants::getDataBaseUsername(), Constants::getDataBasePassword());
 
 $myCustomersMonkey = new CustomersMonkey($c, $myEngine, 100, 700, 'site A');
 
