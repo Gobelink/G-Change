@@ -24,9 +24,13 @@ $myEngine->createData(
 						'customers'
 					 );*/
 //$myEngine->deleteData('7','customers');
+$server = 'SRV-DS\SQLSERVER2012';
+$database = 'AGRIINDUS_TP';
+$user = 'sa';
+$password = '@Gestimum78';
 
-$c = new PDO(Constants::getSQLServerConnectionString(), Constants::getDataBaseUsername(), Constants::getDataBasePassword());
+$c = odbc_connect("Driver={SQL Server Native Client 10.0};Server=$server;Database=$database;", $user, $password);
 
-$myOrdersMonkey = new OrdersMonkey($myEngine, 100, 700);
+$myCustomersMonkey = new CustomersMonkey($c, $myEngine, 100, 700, 'site A');
 
-$myOrdersMonkey->synchronizeAll();
+$myCustomersMonkey->synchronizeAll();

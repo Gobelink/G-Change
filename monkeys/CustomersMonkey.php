@@ -234,20 +234,104 @@ class CustomersMonkey implements monkey{
 				$address1 = $customerAddresses['address1'] ;
 
 				$address2 = $customerAddresses['address2'] ;
-
-				$statement = $this->sqlServerConnection->prepare('PrestaClient '
-								. $idCustomer . ','
+				
+				$PcfCode = 'W'.$idCustomer;
+				$CptNumero = '411'.$PcfCode;
+				
+				if (empty($company)) {$company= $firstname.' '. $lastname;} 
+				else {$Rs2= $firstname .' '.$lastname;} 
+				
+				$verif = odbc_exec($this->sqlServerConnection,'SELECT T.PCF_CODE FROM TIERS T WHERE T.PCF_CODE = \''. $PcfCode .'\'');
+				
+				if (!empty($verif)){
+				odbc_exec($this->sqlServerConnection,'UPDATE TIERS SET '
+													  . ' [PCF_RS] = \'' . $company . '\''
+												      . ' ,[PCF_RS2] = \'' . $Rs2 . '\''
+													  . ' ,[PCF_RUE] = \'' . preg_replace('/\'/','\'\'',$address1) . '\''
+													  . ' ,[PCF_COMP] = \'' . preg_replace('/\'/','\'\'',$address2) . '\''
+												      . ' ,[PCF_EMAIL] = \'' . preg_replace('/\'/','\'\'',$email) . '\''
+												      . ' ,[PCF_SIRET] = \'' . $siret . '\''
+												      . ' ,[PCF_APE] = \'' . $ape . '\''
+												      . ' ,[PCF_NUMMAJ] = [PCF_NUMMAJ]+1 ' 
+													  . ' ,[XXX_MPAYDA] = ' . $maxPaymentDays
+													  . ' ,[XXX_IDGEND] = ' . $idGender 
+													  . ' ,[XXX_PROVEN] = \'' . $this->origin . '\''
+													  . 'WHERE [PCF_CODE] = \'' . $PcfCode . '\''
+													  
+  			                                          . 'UPDATE CONTACTS SET '
+													  . ' [CCT_PRENOM] = \'' . preg_replace('/\'/','\'\'',$firstname) . '\''
+												      . ' ,[CCT_NOM] = \'' . preg_replace('/\'/','\'\'',$lastname) . '\''
+													  . ' ,[CCT_EMAIL] = \'' . preg_replace('/\'/','\'\'',$email) . '\''
+													  . 'WHERE [CCT_ORIGIN] = \'' . $PcfCode . '\''
+													  
+													  . 'UPDATE ADRESSES SET '
+													  . ' [ADR_RS] = \'' . $company . '\''
+												      . ' ,[ADR_RS2] = \'' . $Rs2 . '\''
+													  . ' ,[ADR_RUE] = \'' . preg_replace('/\'/','\'\'',$address1) . '\''
+													  . ' ,[ADR_COMP] = \'' . preg_replace('/\'/','\'\'',$address2) . '\''
+													  . ' ,[ADR_TEL1] = \'' . preg_replace('/\'/','\'\'',$phone) . '\''
+													  . ' ,[ADR_TEL2] = \'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\''
+													  . 'WHERE [ADR_CODE] = \'' . $PcfCode . '\'');
+				} else {
+				odbc_exec($this->sqlServerConnection,'INSERT INTO dbo.TIERS (
+																	[PCF_CODE]
+																   ,[PCF_TYPE]
+																   ,[CPT_NUMERO]
+ 													               ,[PCF_RS]
+																   ,[PCF_RS2]
+																   ,[PCF_RUE]
+																   ,[PCF_COMP]
+																   ,[PCF_TEL1]
+																   ,[PCF_TEL2]
+																   ,[PCF_EMAIL]
+																   ,[PCF_SIRET]
+																   ,[PCF_APE]
+																   ,[DEV_CODE]
+																   ,[NAT_CODE]
+																   ,[TAR_CODE]
+																   ,[PCF_DORT]
+																   ,[PCF_DTCREE]
+																   ,[PCF_DTMAJ]
+																   ,[PCF_USRMAJ]
+																   ,[PCF_NUMMAJ]
+																   ,[PCF_BLOQUE]
+																   ,[PCF_USRCRE]
+																   ,[XXX_CLTWEB]
+																   ,[XXX_MPAYDA]
+																   ,[XXX_IDGEND]
+																   ,[XXX_PROVEN]															   
+																   ) VALUES ('
+								. '\'' . $PcfCode. '\','
+								. '\'C \','
+								. '\'' . $CptNumero . '\','
+								. '\'' . $company . '\',' //PCF_RS
+								. '\'' . $Rs2 . '\',' //PCF_RS2
+								. '\'' . preg_replace('/\'/','\'\'',$address1) . '\','//PCF_RUE
+								. '\'' . preg_replace('/\'/','\'\'',$address2) . '\','//PCF_COMP
+								. '\'' . preg_replace('/\'/','\'\'',$phone) . '\','//PCF_TEL1
+								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\','//PCF_TEL2
+								. '\'' . preg_replace('/\'/','\'\'',$email) . '\','//PCF_EMAIL
+								. '\'' . preg_replace('/\'/','\'\'',$siret) . '\','//PCF_SIRET
+								. '\'' . preg_replace('/\'/','\'\'',$ape) . '\','//PCF_APE
+								. '\'EUR\' ,'//DEV_CODE
+								. '\'001\' ,'//NAT_CODE
+								. '\'WEB\' ,'//TAR_CODE
+								. '0 ,'//PCF_DORT
+								. 'dbo.FormatDate (\''.$dateAdd .'\'),'//PCF_DTCREE
+								. 'dbo.FormatDate (\''.$dateUpd .'\'),'//PCF_DTMAJ
+								. '\'WEB\' ,'//PCF_USRMAJ
+								. '1 ,'//PCF_NUMMAJ
+								. '0 ,'//PCF_BLOQUE
+								. '\'WEB\' ,'//PCF_USRCRE
+								. '1 ,'//XXX_CLTWEB
+								. $maxPaymentDays . ','//XXX_MPAYDA
+								. $idGender . ','//XXX_IDGEND
+								. '\'' . $this->origin .'\')')//XXX_PROVEN
+								/* 
 								. $idShopGroup . ','
    								. $idShop . ','
-								. $idGender . ','
 								. $idDefaultGroup . ','
  								. $idRisk . ','
-								. '\'' . preg_replace('/\'/','\'\'',$company) .'\','
-								. '\'' . preg_replace('/\'/','\'\'',$siret) .'\','
-								. '\'' . preg_replace('/\'/','\'\'',$ape) .'\','
-								. '\'' . preg_replace('/\'/','\'\'',$firstname) .'\','
-								. '\'' . preg_replace('/\'/','\'\'',$lastname) .'\','
-								. '\'' . preg_replace('/\'/','\'\'',$email) . '\','
 								. '\'' . preg_replace('/\'/','\'\'',$passwd) . '\','
 								. '\'' . preg_replace('/\'/','\'\'',$lastPasswdGen) . '\','
 								. '\'' . $birthday . '\','
@@ -258,26 +342,79 @@ class CustomersMonkey implements monkey{
 								. '\'' . $website . '\','
 								. '\'' . $outstandingAllowAmount . '\','
 								. $showPublicPrices . ','
-							    . $maxPaymentDays .','
 								. '\'' . $secureKey . '\','
 								. '\'' . $note . '\','
 								. $active . ','
 								. $isGuest . ','
 								. $deleted . ','
-								. '\'' . $dateAdd .'\','
-								. '\'' . $dateUpd . '\','
-								. '\'' . preg_replace('/\'/','\'\'',$address1) . '\','
-								. '\'' . preg_replace('/\'/','\'\'',$address2) . '\','
-								. '\'' . $phone . '\','
-   								. '\'' . $phoneMobile . '\','
-								. '\'' . $this->origin .  '\'');
-				if(!$statement->execute()){
-					$statement->debugDumpParams();
-					print_r($statement->errorInfo());
-				}else{
-					echo $idCustomer . '<br/>';
+								 */ 
+								or die ("<p>" . odbc_errormsg() . "</p>");
+								
+				odbc_exec($this->sqlServerConnection,'INSERT INTO CONTACTS (
+																	CCT_NUMERO,
+																	CCT_CODE,
+																	CCT_ORIGIN,
+																	CCT_TABLE,
+																	CCT_CIVILE,
+																	CCT_PRENOM,
+																	CCT_NOM,
+																	CCT_EMAIL
+																	) VALUES ('
+								. '\'' . $PcfCode. '\',' //CCT_NUMERO
+								. '\'' . $PcfCode. '\',' //CCT_CODE
+								. '\'' . $PcfCode. '\',' //CCT_ORIGIN
+								. '\'PCF\' ,' //CCT_TABLE
+								. '\'\' ,' //CCT_CIVILE
+								. '\'' . preg_replace('/\'/','\'\'',$firstname) . '\','//CCT_PRENOM
+								. '\'' . preg_replace('/\'/','\'\'',$lastname) . '\','//CCT_NOM
+								. '\'' . preg_replace('/\'/','\'\'',$email) . '\'')//CCT_EMAIL
+								or die ("<p>" . odbc_errormsg() . "</p>");
+								
+				odbc_exec($this->sqlServerConnection,'INSERT INTO ADRESSES (
+															  ADR_TBL,
+															  ADR_CODE,
+															  ADR_NUMERO,
+															  ADR_RS,
+															  ADR_RS2,
+															  ADR_RUE,
+															  ADR_COMP,
+															  ADR_TEL1,
+															  ADR_TEL2
+															 ) VALUES ('
+								. '\'PCF\' ,' //ADR_TBL
+								. '\'' . $PcfCode. '\',' //ADR_CODE
+								. '\'001\' ,' //ADR_NUMERO
+								. '\'' . $company . '\',' //ADR_RS
+								. '\'' . $Rs2 . '\',' //ADR_RS2
+								. '\'' . preg_replace('/\'/','\'\'',$address1) . '\',' //ADR_RUE
+								. '\'' . preg_replace('/\'/','\'\'',$address2) . '\',' //ADR_COMP
+								. '\'' . preg_replace('/\'/','\'\'',$phone) . '\',' //ADR_TEL1
+								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\'') //ADR_TEL2
+								or die ("<p>" . odbc_errormsg() . "</p>");
+								
+				odbc_exec($this->sqlServerConnection,'INSERT INTO ADRESSES (
+															  ADR_TBL,
+															  ADR_CODE,
+															  ADR_NUMERO,
+															  ADR_RS,
+															  ADR_RS2,
+															  ADR_RUE,
+															  ADR_COMP,
+															  ADR_TEL1,
+															  ADR_TEL2
+															 ) VALUES ('
+								. '\'PCF\' ,' //ADR_TBL
+								. '\'' . $PcfCode. '\',' //ADR_CODE
+								. '\'002\' ,' //ADR_NUMERO
+								. '\'' . $company . '\',' //ADR_RS
+								. '\'' . $Rs2 . '\',' //ADR_RS2
+								. '\'' . preg_replace('/\'/','\'\'',$address1) . '\',' //ADR_RUE
+								. '\'' . preg_replace('/\'/','\'\'',$address2) . '\',' //ADR_COMP
+								. '\'' . preg_replace('/\'/','\'\'',$phone) . '\',' //ADR_TEL1
+								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\'') //ADR_TEL2
+								or die ("<p>" . odbc_errormsg() . "</p>");
+					}
 				}
 			}
 		}
 	}
-}
