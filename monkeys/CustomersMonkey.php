@@ -271,7 +271,7 @@ class CustomersMonkey implements monkey{
 													  . ' ,[ADR_COMP] = \'' . preg_replace('/\'/','\'\'',$address2) . '\''
 													  . ' ,[ADR_TEL1] = \'' . preg_replace('/\'/','\'\'',$phone) . '\''
 													  . ' ,[ADR_TEL2] = \'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\''
-													  . 'WHERE [ADR_CODE] = \'' . $PcfCode . '\'');
+													  . 'WHERE [ADR_CODE] = \'' . $PcfCode . '\'') or die ("<p>" . odbc_errormsg() . "</p>");
 				} else {
 				odbc_exec($this->sqlServerConnection,'INSERT INTO dbo.TIERS (
 																	[PCF_CODE]
