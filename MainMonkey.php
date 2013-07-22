@@ -25,10 +25,8 @@ $myEngine->createData(
 					 );*/
 //$myEngine->deleteData('7','customers');
 
-//$c = new PDO(Constants::getSQLServerConnectionString(), Constants::getDataBaseUsername(), Constants::getDataBasePassword());
-$c = odbc_connect('SQLSERVER2012', 'mayas-had', 'Ma11asH');
-$query = odbc_exec($c, 'SELECT * FROM dbo.TIERS WHERE left(PCF_CODE,1) = \'w\'');
-var_dump(odbc_result_all($query));
-//$myCustomersMonkey = new CustomersMonkey($c, $myEngine, 100, 700, 'site A');
+$c = odbc_connect(Constants::getSQLServerConnectionString(),Constants::getDataBaseUsername(), Constants::getDataBasePassword());
 
-$myCustomersMonkey->synchronizeAll();
+$myProductsMonkey = new ProductsMonkey($c, $myEngine, 100, 700);
+
+$myProductsMonkey->synchronizeAll();

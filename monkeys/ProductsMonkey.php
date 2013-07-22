@@ -233,7 +233,7 @@ class productsMonkey implements monkey{
 		$idSupplier = 'NULL';
 		$idManufacturer = 'NULL';
 		$idManufacturer = 'NULL';
-		$idCategoryDefault = 'NULL';
+		$idCategoryDefault = '0';
 		$idShopDefault = 'NULL';
 		$idTaxRulesGroup = 'NULL';
 		$onSale = 'NULL';
@@ -242,7 +242,7 @@ class productsMonkey implements monkey{
 		$upc = 'NULL';
 		$ecotax = 'NULL';
 		$quantity = 'NULL';
-		$minimalQuantit = 'NULL';
+		$minimalQuantit = '0';
 		$price = 'NULL';
 		$wholesalePrice = 'NULL';
 		$unity = 'NULL';
@@ -251,10 +251,10 @@ class productsMonkey implements monkey{
 		$reference = 'NULL';
 		$supplierReference = 'NULL';
 		$location = 'NULL';
-		$width = 'NULL';
-		$height = 'NULL';
+		$width = '0';
+		$height = '0';
 		$depth = 'NULL';
-		$weight = 'NULL';
+		$weight = '0';
 		$outOfStock = 'NULL';
 		$quantityDiscount = 'NULL';
 		$customizable = 'NULL';
@@ -427,58 +427,149 @@ class productsMonkey implements monkey{
 			}
 
 			foreach ($productOptionValues as $key => $declension) {
-				$statement = $this->sqlServerConnection->prepare('PrestaArticles '
-					. $idProduct . ','
-					. $idSupplier . ','
-					. $idManufacturer . ','
-					. $idCategoryDefault . ','
-					. $idShopDefault . ','
-					. $idTaxRulesGroup . ','
-					. (int) $onSale . ','
-					. (int) $onlineOnly . ','
-					. $ean13 . ','
-					. $upc . ','
-					. $ecotax . ','
-					. $quantity . ','
-					. $minimalQuantit . ','
-					. $price . ','
-					. $wholesalePrice . ','
-					. $unity . ','
-					. $unitPriceRatio . ','
-					. $additionalShippingCost . ','
-					. $reference . ','
-					. $supplierReference . ','
-					. $location . ','
-					. $width . ','
-					. $height . ','
-					. $depth . ','
-					. $weight . ','
-					. $outOfStock . ','
-					. (int) $quantityDiscount . ','
-					. (int) $customizable . ','
-					. (int) $uploadableFiles . ','
-					. (int) $textFields . ','
-					. (int) $active . ','
-					. (int) $availableForOrder . ','
-					. '\'' . $availableDate . '\','
-					. $condition . ','
-					. $showPrice . ','
-					. $indexed . ','
-					. $visibility . ','
-					. (int) $cacheIsPack . ','
-					. (int) $cacheHasAttachments . ','
-					. (int) $isVirtual . ','
-					. $cacheDefaultAttribute . ','
-					. '\'' . $dateAdd . '\','
-					. '\'' . $dateUpd . '\','
-					. (int) $advancedStockManagement . ','
-					. '\'' . preg_replace('/\'/','\'\'', $declension) . '\''
-					);
+				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$declension)),-5);
+				$CodeArticle = $reference . $IdDeclinaison;
 				
-				if(!$statement->execute()){
-					$statement->debugDumpParams();
-					print_r($statement->errorInfo());
-					echo '<br/>';
+				$verif = odbc_exec($this->sqlServerConnection,'SELECT A.ART_CODE FROM ARTICLES A WHERE A.ART_CODE = \''. $CodeArticle .'\'');
+				
+				if (!empty($verif)){
+					echo '<p>' . $dateUpd . '</p>';
+					echo '<p>' . $CodeArticle . '</p>';
+
+				odbc_exec($this->sqlServerConnection,'UPDATE ARTICLES SET '
+													  . ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $reference) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
+												      . ' ,[ART_LIBC] =  \'' . preg_replace('/\'/','\'\'', $reference) . '\''
+													  . ' ,[ART_QTEDFT] = ' . $minimalQuantit
+													  . ' ,[ART_POIDSB] = ' . $weight
+												      . ' ,[ART_POIDST] = 0' 
+												      . ' ,[ART_POIDSN] = ' . $weight
+												      . ' ,[ART_LONG] = ' . $width
+												      . ' ,[ART_LARG] = '. $height
+													  . ' ,[ART_DORT] = 0'
+													  . ' ,[ART_P_ACH] = 0'
+													  . ' ,[ART_P_PRV] = 0'
+													  . ' ,[ART_P_COEF] = 0'
+													  . ' ,[ART_P_VTEB] = 0'
+													  . ' ,[ART_P_VTE] = 0'
+													  . ' ,[ART_P_EURO] = 0'
+													  . ' ,[ART_DTMAJ] = dbo.FormatDate (\''. $dateUpd .'\')'
+													  . ' ,[ART_USRMAJ] = \'WEB\''
+													  . ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
+													  . 'WHERE [ART_CODE] = \'' . $CodeArticle . '\''
+													  ) 
+or die ("<p>" . odbc_errormsg() . "</p>");
+					
+				}				
+				else {				
+				odbc_exec($this->sqlServerConnection,'INSERT INTO dbo.ARTICLES
+													   (ART_CODE
+													   ,ART_REF
+													   ,ART_CBAR
+													   ,ART_TYPE
+													   ,ART_CATEG
+													   ,ART_LIB
+													   ,ART_LIBC
+													   ,ART_QTEDFT
+													   ,ART_POIDSB
+													   ,ART_POIDST
+													   ,ART_POIDSN
+													   ,ART_LONG
+													   ,ART_LARG
+													   ,ART_STOCK
+													   ,ART_DORT
+													   ,ART_P_ACH
+													   ,ART_M_PRV
+													   ,ART_I_PRV
+													   ,ART_D_PRV
+													   ,ART_S_PRV
+													   ,ART_P_PRV
+													   ,ART_P_COEF
+													   ,ART_P_VTEB
+													   ,ART_P_VTE
+													   ,ART_P_EURO
+													   ,ART_DTCREE
+													   ,ART_DTMAJ
+													   ,ART_USRMAJ
+													   ,ART_NUMMAJ
+													   ,XXX_IDCATE
+													   ,XXX_IDPRES
+													   ,XXX_VISIBL
+													   ,XXX_DECLIN) VALUES ('
+														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\','
+														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\','
+														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\','
+														. '\'P\','
+														. '\'F\','
+														. '\'' . preg_replace('/\'/','\'\'', $reference) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\','
+														. '\'' . preg_replace('/\'/','\'\'', $reference) . '\','
+														. $minimalQuantit . ','
+														. $weight . ','
+														. '0,'
+														. $weight . ','
+														. $width . ','
+														. $height . ','
+														. '\'M\','
+														. '0,'
+														. '0,'
+														. '\'M\','
+														. '\'P\','
+														. '\'S\','
+														. '\'A\','
+														. '0,'
+														. '0,'
+														. '0,'
+														. '0,'
+														. '0,'
+														. 'dbo.FormatDate (\''.$dateAdd .'\'),'
+														. 'dbo.FormatDate (\''.$dateUpd .'\'),'
+														. '\'WEB\','
+														. '1,'
+														. '\'' . $idCategoryDefault . '\','
+														. '\'' . $idProduct . '\','
+														. '1,'
+														. '\'' . preg_replace('/\'/','\'\'', $declension) . '\')'
+														/*
+														
+														. $idSupplier . ','
+														. $idManufacturer . ','
+														. $idShopDefault . ','
+														. $idTaxRulesGroup . ','
+														. (int) $onSale . ','
+														. (int) $onlineOnly . ','
+														. $ean13 . ','
+														. $upc . ','
+														. $ecotax . ','
+														. $quantity . ','
+														. $price . ','
+														. $wholesalePrice . ','
+														. $unity . ','
+														. $unitPriceRatio . ','
+														. $additionalShippingCost . ','
+														. $reference . ','
+														. $supplierReference . ','
+														. $location . ','
+														. $depth . ','
+														. $outOfStock . ','
+														. (int) $quantityDiscount . ','
+														. (int) $customizable . ','
+														. (int) $uploadableFiles . ','
+														. (int) $textFields . ','
+														. (int) $active . ','
+														. (int) $availableForOrder . ','
+														. '\'' . $availableDate . '\','
+														. $condition . ','
+														. $showPrice . ','
+														. $indexed . ','
+														. $visibility . ','
+														. (int) $cacheIsPack . ','
+														. (int) $cacheHasAttachments . ','
+														. (int) $isVirtual . ','
+														. $cacheDefaultAttribute . ','
+														. '\'' . $dateAdd . '\','
+														. '\'' . $dateUpd . '\','
+														. (int) $advancedStockManagement . ','
+														 */
+					) or die ("<p>" . odbc_errormsg() . "</p>");
 				}
 			}
 			echo $idProduct . '<br/>';
