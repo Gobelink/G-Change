@@ -1,6 +1,7 @@
 <div id="body-container">
-	Vous venez de créer votre premier template avec {{ moteur_name }} !
-	<p>
-		Bonjour {{ tab.nom }}
-	</p>
+	{% if module is defined %}
+		{% if module == 'customers' %}
+			{% include 'customers-form.twig' %}
+		{% endif %}
+	{% endif %}
 </div>
