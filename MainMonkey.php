@@ -44,7 +44,14 @@ class MainMonkey{
 		$customersMonkey->synchronizeAll();
 	}
 
-	public function synchronizeOrders(){
+	public function synchronizeOrders($from, $to){
+		$ordersMonkey = new ordersMonkey(
+			$this->getDatabaseConnection(), 
+			$this->getEngineAdvancedEngine(),
+			$from, 
+			$to
+		);
+		$ordersMonkey->synchronizeAll();
 
 	}
 	
@@ -58,6 +65,14 @@ class MainMonkey{
 							(int) $_POST['from'],
 							(int) $_POST['to'],
 							htmlspecialchars($_POST['origin'])
+						);
+					}
+					break;
+				case 'syncOrders':
+					if(isset($_POST['from'], $_POST['to'])){
+						$this->synchronizeOrders(
+							(int) $_POST['from'],
+							(int) $_POST['to']
 						);
 					}
 					break;

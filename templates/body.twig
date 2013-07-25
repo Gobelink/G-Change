@@ -2,6 +2,8 @@
 	{% if module is defined %}
 		{% if module == 'customers' %}
 			{% include 'customers-form.twig' %}
+		{% elseif module == 'orders' %}
+			{% include 'orders-form.twig' %}
 		{% endif %}
 	{% endif %}
 </div>
