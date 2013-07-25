@@ -229,65 +229,32 @@ class OrdersMonkey implements monkey{
 		 
 		 foreach ($myPSOrders as $orderID => $currentOrder){
 		 //$CodeClient = '\'W\'+'.$currentOrder['id_customer'];
-		 $CodeClient = '\'W107\'';
+		 $CodeClient = '\'W'.$currentOrder['id_customer'].'\'';
 		 $Tva = $currentOrder['total_paid_tax_incl']- $currentOrder['total_paid_tax_excl'];
-		 odbc_exec($this->sqlServerConnection,'			
-         -- Récupération du numéro de document --
-		 DECLARE @NUMERO INT
-		 EXEC G2GETNEWNUMERO \'N_DOC\',1,@NUMERO OUTPUT
-
-		 -- Déclaration d\'un curseur pour générer le n° de document à la voler --
-		 DECLARE @CodeTiers VARCHAR (15)
-		 DECLARE @DocDate VARCHAR (10)
-		 DECLARE @DocType VARCHAR (3)
-		 DECLARE @DocStype VARCHAR (1)
-		 DECLARE @Prefixe VARCHAR (4)
-		 DECLARE @NLigne INT
-
-		 DECLARE @TypeDoc VARCHAR(1)
-		 SET @TypeDoc = \''.$DocType.'\'
-
-		 DECLARE @STypeDoc VARCHAR(1)
-		 SET @STypeDoc = \''.$DocStype.'\'
-
-		 DECLARE E CURSOR FOR 
-
-		  SELECT LEFT('.$CodeClient.',15), GETDATE(), 
-		   \'VTE\' AS \'DocType\',  @STypeDoc AS \'DOC_STYPE\', 
-		   LEFT((SELECT REPLACE (SP.SOC_PRMTXT, \' \', \'\') FROM SOC_PARAMS SP WHERE SP.SOC_PARAM = \'N_VTEC\'),5)
-		  
-
-		 OPEN E
-
-		 FETCH NEXT FROM E INTO @CodeTiers, @DocDate, @DocType, @DocStype, @Prefixe 
- 
-		  WHILE @@FETCH_STATUS = 0
-		  BEGIN
-			SELECT @NUMERO
-
-			DECLARE @DocNumero VARCHAR(10)
-			SELECT @DocNumero = RIGHT(REPLICATE(\'0\',10)+CAST (@NUMERO AS VARCHAR),10) 
-			
-			SET @NUMERO = @NUMERO + 1;
-		
-			DECLARE @Identifiant VARCHAR(30)
-			SET @Identifiant = \'N_\' + @DocType + @DocStype
-
-			DECLARE @Resultat VARCHAR(15)
-			EXEC G2GetNewPiece @Identifiant, @Prefixe, @Resultat OUTPUT
-	
-			SELECT @Resultat
-
-			DECLARE @DocPiece VARCHAR(15)
-			SELECT @DocPiece = @Resultat
-	
-			SET @Resultat = CAST (RIGHT(@Resultat,4) AS INT) + 1;
-
-			FETCH NEXT FROM E INTO @CodeTiers, @DocDate, @DocType, @DocStype, @Prefixe 
-		  END
-		  CLOSE E
-		  DEALLOCATE E'
-		 .' INSERT INTO LIGNES (DOC_NUMERO, -- 1
+		 
+		 $ExecPsDocNumero = 'DECLARE @NUMERO INT
+		 EXEC G2GETNEWNUMERO \'N_DOC\', 1, @NUMERO OUTPUT		
+		 SELECT @NUMERO';
+		 
+		 $ExecPsDocPiece = ' DECLARE @Identifiant VARCHAR(6)
+		 SET @Identifiant = \'N_VTEC\'
+		 
+  	     DECLARE @Prefixe VARCHAR (4)
+		 SET @Prefixe = LEFT((SELECT REPLACE (SP.SOC_PRMTXT, \' \', \'\') FROM SOC_PARAMS SP WHERE SP.SOC_PARAM = @Identifiant),5)
+		 
+		 DECLARE @Resultat VARCHAR(15)
+		 EXEC G2GetNewPiece @Identifiant, @Prefixe, @Resultat OUTPUT
+		 
+		 SELECT @Resultat';
+		 
+		 $IdDocGestimum = odbc_exec($this->sqlServerConnection,$ExecPsDocNumero) or die ("<p>" . odbc_errormsg() . "</p>");  
+		 $DocNumero = substr (str_repeat("0",10).$IdDocGestimum,-10);
+		 odbc_close($this->sqlServerConnection); 
+		 
+		 $connect = odbc_connect(Constants::getSQLServerConnectionString(),Constants::getDataBaseUsername(), Constants::getDataBasePassword());
+		 $DocPiece = odbc_exec($connect,$ExecPsDocPiece)or die ("<p>" . odbc_errormsg() . "</p>");  
+		 		 
+		 odbc_exec($this->sqlServerConnection,' INSERT INTO LIGNES (DOC_NUMERO, -- 1
 								 LIG_NUMERO, -- 2
 								 LIG_SUBNUM, -- 3
 								 DEP_CODE, -- 4
@@ -352,7 +319,7 @@ class OrdersMonkey implements monkey{
 								 NAT_TVATX, -- 63
 								 NAT_TVATYP -- 64
 							 ) VALUES ('
-		  .'@DocNumero,'//DOC_NUMERO -- 1
+		  .$DocNumero.','//DOC_NUMERO -- 1
 		  .'RIGHT(REPLICATE(\'0\',5)+CAST(1*16 AS VARCHAR(5)),5),' //LIG_NUMERO -- 2
 		  .'00000,' //LIG_SUBNUM -- 3
 		  .'001,' // DEP_CODE -- 4
@@ -415,7 +382,7 @@ class OrdersMonkey implements monkey{
 		  .'\'WEB\',' //LIG_USRMAJ
 		  .'1,' //LIG_NUMMAJ
 		  .'19.6,' //NAT_TVATX
-		  .'\'F\' )' //NAT_TVATYP 
+		  .'\'F\' )'//NAT_TVATYP 
 		  
 		  .' INSERT INTO dbo.DOCUMENTS (
 												  DOC_TYPE,
@@ -495,14 +462,14 @@ class OrdersMonkey implements monkey{
 		  .'0,' //DOC_EN_TTC
 		  .'\'Commande Web : '.$currentOrder['invoice_number'].' \','//DOC_REFPCF
 		  .'\'\',' //DOC_MEMO
-		  .'@DocNumero,' //DOC_NUMERO
+		  .$DocNumero.',' //DOC_NUMERO
 		  .'GETDATE(),'//.$currentOrder['invoice_date'].',' //DOC_DATE -- A voir !!!
 		  .'GETDATE(),'//.$currentOrder['invoice_date'].',' //DOC_DT_PRV -- A voir !!!
 		  .'GETDATE(),' //DOC_DTCRE
 		  .'GETDATE(),' //DOC_DTMAJ
 		  .$CodeClient.','//.'\'W'.$currentOrder['id_customer'].'\',' //PCF_CODE
 		  .$CodeClient.','//.'\'W'.$currentOrder['id_customer'].'\',' //PCF_PAYEUR
-		  .'@DocPiece,' //DOC_PIECE
+		  .$DocPiece.',' //DOC_PIECE
 		  .'\'FR\',' //PAY_CODE
 		  .'\'\',' //DOC_F_RS
 		  .'\'\',' //DOC_F_RS2
@@ -556,13 +523,12 @@ class OrdersMonkey implements monkey{
 		  .$currentOrder['total_products_wt'].',' //DOC_POIDSN 
 		  .'0,' //DOC_NCOLIS
 		  .'0)' //DOC_VOLUME
-		  .' EXEC dbo.CreatEcheances @DocNumero ') or die ("<p>" . odbc_errormsg() . "</p>");  
-		
-odbc_close($this->sqlServerConnection); 
+		  .' EXEC dbo.CreatEcheances @DocNumero ') or die ("<p>" . odbc_errormsg() . "</p>"); 		
+		  odbc_close($this->sqlServerConnection); 
 		  
 				}
 			}
-			}
+		}
 		/*}
 		
 		
