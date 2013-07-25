@@ -5,6 +5,7 @@
 class bisAutoloader{
 	public static function init(){
 		$classes = array(
+				'MainMonkey',
 				'Constants',
 				'PrestaShopWebservice',
 				'manipulationEngine',
@@ -12,8 +13,8 @@ class bisAutoloader{
 				'AdvancedManipulationEngine',
 				'CustomersMonkey',
 				'OrdersMonkey',
-				'ProductsMonkey'
-
+				'ProductsMonkey',
+				'Autoloader'
 			);
 	array_walk($classes, 'bisAutoLoader::performRequire');		
 }
@@ -41,6 +42,10 @@ public static function performRequire($className){
 	}
 	if(file_exists('monkeys/interfaces/' . $className . '.php')){
 		require_once('monkeys/interfaces/' . $className . '.php');
+		return;
+	}
+	if(file_exists('twig/lib/Twig/' . $className . '.php')){
+		require_once('twig/lib/Twig/' . $className . '.php');
 		return;
 	}
 }
