@@ -121,4 +121,9 @@ $myEngine->createData(
 						'customers'
 					 );
 //$myEngine->deleteData('7','customers');
+$c = odbc_connect(Constants::getSQLServerConnectionString(),Constants::getDataBaseUsername(), Constants::getDataBasePassword());
+
+$myOrdersMonkey = new OrdersMonkey($c, $myEngine, 100, 700);
+
+$myOrdersMonkey->synchronizeAll();
 */

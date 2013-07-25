@@ -252,6 +252,8 @@ class CustomersMonkey implements monkey{
 												      . ' ,[PCF_EMAIL] = \'' . preg_replace('/\'/','\'\'',$email) . '\''
 												      . ' ,[PCF_SIRET] = \'' . $siret . '\''
 												      . ' ,[PCF_APE] = \'' . $ape . '\''
+													  . ' ,[PCF_TEL1] = \'' . $phone . '\''
+													  . ' ,[PCF_TEL2] = \'' . $phoneMobile . '\''
 												      . ' ,[PCF_NUMMAJ] = [PCF_NUMMAJ]+1 ' 
 													  . ' ,[XXX_MPAYDA] = ' . $maxPaymentDays
 													  . ' ,[XXX_IDGEND] = ' . $idGender 
