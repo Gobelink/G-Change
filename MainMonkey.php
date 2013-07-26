@@ -66,7 +66,6 @@ class MainMonkey{
 							(int) $_POST['to'],
 							htmlspecialchars($_POST['origin'])
 						);
-						var_dump($_POST['from']);
 					}
 					break;
 				case 'syncOrders':
