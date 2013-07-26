@@ -1,0 +1,8 @@
+#body-container
+{
+	background-color: rgb(200,200,200) ;
+	height: 75%;
+	position: relative;
+	margin-left: 50px;
+	margin-right: 50px;
+}

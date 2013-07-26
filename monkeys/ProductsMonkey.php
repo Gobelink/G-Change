@@ -428,11 +428,14 @@ class productsMonkey implements monkey{
 
 			foreach ($productOptionValues as $key => $declension) {
 				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$declension)),-5);
-				$CodeArticle = $reference.$IdDeclinaison;
+				$CodeArticle = $reference . $IdDeclinaison;
 				
 				$verif = odbc_exec($this->sqlServerConnection,'SELECT A.ART_CODE FROM ARTICLES A WHERE A.ART_CODE = \''. $CodeArticle .'\'');
 				
 				if (!empty($verif)){
+					echo '<p>' . $dateUpd . '</p>';
+					echo '<p>' . $CodeArticle . '</p>';
+
 				odbc_exec($this->sqlServerConnection,'UPDATE ARTICLES SET '
 													  . ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $reference) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
 												      . ' ,[ART_LIBC] =  \'' . preg_replace('/\'/','\'\'', $reference) . '\''
@@ -449,11 +452,12 @@ class productsMonkey implements monkey{
 													  . ' ,[ART_P_VTEB] = 0'
 													  . ' ,[ART_P_VTE] = 0'
 													  . ' ,[ART_P_EURO] = 0'
-													  . ' ,[ART_DTMAJ] = dbo.FormatDate (\''.$dateUpd .'\')'
+													  . ' ,[ART_DTMAJ] = dbo.FormatDate (\''. $dateUpd .'\')'
 													  . ' ,[ART_USRMAJ] = \'WEB\''
 													  . ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
 													  . 'WHERE [ART_CODE] = \'' . $CodeArticle . '\''
-													  ) or die ("<p>" . odbc_errormsg() . "</p>");
+													  ) 
+or die ("<p>" . odbc_errormsg() . "</p>");
 					
 				}				
 				else {				

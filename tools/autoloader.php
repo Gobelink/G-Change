@@ -3,18 +3,17 @@ class autoloader {
 
     public static $loader;
 
-    public static function init()
-    {
+    public static function init(){
         if (self::$loader == NULL)
             self::$loader = new self();
 
         return self::$loader;
     }
 
-    public function __construct()
-    {
-        spl_autoload_register(array($this,'monkeys'));
+    public function __construct(){
+	
         spl_autoload_register(array($this,'monkeysInterfaces'));
+        spl_autoload_register(array($this,'monkeys'));
         spl_autoload_register(array($this,'tools'));
         spl_autoload_register(array($this,'toolsIntrefaces'));
         spl_autoload_register(array($this,'library'));
@@ -30,7 +29,7 @@ class autoloader {
     public function monkeysInterfaces($class){
         set_include_path('./monkeys/interfaces/');
         spl_autoload_extensions('.php');
-        spl_autoload($class);
+        spl_autoload($class,'.php');
     }
 
     public function tools($class){
