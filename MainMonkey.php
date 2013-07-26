@@ -60,16 +60,17 @@ class MainMonkey{
 		if(isset($_POST[$form])){
 			switch ($form) {
 				case 'syncCustomers':
-					if(isset($_POST['from'], $_POST['to'], $_POST['origin'])){
+					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin'])){
 						$this->synchronizeCustomers(
 							(int) $_POST['from'],
 							(int) $_POST['to'],
 							htmlspecialchars($_POST['origin'])
 						);
+						var_dump($_POST['from']);
 					}
 					break;
 				case 'syncOrders':
-					if(isset($_POST['from'], $_POST['to'])){
+					if(!empty($_POST['from']) && !empty($_POST['to'])){
 						$this->synchronizeOrders(
 							(int) $_POST['from'],
 							(int) $_POST['to']
