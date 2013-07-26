@@ -45,8 +45,8 @@ public static function performRequire($className){
 		require_once('monkeys/interfaces/' . $className . '.php');
 		return;
 	}
-	if(file_exists('twig/lib/Twig/' . $className . '.php')){
-		require_once('twig/lib/Twig/' . $className . '.php');
+	if(file_exists('tools/twig/lib/Twig/' . $className . '.php')){
+		require_once('tools/twig/lib/Twig/' . $className . '.php');
 		return;
 	}
 }
