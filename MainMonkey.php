@@ -27,6 +27,6 @@ $myEngine->createData(
 
 $c = odbc_connect(Constants::getSQLServerConnectionString(),Constants::getDataBaseUsername(), Constants::getDataBasePassword());
 
-$myOrdersMonkey = new OrdersMonkey($c, $myEngine, 100, 700);
+$myCustomerssMonkey = new CustomersMonkey($c, $myEngine, 100, 700,'');
 
-$myOrdersMonkey->synchronizeAll();
+$myCustomerssMonkey->synchronizeAll();
