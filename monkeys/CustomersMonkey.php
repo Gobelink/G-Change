@@ -28,7 +28,7 @@ class CustomersMonkey implements monkey{
 		$address = $this->myAdvancedManipulationEngine->retrieveData(
 			'addresses', 
 			NULL,
-			array('id_customer, address1', 'address2'), 
+			array('id_customer, address1', 'address2', 'postcode','city'), 
 			array('id_customer' => '[' . $this->from . ',' . $this->to . ']')
 			);
 
@@ -46,6 +46,12 @@ class CustomersMonkey implements monkey{
 							break;
 						case 'address2':
 							$addressesArray['address2'] = $value;
+							break;
+						case 'postcode':
+							$addressesArray['postcode'] = $value;
+							break;
+						case 'city':
+							$addressesArray['city'] = $value;
 							break;
 						default:
 							break;
@@ -128,6 +134,8 @@ class CustomersMonkey implements monkey{
 			$dateUpd = 'NULL';
 			$address1 = 'NULL';
 			$address2 = 'NULL';
+			$postcode = 'NULL';
+			$city = 'NULL';
 			$phone = 'NULL';
 			$phoneMobile = 'NULL';
 
@@ -235,20 +243,27 @@ class CustomersMonkey implements monkey{
 
 				$address2 = $customerAddresses['address2'] ;
 				
+				$postcode = $customerAddresses['postcode'] ;
+				
+				$city = $customerAddresses['city'] ;
+				
 				$PcfCode = 'W'.$idCustomer;
 				$CptNumero = '411'.$PcfCode;
+				$Rs2 = '';
 				
-				if (empty($company)) {$company= $firstname.' '. $lastname;} 
+				if ($company='NULL') {$company= $firstname.' '. $lastname;} 
 				else {$Rs2= $firstname .' '.$lastname;} 
-				
+			   
 				$verif = odbc_exec($this->sqlServerConnection,'SELECT T.PCF_CODE FROM TIERS T WHERE T.PCF_CODE = \''. $PcfCode .'\'');
 				
 				if (!empty($verif)){
 				odbc_exec($this->sqlServerConnection,'UPDATE TIERS SET '
-													  . ' [PCF_RS] = \'' . $company . '\''
-												      . ' ,[PCF_RS2] = \'' . $Rs2 . '\''
+													  . ' [PCF_RS] = UPPER(\'' . $company . '\')'
+												      . ' ,[PCF_RS2] = UPPER(\'' . $Rs2 . '\')'
 													  . ' ,[PCF_RUE] = \'' . preg_replace('/\'/','\'\'',$address1) . '\''
 													  . ' ,[PCF_COMP] = \'' . preg_replace('/\'/','\'\'',$address2) . '\''
+													  . ' ,[PCF_CP] = \'' . preg_replace('/\'/','\'\'',$postcode) . '\''
+													  . ' ,[PCF_VILLE] = \'' . preg_replace('/\'/','\'\'',$city) . '\''
 												      . ' ,[PCF_EMAIL] = \'' . preg_replace('/\'/','\'\'',$email) . '\''
 												      . ' ,[PCF_SIRET] = \'' . $siret . '\''
 												      . ' ,[PCF_APE] = \'' . $ape . '\''
@@ -267,10 +282,12 @@ class CustomersMonkey implements monkey{
 													  . 'WHERE [CCT_ORIGIN] = \'' . $PcfCode . '\''
 													  
 													  . 'UPDATE ADRESSES SET '
-													  . ' [ADR_RS] = \'' . $company . '\''
-												      . ' ,[ADR_RS2] = \'' . $Rs2 . '\''
+													  . ' [ADR_RS] = UPPER(\'' . $company . '\')'
+												      . ' ,[ADR_RS2] = UPPER(\'' . $Rs2 . '\')'
 													  . ' ,[ADR_RUE] = \'' . preg_replace('/\'/','\'\'',$address1) . '\''
 													  . ' ,[ADR_COMP] = \'' . preg_replace('/\'/','\'\'',$address2) . '\''
+													  . ' ,[ADR_CP] = \'' . preg_replace('/\'/','\'\'',$postcode) . '\''
+													  . ' ,[ADR_VILLE] = \'' . preg_replace('/\'/','\'\'',$city) . '\''
 													  . ' ,[ADR_TEL1] = \'' . preg_replace('/\'/','\'\'',$phone) . '\''
 													  . ' ,[ADR_TEL2] = \'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\''
 													  . 'WHERE [ADR_CODE] = \'' . $PcfCode . '\'') or die ("<p>" . odbc_errormsg() . "</p>");
@@ -283,6 +300,8 @@ class CustomersMonkey implements monkey{
 																   ,[PCF_RS2]
 																   ,[PCF_RUE]
 																   ,[PCF_COMP]
+																   ,[PCF_CP]
+																   ,[PCF_VILLE]
 																   ,[PCF_TEL1]
 																   ,[PCF_TEL2]
 																   ,[PCF_EMAIL]
@@ -306,10 +325,12 @@ class CustomersMonkey implements monkey{
 								. '\'' . $PcfCode. '\','
 								. '\'C \','
 								. '\'' . $CptNumero . '\','
-								. '\'' . $company . '\',' //PCF_RS
-								. '\'' . $Rs2 . '\',' //PCF_RS2
+								. 'UPPER(\'' . $company . '\'),' //PCF_RS
+								. 'UPPER(\'' . $Rs2 . '\'),' //PCF_RS2
 								. '\'' . preg_replace('/\'/','\'\'',$address1) . '\','//PCF_RUE
 								. '\'' . preg_replace('/\'/','\'\'',$address2) . '\','//PCF_COMP
+								. '\'' . preg_replace('/\'/','\'\'',$postcode) . '\'' //PCF_CP
+								. '\'' . preg_replace('/\'/','\'\'',$city) . '\'' //PCF_VILLE
 								. '\'' . preg_replace('/\'/','\'\'',$phone) . '\','//PCF_TEL1
 								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\','//PCF_TEL2
 								. '\'' . preg_replace('/\'/','\'\'',$email) . '\','//PCF_EMAIL
@@ -380,16 +401,20 @@ class CustomersMonkey implements monkey{
 															  ADR_RS2,
 															  ADR_RUE,
 															  ADR_COMP,
+															  ADR_CP,
+															  ADR_VILLE,
 															  ADR_TEL1,
 															  ADR_TEL2
 															 ) VALUES ('
 								. '\'PCF\' ,' //ADR_TBL
 								. '\'' . $PcfCode. '\',' //ADR_CODE
 								. '\'001\' ,' //ADR_NUMERO
-								. '\'' . $company . '\',' //ADR_RS
-								. '\'' . $Rs2 . '\',' //ADR_RS2
+								. 'UPPER(\'' . $company . '\'),' //ADR_RS
+								. 'UPPER(\'' . $Rs2 . '\'),' //ADR_RS2
 								. '\'' . preg_replace('/\'/','\'\'',$address1) . '\',' //ADR_RUE
 								. '\'' . preg_replace('/\'/','\'\'',$address2) . '\',' //ADR_COMP
+								. '\'' . preg_replace('/\'/','\'\'',$postcode) . '\',' //ADR_CP
+								. '\'' . preg_replace('/\'/','\'\'',$city) . '\',' //ADR_VILLE
 								. '\'' . preg_replace('/\'/','\'\'',$phone) . '\',' //ADR_TEL1
 								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\'') //ADR_TEL2
 								or die ("<p>" . odbc_errormsg() . "</p>");
@@ -402,16 +427,20 @@ class CustomersMonkey implements monkey{
 															  ADR_RS2,
 															  ADR_RUE,
 															  ADR_COMP,
+															  ADR_CP,
+															  ADR_VILLE,
 															  ADR_TEL1,
 															  ADR_TEL2
 															 ) VALUES ('
 								. '\'PCF\' ,' //ADR_TBL
 								. '\'' . $PcfCode. '\',' //ADR_CODE
 								. '\'002\' ,' //ADR_NUMERO
-								. '\'' . $company . '\',' //ADR_RS
-								. '\'' . $Rs2 . '\',' //ADR_RS2
+								. 'UPPER(\'' . $company . '\'),' //ADR_RS
+								. 'UPPER(\'' . $Rs2 . '\'),' //ADR_RS2
 								. '\'' . preg_replace('/\'/','\'\'',$address1) . '\',' //ADR_RUE
 								. '\'' . preg_replace('/\'/','\'\'',$address2) . '\',' //ADR_COMP
+								. '\'' . preg_replace('/\'/','\'\'',$postcode) . '\',' //ADR_CP
+								. '\'' . preg_replace('/\'/','\'\'',$city) . '\',' //ADR_VILLE
 								. '\'' . preg_replace('/\'/','\'\'',$phone) . '\',' //ADR_TEL1
 								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\'') //ADR_TEL2
 								or die ("<p>" . odbc_errormsg() . "</p>");
