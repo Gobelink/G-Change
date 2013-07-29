@@ -473,6 +473,17 @@ or die ("<p>" . odbc_errormsg() . "</p>");
 													   ,ART_POIDSB
 													   ,ART_POIDST
 													   ,ART_POIDSN
+													   ,ART_UB_ACH
+													   ,ART_CD_ACH
+													   ,ART_UC_ACH
+													   ,ART_UB_STK
+													   ,ART_CD_STK
+													   ,ART_UC_STK
+													   ,ART_UB_VTE
+													   ,ART_CD_VTE
+													   ,ART_UC_VTE
+													   ,ART_R_UAUV
+													   ,ART_R_USUV
 													   ,ART_LONG
 													   ,ART_LARG
 													   ,ART_STOCK
@@ -495,37 +506,48 @@ or die ("<p>" . odbc_errormsg() . "</p>");
 													   ,XXX_IDPRES
 													   ,XXX_VISIBL
 													   ,XXX_DECLIN) VALUES ('
-														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\','
-														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\','
-														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\','
-														. '\'P\','
-														. '\'F\','
-														. '\'' . preg_replace('/\'/','\'\'', $reference) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\','
-														. '\'' . preg_replace('/\'/','\'\'', $reference) . '\','
-														. $minimalQuantit . ','
-														. $weight . ','
-														. '0,'
-														. $weight . ','
-														. $width . ','
-														. $height . ','
-														. '\'M\','
-														. '0,'
-														. '0,'
-														. '\'M\','
-														. '\'P\','
-														. '\'S\','
-														. '\'A\','
-														. '0,'
-														. '0,'
-														. '0,'
-														. '0,'
-														. '0,'
-														. 'dbo.FormatDate (\''.$dateAdd .'\'),'
-														. 'dbo.FormatDate (\''.$dateUpd .'\'),'
-														. '\'WEB\','
-														. '1,'
-														. '\'' . $idCategoryDefault . '\','
-														. '\'' . $idProduct . '\','
+														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_CODE
+														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_REF
+														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_CBAR
+														. '\'P\',' //ART_TYPE
+														. '\'F\',' //ART_CATEG
+														. '\'' . preg_replace('/\'/','\'\'', $reference) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\',' //ART_LIB
+														. '\'' . preg_replace('/\'/','\'\'', $reference) . '\',' //ART_LIBC
+														. $minimalQuantit . ',' //ART_QTEDFT
+														. $weight . ',' //ART_POIDSB
+														. '0,' //ART_POIDST
+														. $weight . ',' //ART_POIDSN
+														. '\'U\',' // ART_UB_ACH
+														. '1,' //ART_CD_ACH
+													    . '\'U\',' //ART_UC_ACH
+													    . '\'U\',' //ART_UB_STK
+													    . '1,' //ART_CD_STK
+													    . '\'U\',' //ART_UC_STK
+													    . '\'U\',' //ART_UB_VTE
+													    . '1,' //ART_CD_VTE
+													    . '\'U\',' //ART_UC_VTE
+													    . '1,' //ART_R_UAUV
+													    . '1,' //ART_R_USUV
+														. $width . ',' //ART_LONG
+														. $height . ',' //ART_LARG
+														. '\'M\',' //ART_STOCK
+														. '0,' //ART_DORT
+														. '0,' //ART_P_ACH
+														. '\'M\',' //ART_M_PRV
+														. '\'P\',' //ART_I_PRV
+														. '\'S\',' //ART_D_PRV
+														. '\'A\',' //ART_S_PRV
+														. '0,' //ART_P_PRV
+														. '0,' //ART_P_COEF
+														. '0,' //ART_P_VTEB
+														. '0,' //ART_P_VTE
+														. '0,' //ART_P_EURO
+														. 'dbo.FormatDate (\''.$dateAdd .'\'),' //ART_DTCREE
+														. 'dbo.FormatDate (\''.$dateUpd .'\'),' //ART_DTMAJ
+														. '\'WEB\',' //ART_USRMAJ
+														. '1,' //ART_NUMMAJ
+														. '\'' . $idCategoryDefault . '\',' //XXX_IDCATE
+														. '\'' . $idProduct . '\',' //XXX_IDPRES
 														. '1,'
 														. '\'' . preg_replace('/\'/','\'\'', $declension) . '\')'
 														/*

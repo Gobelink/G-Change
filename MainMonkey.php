@@ -34,7 +34,7 @@ class MainMonkey{
 
 	public function synchronizeCustomers($from, $to, $origin){
 		
-		$customersMonkey = new customersMonkey(
+	$customersMonkey = new customersMonkey(
 			$this->getDatabaseConnection(), 
 			$this->getEngineAdvancedEngine(),
 			$from, 
@@ -55,7 +55,7 @@ class MainMonkey{
 
 	}
 	
-	public function finalActionFormListener($form){
+/*		public function finalActionFormListener($form){
 		
 		if(isset($_POST[$form])){
 			switch ($form) {
@@ -110,12 +110,12 @@ class MainMonkey{
 											$this->getTemplateVariables()
 										);
 	}
-}
-/*
-include('./tools/bisAutoloader.php');
+*/}
+
+/*include('./tools/bisAutoloader.php');
 // Replace path and key with your own.
 $myEngine = new AdvancedManipulationEngine(Constants::getShopAddress(), Constants::getWebServiceKey());
-/*
+
 $myEngine->createData(
 						array(
 							  'lastname' => 'tamerlank',
@@ -135,11 +135,10 @@ $myEngine->createData(
 							  'lastname' => 'Vlodvek'
 							  ),
 						'customers'
-					 );
+					 );*/
 //$myEngine->deleteData('7','customers');
 $c = odbc_connect(Constants::getSQLServerConnectionString(),Constants::getDataBaseUsername(), Constants::getDataBasePassword());
 
 $myCustomerssMonkey = new CustomersMonkey($c, $myEngine, 100, 700,'');
 
 $myCustomerssMonkey->synchronizeAll();
-*/
