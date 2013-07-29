@@ -10,7 +10,7 @@ class productsMonkey implements monkey{
 	protected $sqlServerConnection;
 
 	protected $origin;
-
+	
 	function __construct($sqlServerConnection, $advancedManipulationEngine, $from, $to, $origin){
 		$this->myAdvancedManipulationEngine = $advancedManipulationEngine;
 
@@ -210,7 +210,6 @@ class productsMonkey implements monkey{
 						foreach ($value as $languageKey => $languageValue) {
 							$productsArray['name'] = $languageValue; // I am sure that there are at most and at least 1 language value
 						}
-						echo $productsArray['name'] . '<br/>';
 					case 'associations':
 						foreach ($value as $keyOfAssociation => $valueOfAssociation){
 							if((string)$keyOfAssociation == 'product_option_values'){
@@ -282,7 +281,7 @@ class productsMonkey implements monkey{
 		$isVirtual = 'NULL';
 		$cacheDefaultAttribute = 'NULL';
 		$dateAdd = 'NULL';
-		$dateUpd = 'NULL';
+		$dateUpd = NULL;
 		$advancedStockManagement = 'NULL';
 		$productOptionValues = array();
 
@@ -433,19 +432,24 @@ class productsMonkey implements monkey{
 				// The product has no declension (option value)
 				$productOptionValues[] = 'NULL';
 			}
+			$originInt = (int) $this->origin;
+			$theOtherSite = 1 - $originInt;
+			
+			$dateUpd = new DateTime($dateUpd);
+			$dateUpd = $dateUpd->format('Y-d-m H:i:s');
 
 			foreach ($productOptionValues as $key => $declension) {
 				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$key)),-5);
 				$CodeArticle = $reference . $IdDeclinaison;
-
-				$verif = odbc_exec($this->sqlServerConnection,'SELECT A.ART_CODE FROM ARTICLES A WHERE A.ART_CODE = \''. $CodeArticle .'\'');
 				
-				if (!empty($verif)){
-					echo '<p>' . $dateUpd . '</p>';
-					echo '<p>' . $CodeArticle . '</p>';
-
+				$verif = odbc_exec($this->sqlServerConnection,'SELECT A.ART_CODE FROM ARTICLES A WHERE A.ART_CODE = \''. $CodeArticle .'\'');
+				$result = odbc_result($verif,1);
+				if (!empty($result)){
+					//echo '<p>' . $dateUpd . '</p>';
+					//echo '<p>' . $CodeArticle . '</p>';
+		
 				odbc_exec($this->sqlServerConnection,'UPDATE ARTICLES SET '
-													  . ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $reference) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
+													  . ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $productArray['name']) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
 												      . ' ,[ART_LIBC] =  \'' . preg_replace('/\'/','\'\'', $reference) . '\''
 													  . ' ,[ART_QTEDFT] = ' . $minimalQuantit
 													  . ' ,[ART_POIDSB] = ' . $weight
@@ -460,7 +464,7 @@ class productsMonkey implements monkey{
 													  . ' ,[ART_P_VTEB] = 0'
 													  . ' ,[ART_P_VTE] = 0'
 													  . ' ,[ART_P_EURO] = 0'
-													  . ' ,[ART_DTMAJ] = \''. $dateUpd .'\''
+													  . ' ,[ART_DTMAJ] = \'' . $dateUpd . '\''
 													  . ' ,[ART_USRMAJ] = \'WEB\''
 													  . ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
 													  . 'WHERE [ART_CODE] = \'' . $CodeArticle . '\''
@@ -468,7 +472,7 @@ class productsMonkey implements monkey{
 				or die ("<p>" . odbc_errormsg() . "</p>");
 					
 				}				
-				else {				
+				else {	
 				odbc_exec($this->sqlServerConnection,'INSERT INTO dbo.ARTICLES
 													   (ART_CODE
 													   ,ART_REF
@@ -512,14 +516,17 @@ class productsMonkey implements monkey{
 													   ,ART_NUMMAJ
 													   ,XXX_IDCATE
 													   ,XXX_IDPRES
-													   ,XXX_VISIBL
-													   ,XXX_DECLIN) VALUES ('
+													   ,XXX_IDDECL
+													   ,XXX_DECLIN
+													   ,XXX_SITECA
+													   ,XXX_SITEVE
+													   ) VALUES ('
 														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_CODE
 														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_REF
 														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_CBAR
 														. '\'P\',' //ART_TYPE
 														. '\'F\',' //ART_CATEG
-														. '\'' . preg_replace('/\'/','\'\'', $reference) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\',' //ART_LIB
+														. '\'' . preg_replace('/\'/','\'\'', $productArray['name']) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\',' //ART_LIB
 														. '\'' . preg_replace('/\'/','\'\'', $reference) . '\',' //ART_LIBC
 														. $minimalQuantit . ',' //ART_QTEDFT
 														. $weight . ',' //ART_POIDSB
@@ -550,14 +557,16 @@ class productsMonkey implements monkey{
 														. '0,' //ART_P_VTEB
 														. '0,' //ART_P_VTE
 														. '0,' //ART_P_EURO
-														. 'dbo.FormatDate (\''.$dateAdd .'\'),' //ART_DTCREE
-														. 'dbo.FormatDate (\''.$dateUpd .'\'),' //ART_DTMAJ
+														. '\''. $dateAdd .'\',' //ART_DTCREE
+														. '\''. $dateUpd .'\',' //ART_DTMAJ
 														. '\'WEB\',' //ART_USRMAJ
 														. '1,' //ART_NUMMAJ
 														. '\'' . $idCategoryDefault . '\',' //XXX_IDCATE
 														. '\'' . $idProduct . '\',' //XXX_IDPRES
-														. '1,'
-														. '\'' . preg_replace('/\'/','\'\'', $declension) . '\')'
+														. $IdDeclinaison .',' //XXX_IDDECL
+														. '\'' . preg_replace('/\'/','\'\'', $declension) . '\',' //XXX_DECLIN
+														. (int)$this->origin . ',' //XXX_SITECA
+														. $theOtherSite .')' //XXX_SITEVE
 														/*
 														
 														. $idSupplier . ','

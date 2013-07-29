@@ -226,7 +226,7 @@ class OrdersMonkey implements monkey{
 									Constants::getExecG2GetNewPiece()
 									)
 			or die ("<p>" . odbc_errormsg() . "</p>");
-
+			
 			$DocPiece = odbc_result($IdDocPiece,1);
 			odbc_close($connect);
 
