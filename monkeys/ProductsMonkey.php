@@ -9,13 +9,17 @@ class productsMonkey implements monkey{
 
 	protected $sqlServerConnection;
 
-	function __construct($sqlServerConnection, $advancedManipulationEngine, $from, $to){
+	protected $origin;
+
+	function __construct($sqlServerConnection, $advancedManipulationEngine, $from, $to, $origin){
 		$this->myAdvancedManipulationEngine = $advancedManipulationEngine;
 
 		$this->from = $from;
 		$this->to = $to;
 
 		$this->sqlServerConnection = $sqlServerConnection;
+
+		$this->origin = $origin;
 	}
 
 	public function getProductOptionsValuesNames(){
@@ -202,12 +206,18 @@ class productsMonkey implements monkey{
 					case 'advanced_stock_management':
 						$productsArray['advanced_stock_management'] = $value;
 						break;
+					case 'name':
+						foreach ($value as $languageKey => $languageValue) {
+							$productsArray['name'] = $languageValue; // I am sure that there are at most and at least 1 language value
+						}
+						echo $productsArray['name'] . '<br/>';
 					case 'associations':
 						foreach ($value as $keyOfAssociation => $valueOfAssociation){
 							if((string)$keyOfAssociation == 'product_option_values'){
 								foreach ($valueOfAssociation as $keyOfProductOptionValues => $valueOfProductOptionValues) {
 									foreach ($valueOfProductOptionValues as $productsOptionValuesId => $productsOptionValuesIdvalue) {
- 										$productsArray['product_option_values'][] = $productOptionsValuesNames[(int)$productsOptionValuesIdvalue];
+ 										$productsArray['product_option_values'][(int)$productsOptionValuesIdvalue] = 
+ 											$productOptionsValuesNames[(int)$productsOptionValuesIdvalue];
 									}
 								}
 							}
@@ -412,9 +422,7 @@ class productsMonkey implements monkey{
 						$advancedStockManagement = (int) $value;
 						break;
 					case 'product_option_values':
-						foreach ($value as $key => $valueOfOptionValue) {
-							$productOptionValues[] = $valueOfOptionValue;
-						}
+						$productOptionValues = $value;
 						break;
 					default:
 						break;
@@ -427,9 +435,9 @@ class productsMonkey implements monkey{
 			}
 
 			foreach ($productOptionValues as $key => $declension) {
-				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$declension)),-5);
+				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$key)),-5);
 				$CodeArticle = $reference . $IdDeclinaison;
-				
+
 				$verif = odbc_exec($this->sqlServerConnection,'SELECT A.ART_CODE FROM ARTICLES A WHERE A.ART_CODE = \''. $CodeArticle .'\'');
 				
 				if (!empty($verif)){
@@ -452,12 +460,12 @@ class productsMonkey implements monkey{
 													  . ' ,[ART_P_VTEB] = 0'
 													  . ' ,[ART_P_VTE] = 0'
 													  . ' ,[ART_P_EURO] = 0'
-													  . ' ,[ART_DTMAJ] = dbo.FormatDate (\''. $dateUpd .'\')'
+													  . ' ,[ART_DTMAJ] = \''. $dateUpd .'\''
 													  . ' ,[ART_USRMAJ] = \'WEB\''
 													  . ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
 													  . 'WHERE [ART_CODE] = \'' . $CodeArticle . '\''
 													  ) 
-or die ("<p>" . odbc_errormsg() . "</p>");
+				or die ("<p>" . odbc_errormsg() . "</p>");
 					
 				}				
 				else {				

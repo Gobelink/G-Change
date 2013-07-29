@@ -52,9 +52,18 @@ class MainMonkey{
 			$to
 		);
 		$ordersMonkey->synchronizeAll();
-
 	}
 	
+	public function synchronizeProducts($from, $to, $origin){
+		$productsMonkey = new productsMonkey(
+			$this->getDatabaseConnection(), 
+			$this->getEngineAdvancedEngine(),
+			$from,
+			$to,
+			$origin
+		);
+		$productsMonkey->synchronizeAll();
+	}
 	public function finalActionFormListener($form){
 		
 		if(isset($_POST[$form])){
@@ -73,6 +82,15 @@ class MainMonkey{
 						$this->synchronizeOrders(
 							(int) $_POST['from'],
 							(int) $_POST['to']
+						);
+					}
+					break;
+				case 'syncProducts':
+					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin'])){
+						$this->synchronizeProducts(
+							(int) $_POST['from'],
+							(int) $_POST['to'],
+							htmlspecialchars($_POST['origin'])
 						);
 					}
 					break;
