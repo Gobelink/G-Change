@@ -52,10 +52,19 @@ class MainMonkey{
 			$to
 		);
 		$ordersMonkey->synchronizeAll();
-
 	}
 	
-/*		public function finalActionFormListener($form){
+	public function synchronizeProducts($from, $to, $origin){
+		$productsMonkey = new productsMonkey(
+			$this->getDatabaseConnection(), 
+			$this->getEngineAdvancedEngine(),
+			$from,
+			$to,
+			$origin
+		);
+		$productsMonkey->synchronizeAll();
+	}
+	public function finalActionFormListener($form){
 		
 		if(isset($_POST[$form])){
 			switch ($form) {
@@ -66,7 +75,6 @@ class MainMonkey{
 							(int) $_POST['to'],
 							htmlspecialchars($_POST['origin'])
 						);
-						var_dump($_POST['from']);
 					}
 					break;
 				case 'syncOrders':
@@ -74,6 +82,15 @@ class MainMonkey{
 						$this->synchronizeOrders(
 							(int) $_POST['from'],
 							(int) $_POST['to']
+						);
+					}
+					break;
+				case 'syncProducts':
+					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin'])){
+						$this->synchronizeProducts(
+							(int) $_POST['from'],
+							(int) $_POST['to'],
+							htmlspecialchars($_POST['origin'])
 						);
 					}
 					break;
@@ -110,7 +127,7 @@ class MainMonkey{
 											$this->getTemplateVariables()
 										);
 	}
-*/}
+}
 
 /*include('./tools/bisAutoloader.php');
 // Replace path and key with your own.
@@ -127,7 +144,7 @@ $myEngine->createData(
 						'customers'
 					 );
 
-*/
+
 // The ID is important and is not updatable, provide it so that the corresponding entity will be updated.
 /*$myEngine->updateData(
 						array(
@@ -135,10 +152,11 @@ $myEngine->createData(
 							  'lastname' => 'Vlodvek'
 							  ),
 						'customers'
-					 );*/
+					 );
 //$myEngine->deleteData('7','customers');
 $c = odbc_connect(Constants::getSQLServerConnectionString(),Constants::getDataBaseUsername(), Constants::getDataBasePassword());
 
 $myCustomerssMonkey = new CustomersMonkey($c, $myEngine, 100, 700,'');
 
 $myCustomerssMonkey->synchronizeAll();
+*/
