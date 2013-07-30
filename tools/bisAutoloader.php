@@ -7,6 +7,7 @@ class bisAutoloader{
 		$classes = array(
 				'MainMonkey',
 				'Constants',
+				'OrdersConstants',
 				'Utility',
 				'PrestaShopWebservice',
 				'manipulationEngine',
