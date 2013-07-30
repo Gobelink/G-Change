@@ -209,7 +209,7 @@ class OrdersMonkey implements monkey{
 		
 			$IdDocGestimum = odbc_exec(
 										$this->sqlServerConnection,
-										Constants::getExecG2GetNewNumeroProcedureString()
+										OrdersConstants::getExecG2GetNewNumeroProcedureString()
 										) 
 			or die ("<p>" . odbc_errormsg() . "</p>"); 
 			
@@ -223,7 +223,7 @@ class OrdersMonkey implements monkey{
 									);
 			$IdDocPiece = odbc_exec(
 									$connect,
-									Constants::getExecG2GetNewPiece()
+									OrdersConstants::getExecG2GetNewPiece()
 									)
 			or die ("<p>" . odbc_errormsg() . "</p>");
 			
@@ -239,7 +239,7 @@ class OrdersMonkey implements monkey{
 				$i+= 16;
 				$priceOfQuantity = $currentProduct['product_price'] * $currentProduct['product_quantity'];
 				
-				$queryForInsertingLines = Constants::getOrdersLinesInsertionString(
+				$queryForInsertingLines = OrdersConstants::getOrdersLinesInsertionString(
 																					$DocNumero,
 																					$i,
 																					$idProductAndIdProductAttribute,
@@ -255,7 +255,7 @@ class OrdersMonkey implements monkey{
 				odbc_close($this->sqlServerConnection); 
 			}
 
-			$queryForInsertingDocuments = Constants::getOrdersDocumentsInsertionString(
+			$queryForInsertingDocuments = OrdersConstants::getOrdersDocumentsInsertionString(
 																						$currentOrder['invoice_number'],
 																						$currentOrder['invoice_date'],
 																						$CodeClient,
