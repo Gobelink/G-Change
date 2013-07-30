@@ -15,16 +15,6 @@ class OrdersMonkey implements monkey{
 		$this->to = $to;
 	}
 
-	public function getOrPrestashopQueryStringFromArray($theArray){
-		
-		$idsQueryString = '';
-
-		foreach ($theArray as $key => $value) {
-			$idsQueryString = $idsQueryString . '|' . $value;
-		}
-		return trim($idsQueryString, '|');
-	}
-
 	public function getAddressesOfOrders($ordersAddressesIds){
 		
 		$addressesByIdsHashMap = array();
@@ -35,7 +25,7 @@ class OrdersMonkey implements monkey{
 			'addresses', 
 			NULL,
 			array('id', 'address1', 'address2', 'postcode', 'city'), 
-			array('id' => '[' . $this->getOrPrestashopQueryStringFromArray($ordersAddressesIds) . ']')
+			array('id' => '[' . Utility::getOrPrestashopQueryStringFromArray($ordersAddressesIds) . ']')
 			);
 
 		foreach ($address as $key => $values) {
@@ -67,7 +57,7 @@ class OrdersMonkey implements monkey{
 			'carts',
 			NULL,
 			NULL,
-			array('id' => '[' . $this->getOrPrestashopQueryStringFromArray($idCartsArray) . ']')
+			array('id' => '[' . Utility::getOrPrestashopQueryStringFromArray($idCartsArray) . ']')
 			);
 
 		foreach ($cart as $key => $singleCart) {

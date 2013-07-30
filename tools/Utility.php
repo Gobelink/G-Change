@@ -13,4 +13,14 @@ class Utility{
 		}
 		return $dateString;
 	}
+
+	public static function getOrPrestashopQueryStringFromArray($theArray){
+		
+		$idsQueryString = '';
+
+		foreach ($theArray as $key => $value) {
+			$idsQueryString = $idsQueryString . '|' . $value;
+		}
+		return trim($idsQueryString, '|');
+	}
 }
