@@ -65,7 +65,7 @@ class productsMonkey implements monkey{
 			array('id' => '[' . $this->from . ',' . $this->to . ']')
 			);
 
-		$productsHashmap;
+		$productsHashmap = array();
 		$productsHashmapKey;
 		$productsArray;
 
