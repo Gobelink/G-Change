@@ -70,28 +70,34 @@ class MainMonkey{
 			switch ($form) {
 				case 'syncCustomers':
 					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin'])){
-						$this->synchronizeCustomers(
-							(int) $_POST['from'],
-							(int) $_POST['to'],
-							htmlspecialchars($_POST['origin'])
-						);
+						if($_POST['from'] <= $_POST['to']){
+							$this->synchronizeCustomers(
+								(int) $_POST['from'],
+								(int) $_POST['to'],
+								(int) $_POST['origin']
+							);
+						}
 					}
 					break;
 				case 'syncOrders':
 					if(!empty($_POST['from']) && !empty($_POST['to'])){
-						$this->synchronizeOrders(
-							(int) $_POST['from'],
-							(int) $_POST['to']
-						);
+						if($_POST['from'] <= $_POST['to']){
+							$this->synchronizeOrders(
+								(int) $_POST['from'],
+								(int) $_POST['to']
+							);
+						}
 					}
 					break;
 				case 'syncProducts':
 					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin'])){
-						$this->synchronizeProducts(
-							(int) $_POST['from'],
-							(int) $_POST['to'],
-							htmlspecialchars($_POST['origin'])
-						);
+						if($_POST['from'] <= $_POST['to']){
+							$this->synchronizeProducts(
+								(int) $_POST['from'],
+								(int) $_POST['to'],
+								(int) $_POST['origin']
+							);
+						}
 					}
 					break;
 				default:

@@ -1,6 +1,10 @@
 <form name="input" action="#" method="post">
 ID du premier produit Prestashop à synchroniser : <input type="text" name="from"><br/>
 ID du dernier produit Prestashop à synchroniser : <input type="text" name="to"><br/>
-Boutique d'origine des produits Prestashop : <input type="text" name="origin"><br/>
+Synchronisation avec : 
+	<select name="origin">
+		<option value="1">Site catalogue</option>
+		<option value="2">Site de vente</option>
+	</select><br/>
 <input type="submit" name="syncProducts" value="Submit">
 </form>

@@ -433,10 +433,9 @@ class productsMonkey implements monkey{
 				$productOptionValues[] = 'NULL';
 			}
 			$originInt = (int) $this->origin;
-			$theOtherSite = 1 - $originInt;
 			
 			$dateUpd = new DateTime($dateUpd);
-			$dateUpd = $dateUpd->format('Y-d-m H:i:s');
+			$dateUpd = $dateUpd->format('Y-m-d H:i:s');
 
 			foreach ($productOptionValues as $key => $declension) {
 				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$key)),-5);
@@ -444,11 +443,9 @@ class productsMonkey implements monkey{
 				
 				$verif = odbc_exec($this->sqlServerConnection,'SELECT A.ART_CODE FROM ARTICLES A WHERE A.ART_CODE = \''. $CodeArticle .'\'');
 				$result = odbc_result($verif,1);
+
 				if (!empty($result)){
-					//echo '<p>' . $dateUpd . '</p>';
-					//echo '<p>' . $CodeArticle . '</p>';
-		
-				odbc_exec($this->sqlServerConnection,'UPDATE ARTICLES SET '
+					odbc_exec($this->sqlServerConnection,'UPDATE ARTICLES SET '
 													  . ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $productArray['name']) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
 												      . ' ,[ART_LIBC] =  \'' . preg_replace('/\'/','\'\'', $reference) . '\''
 													  . ' ,[ART_QTEDFT] = ' . $minimalQuantit
@@ -464,16 +461,15 @@ class productsMonkey implements monkey{
 													  . ' ,[ART_P_VTEB] = 0'
 													  . ' ,[ART_P_VTE] = 0'
 													  . ' ,[ART_P_EURO] = 0'
-													  . ' ,[ART_DTMAJ] = \'' . $dateUpd . '\''
+													  . ' ,[ART_DTMAJ] = \'' . Utility::getNoZeroDate($dateUpd) . '\''
 													  . ' ,[ART_USRMAJ] = \'WEB\''
 													  . ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
 													  . 'WHERE [ART_CODE] = \'' . $CodeArticle . '\''
 													  ) 
-				or die ("<p>" . odbc_errormsg() . "</p>");
-					
+					or die ("<p>" . odbc_errormsg() . "</p>");	
 				}				
-				else {	
-				odbc_exec($this->sqlServerConnection,'INSERT INTO dbo.ARTICLES
+				else{	
+					odbc_exec($this->sqlServerConnection,'INSERT INTO dbo.ARTICLES
 													   (ART_CODE
 													   ,ART_REF
 													   ,ART_CBAR
@@ -518,8 +514,7 @@ class productsMonkey implements monkey{
 													   ,XXX_IDPRES
 													   ,XXX_IDDECL
 													   ,XXX_DECLIN
-													   ,XXX_SITECA
-													   ,XXX_SITEVE
+													   ,XXX_ORIGIN
 													   ) VALUES ('
 														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_CODE
 														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_REF
@@ -557,16 +552,15 @@ class productsMonkey implements monkey{
 														. '0,' //ART_P_VTEB
 														. '0,' //ART_P_VTE
 														. '0,' //ART_P_EURO
-														. '\''. $dateAdd .'\',' //ART_DTCREE
-														. '\''. $dateUpd .'\',' //ART_DTMAJ
+														. '\''. Utility::getNoZeroDate($dateUpd) .'\',' //ART_DTCREE
+														. '\''. Utility::getNoZeroDate($dateUpd) .'\',' //ART_DTMAJ
 														. '\'WEB\',' //ART_USRMAJ
 														. '1,' //ART_NUMMAJ
 														. '\'' . $idCategoryDefault . '\',' //XXX_IDCATE
 														. '\'' . $idProduct . '\',' //XXX_IDPRES
 														. $IdDeclinaison .',' //XXX_IDDECL
 														. '\'' . preg_replace('/\'/','\'\'', $declension) . '\',' //XXX_DECLIN
-														. (int)$this->origin . ',' //XXX_SITECA
-														. $theOtherSite .')' //XXX_SITEVE
+														. (int)$this->origin .')'
 														/*
 														
 														. $idSupplier . ','
