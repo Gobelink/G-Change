@@ -233,13 +233,16 @@ class OrdersMonkey implements monkey{
 			$i = 0;
 			
 			foreach ($currentOrder['orderRows'] as $key => $currentProduct) {
+				
+				$idProductAndIdProductAttribute = $currentProduct['product_id'] . $currentProduct['product_attribute_id'];
+				
 				$i+= 16;
 				$priceOfQuantity = $currentProduct['product_price'] * $currentProduct['product_quantity'];
 				
 				$queryForInsertingLines = Constants::getOrdersLinesInsertionString(
 																					$DocNumero,
 																					$i,
-																					$currentProduct['product_attribute_id'],
+																					$idProductAndIdProductAttribute,
 																					$currentProduct['product_name'],
 																					$currentProduct['product_quantity'],
 																					$currentProduct['product_price'],
