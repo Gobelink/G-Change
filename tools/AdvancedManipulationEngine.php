@@ -1,6 +1,8 @@
 <?php
 class AdvancedManipulationEngine implements manipulationEngine {
 	
+	protected PRODUCTS_PSWS_RESOURCE = 'products';
+
 	protected $prestashopWebService; // PrestaShopWebService object.
 
 	protected $shopURL; // URL to the shop which we want to work with.
@@ -10,27 +12,37 @@ class AdvancedManipulationEngine implements manipulationEngine {
 	public function createData($entity, $entityResource){
 
 		try{
-			$xml = $this->prestashopWebService->get(
-													array(
-															'url' => 
-															$this->shopURL . '/api/' .
-															$entityResource . 
-															'?schema=blank'
-														)
-													);
-			
-			$resources = self::getgRandcHildren($xml);
+			$resources = $this->getResources($entityResource);
 			foreach ($resources as $nodeKey => $node){
 				if(array_key_exists($nodeKey, $entity)) // PHP >= 4.0.7
 					$resources->$nodeKey = $entity[$nodeKey];
 			}
-
 			$opt = array('resource' => $entityResource);
 			$opt['postXml'] = $xml->asXML();
 			$xml = $this->prestashopWebService->add($opt);
 			echo "Successfully added! <br/>";
-		}catch(PrestaShopWebserviceException $e){
+		}
+		catch(PrestaShopWebserviceException $e){
 			echo 'Error while creating ' . $entityResource . ' data: <br/>' . $e->getMessage();
+		}
+	}
+
+	public function createProduct($productArray){
+		try{
+			$resources = $this->getResources(PRODUCTS_PSWS_RESOURCE);
+			foreach ($productArray as $insertingAttribute => $insertingAttributeValue) {
+				switch ($insertingAttribute) {
+					case 'referec':
+						# code...
+						break;
+					
+					default:
+						# code...
+						break;
+				}
+			}
+		}catch(PrestaShopWebserviceException $e){
+			echo 'Error while creating ' . PRODUCTS_PSWS_RESOURCE . ' data: <br/>' . $e->getMessage();
 		}
 	}
 
@@ -126,6 +138,20 @@ class AdvancedManipulationEngine implements manipulationEngine {
 		return $xml->children()->children();
 	}
 
+	public function getEntitySchema($entityResource){
+		return $this->prestashopWebService->get(
+													array(
+															'url' => 
+															$this->shopURL . '/api/' .
+															$entityResource . 
+															'?schema=blank'
+														)
+												);
+	}
+
+	public function getResources($entityResource){
+		return self::getgRandcHildren($this->getEntitySchema($entityResource));
+	}
 	function __construct($shopURL, $key){
 		
 		$this->shopURL = $shopURL;

@@ -232,6 +232,48 @@ class productsMonkey implements monkey{
 		return $productsHashmap;
 	}
 
+	public function getProductsFromGestimum(){
+		
+		$products = array();
+		$query = ' EXEC dbo.Presta_Synhro_Article_Site_Catalogue 1';
+		$res = odbc_exec($this->sqlServerConnection, $query);
+		
+		while( $row = odbc_fetch_array($res) ) {
+   	 		$products[] = $row;
+   	 		print_r($row);
+		}
+		return $products;
+	}
+
+	public function insertProductsIntoPrestashop(){
+
+		//$products = this->getProductsFromGestimum();
+		$product = array(
+						  	  'name' => 'Chemise pour singe',
+						  	  'reference' => 'AKL200008',
+						  	  'image' => 'www.example.com'
+							  );
+		$this->myAdvancedManipulationEngine->createData(
+						$product,
+						'products'
+					 );
+		/*$this->myAdvancedManipulationEngine->createData(
+						array(
+							  'lastname' => 'tamerlank',
+						  	  'firstname' => 'titi',
+							  'email' => 'mayus@name.com',
+							  'passwd' => 'mayus',
+							  'note' => 'Homme à Lynda'
+							  ),
+						'customers'
+					 );*/
+	}
+
+	public function synchronizeGestimumToPrestashop(){
+		//$this->getProductsFromGestimum();
+		$this->insertProductsIntoPrestashop();
+	}
+
 	public function synchronizePrestashopToGestimum(){
 
 		// Retrieving the products with the variables $from, $to.
@@ -464,6 +506,7 @@ class productsMonkey implements monkey{
 													  . ' ,[ART_DTMAJ] = \'' . Utility::getNoZeroDate($dateUpd) . '\''
 													  . ' ,[ART_USRMAJ] = \'WEB\''
 													  . ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
+													  . ',[XXX_IDDECL] =' . $IdDeclinaison
 													  . 'WHERE [ART_CODE] = \'' . $CodeArticle . '\''
 													  ) 
 					or die ("<p>" . odbc_errormsg() . "</p>");	
@@ -606,11 +649,11 @@ class productsMonkey implements monkey{
 				}
 			}
 			echo $idProduct . '<br/>';
-		
 		}
 	}
 
 	public function synchronizeAll(){
-		$this->synchronizePrestashopToGestimum();
+		//$this->synchronizePrestashopToGestimum();
+		$this->synchronizeGestimumToPrestashop();
 	}
 }
