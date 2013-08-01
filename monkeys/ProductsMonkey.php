@@ -518,6 +518,7 @@ class productsMonkey implements monkey{
 													   ,ART_CBAR
 													   ,ART_TYPE
 													   ,ART_CATEG
+													   ,ART_TGAMME
 													   ,ART_LIB
 													   ,ART_LIBC
 													   ,ART_QTEDFT
@@ -564,6 +565,7 @@ class productsMonkey implements monkey{
 														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_CBAR
 														. '\'P\',' //ART_TYPE
 														. '\'F\',' //ART_CATEG
+														. '\'\',' // ART_TGAMME
 														. '\'' . preg_replace('/\'/','\'\'', $productArray['name']) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\',' //ART_LIB
 														. '\'' . preg_replace('/\'/','\'\'', $reference) . '\',' //ART_LIBC
 														. $minimalQuantit . ',' //ART_QTEDFT
