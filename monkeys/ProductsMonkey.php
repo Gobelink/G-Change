@@ -251,12 +251,12 @@ class productsMonkey implements monkey{
 		$product = array(
 						  	  'name' => 'Chemise pour singe',
 						  	  'reference' => 'AKL200008',
-						  	  'image' => 'www.example.com'
+						  	  'price' => '15.5',
+						  	  'out_of_stock' => '0',
+						  	  'link_rewrite' => 'filtre à singe',
+						  	  'quantity' => '100'
 							  );
-		$this->myAdvancedManipulationEngine->createData(
-						$product,
-						'products'
-					 );
+		$this->myAdvancedManipulationEngine->createProduct($product);
 		/*$this->myAdvancedManipulationEngine->createData(
 						array(
 							  'lastname' => 'tamerlank',
@@ -653,7 +653,7 @@ class productsMonkey implements monkey{
 	}
 
 	public function synchronizeAll(){
-		//$this->synchronizePrestashopToGestimum();
-		$this->synchronizeGestimumToPrestashop();
+		$this->synchronizePrestashopToGestimum();
+		//$this->synchronizeGestimumToPrestashop();
 	}
 }

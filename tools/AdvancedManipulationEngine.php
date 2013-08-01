@@ -1,7 +1,7 @@
 <?php
 class AdvancedManipulationEngine implements manipulationEngine {
 	
-	protected PRODUCTS_PSWS_RESOURCE = 'products';
+	const PRODUCTS_PSWS_RESOURCE = 'products';
 
 	protected $prestashopWebService; // PrestaShopWebService object.
 
@@ -12,7 +12,10 @@ class AdvancedManipulationEngine implements manipulationEngine {
 	public function createData($entity, $entityResource){
 
 		try{
-			$resources = $this->getResources($entityResource);
+			$xml = $this->getEntitySchema($entityResource);
+
+			$resources = self::getGrandChildren($xml);
+			
 			foreach ($resources as $nodeKey => $node){
 				if(array_key_exists($nodeKey, $entity)) // PHP >= 4.0.7
 					$resources->$nodeKey = $entity[$nodeKey];
@@ -29,20 +32,30 @@ class AdvancedManipulationEngine implements manipulationEngine {
 
 	public function createProduct($productArray){
 		try{
-			$resources = $this->getResources(PRODUCTS_PSWS_RESOURCE);
+			$xml = $this->getEntitySchema(self::PRODUCTS_PSWS_RESOURCE);
+
+			$resources = self::getGrandChildren($xml);
 			foreach ($productArray as $insertingAttribute => $insertingAttributeValue) {
 				switch ($insertingAttribute) {
-					case 'referec':
-						# code...
+					case 'name':
+						$resources->$insertingAttribute->lanuage[0] = $insertingAttributeValue; 
 						break;
-					
+					case 'link_rewrite':
+						$resources->$insertingAttribute->lanuage[0] = $insertingAttributeValue; 
+						break;
 					default:
-						# code...
+						$resources->$insertingAttribute = $insertingAttributeValue;
 						break;
 				}
 			}
+			var_dump($xml);
+			$opt = array('resource' => self::PRODUCTS_PSWS_RESOURCE);
+			$opt['postXml'] = $xml->asXML();
+			$xml = $this->prestashopWebService->add($opt);
+			echo "Successfully added! <br/>";
+
 		}catch(PrestaShopWebserviceException $e){
-			echo 'Error while creating ' . PRODUCTS_PSWS_RESOURCE . ' data: <br/>' . $e->getMessage();
+			echo 'Error while creating ' . self::PRODUCTS_PSWS_RESOURCE . ' data: <br/>' . $e->getMessage();
 		}
 	}
 
@@ -149,9 +162,6 @@ class AdvancedManipulationEngine implements manipulationEngine {
 												);
 	}
 
-	public function getResources($entityResource){
-		return self::getgRandcHildren($this->getEntitySchema($entityResource));
-	}
 	function __construct($shopURL, $key){
 		
 		$this->shopURL = $shopURL;
