@@ -249,12 +249,24 @@ class productsMonkey implements monkey{
 
 		//$products = this->getProductsFromGestimum();
 		$product = array(
+						  	  // Language
 						  	  'name' => 'Chemise pour singe',
-						  	  'reference' => 'AKL200008',
-						  	  'price' => '15.5',
-						  	  'out_of_stock' => '0',
-						  	  'link_rewrite' => 'filtre à singe',
-						  	  'quantity' => '100'
+						  	  'description' => 'enjoy it bitch',
+						  	  'description_short' => 'c short',
+						  	  'link_rewrite' => 'rewrite',
+						  	  'meta_title' => 'title',
+						  	  'meta_description' => 'descr',
+						  	  'meta_keywords' => 'hodor,ggg,lol',
+						  	  'available_now' => 'hm yes',
+						  	  'available_later' => 'yes too',
+						  	  // Simple
+						  	  'id_category_default' => '1',
+						  	  'price' => '1500',
+						  	  'active' => '1',
+						  	  'available_for_order' => '1',
+						  	  'show_price' => '1',
+						  	  // addChild
+						  	  'id_category' => '1'
 							  );
 		$this->myAdvancedManipulationEngine->createProduct($product);
 		/*$this->myAdvancedManipulationEngine->createData(
@@ -270,8 +282,8 @@ class productsMonkey implements monkey{
 	}
 
 	public function synchronizeGestimumToPrestashop(){
-		//$this->getProductsFromGestimum();
-		$this->insertProductsIntoPrestashop();
+		$this->getProductsFromGestimum();
+		//$this->insertProductsIntoPrestashop();
 	}
 
 	public function synchronizePrestashopToGestimum(){
@@ -655,7 +667,7 @@ class productsMonkey implements monkey{
 	}
 
 	public function synchronizeAll(){
-		$this->synchronizePrestashopToGestimum();
-		//$this->synchronizeGestimumToPrestashop();
+		//$this->synchronizePrestashopToGestimum();
+		$this->synchronizeGestimumToPrestashop();
 	}
 }

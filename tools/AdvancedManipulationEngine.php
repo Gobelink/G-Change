@@ -35,25 +35,34 @@ class AdvancedManipulationEngine implements manipulationEngine {
 			$xml = $this->getEntitySchema(self::PRODUCTS_PSWS_RESOURCE);
 
 			$resources = self::getGrandChildren($xml);
+
+			$resources->associations->categories = '';
 			foreach ($productArray as $insertingAttribute => $insertingAttributeValue) {
 				switch ($insertingAttribute) {
-					case 'name':
-						$resources->$insertingAttribute->lanuage[0] = $insertingAttributeValue; 
-						break;
+					case 'name': 
+					case 'description': 
 					case 'link_rewrite':
-						$resources->$insertingAttribute->lanuage[0] = $insertingAttributeValue; 
+					case 'short_description':
+					case 'meta_title':
+					case 'meta_description': 
+					case 'meta_keywords':
+					case 'available_now':
+					case 'available_later':
+						$resources->$insertingAttribute->language[0] = $insertingAttributeValue; 
+						break;
+					case 'id_category':
+						$resources->associations->categories->addChild('category')->addChild('id', $insertingAttributeValue);
 						break;
 					default:
 						$resources->$insertingAttribute = $insertingAttributeValue;
 						break;
 				}
 			}
-			var_dump($xml);
 			$opt = array('resource' => self::PRODUCTS_PSWS_RESOURCE);
+			//$xml = new SimpleXMLElement(Utility::getString());
 			$opt['postXml'] = $xml->asXML();
 			$xml = $this->prestashopWebService->add($opt);
 			echo "Successfully added! <br/>";
-
 		}catch(PrestaShopWebserviceException $e){
 			echo 'Error while creating ' . self::PRODUCTS_PSWS_RESOURCE . ' data: <br/>' . $e->getMessage();
 		}
@@ -168,7 +177,7 @@ class AdvancedManipulationEngine implements manipulationEngine {
 		$this->key = $key;
 
 		try{
-			$this->prestashopWebService = new PrestaShopWebservice($shopURL, $key, false);
+			$this->prestashopWebService = new PrestaShopWebservice($shopURL, $key, true);
 		}catch(PrestaShopWebserviceException $e){
 				echo 'Error while building object: <br/>' . $e->getMessage();
 		}
