@@ -87,15 +87,19 @@ class CustomersMonkey implements monkey{
 
 		return (in_array($idCustomer, $customersHavingClosedOrdersArray)); // True if the ID of this customer is contained in the table
 	}
-
-	public function synchronizeAll(){
-
-		$customer = $this->myAdvancedManipulationEngine->retrieveData(
+	public function getCustomersFromPrestashop(){
+		return $this->myAdvancedManipulationEngine->retrieveData(
 			'customers',
 			NULL,
 			NULL,
 			array('id'	=> '[' . $this->from . ',' . $this->to . ']')
 			);
+	}
+
+	public function synchronizePrestashopToGestimum(){
+
+		$customer = $this->getCustomersFromPrestashop();
+
 		$customersAdresses = $this->getCustomerAddress();
 		$customersHavingClosedOrdersArray = $this->customersConfirmedOrders();
 
@@ -320,5 +324,8 @@ class CustomersMonkey implements monkey{
 				}
 			}
 		}
+	}
+	public function synchronizeAll(){
+		$this->synchronizePrestashopToGestimum();
 	}
 }
