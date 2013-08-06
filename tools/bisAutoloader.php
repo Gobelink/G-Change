@@ -8,6 +8,8 @@ class bisAutoloader{
 				'MainMonkey',
 				'Constants',
 				'OrdersConstants',
+				'ProductsConstants',
+				'CustomersConstants',
 				'Utility',
 				'PrestaShopWebservice',
 				'manipulationEngine',
