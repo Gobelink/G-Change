@@ -96,7 +96,6 @@ class CustomersMonkey implements monkey{
 			NULL,
 			array('id'	=> '[' . $this->from . ',' . $this->to . ']')
 			);
-		
 		$customersAdresses = $this->getCustomerAddress();
 		$customersHavingClosedOrdersArray = $this->customersConfirmedOrders();
 
@@ -251,12 +250,23 @@ class CustomersMonkey implements monkey{
 				$CptNumero = '411'.$PcfCode;
 				$Rs2 = '';
 				
-				if ($company='NULL') {$company= $firstname.' '. $lastname;} 
-				else {$Rs2= $firstname .' '.$lastname;} 
-			   
-				$verif = odbc_exec($this->sqlServerConnection,'SELECT T.PCF_CODE FROM TIERS T WHERE T.PCF_CODE = \''. $PcfCode .'\'');
+				if ($company='NULL'){
+					$company= $firstname.' '. $lastname;
+				}else{
+					$Rs2= $firstname .' '.$lastname;
+				} 
+
+				$verif = odbc_exec($this->sqlServerConnection, CustomersConstants::getSelectPCFCODEString($PcfCode));
 				
-				if (!empty($verif)){
+				$countArray = odbc_fetch_array($verif);
+				
+				foreach ($countArray as $key => $value) {
+					$exists = $value;
+				}
+				$exists = $exists > 0;
+				
+				if ($exists){
+
 				odbc_exec($this->sqlServerConnection,'UPDATE TIERS SET '
 													  . ' [PCF_RS] = UPPER(\'' . $company . '\')'
 												      . ' ,[PCF_RS2] = UPPER(\'' . $Rs2 . '\')'
@@ -329,8 +339,8 @@ class CustomersMonkey implements monkey{
 								. 'UPPER(\'' . $Rs2 . '\'),' //PCF_RS2
 								. '\'' . preg_replace('/\'/','\'\'',$address1) . '\','//PCF_RUE
 								. '\'' . preg_replace('/\'/','\'\'',$address2) . '\','//PCF_COMP
-								. '\'' . preg_replace('/\'/','\'\'',$postcode) . '\'' //PCF_CP
-								. '\'' . preg_replace('/\'/','\'\'',$city) . '\'' //PCF_VILLE
+								. '\'' . preg_replace('/\'/','\'\'',$postcode) . '\',' //PCF_CP
+								. '\'' . preg_replace('/\'/','\'\'',$city) . '\',' //PCF_VILLE
 								. '\'' . preg_replace('/\'/','\'\'',$phone) . '\','//PCF_TEL1
 								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\','//PCF_TEL2
 								. '\'' . preg_replace('/\'/','\'\'',$email) . '\','//PCF_EMAIL
@@ -340,8 +350,8 @@ class CustomersMonkey implements monkey{
 								. '\'001\' ,'//NAT_CODE
 								. '\'WEB\' ,'//TAR_CODE
 								. '0 ,'//PCF_DORT
-								. 'dbo.FormatDate (\''.$dateAdd .'\'),'//PCF_DTCREE
-								. 'dbo.FormatDate (\''.$dateUpd .'\'),'//PCF_DTMAJ
+								. '\'' . Utility::getNoZeroDate($dateAdd) .'\','//PCF_DTCREE
+								. '\'' . Utility::getNoZeroDate($dateUpd) .'\','//PCF_DTMAJ
 								. '\'WEB\' ,'//PCF_USRMAJ
 								. '1 ,'//PCF_NUMMAJ
 								. '0 ,'//PCF_BLOQUE
@@ -350,8 +360,7 @@ class CustomersMonkey implements monkey{
 								. $maxPaymentDays . ','//XXX_MPAYDA
 								. $idGender . ','//XXX_IDGEND
 								. '\'' . $this->origin .'\')')//XXX_PROVEN
-								/* 
-								. $idShopGroup . ','
+								/*. $idShopGroup . ','
    								. $idShop . ','
 								. $idDefaultGroup . ','
  								. $idRisk . ','
@@ -369,10 +378,8 @@ class CustomersMonkey implements monkey{
 								. '\'' . $note . '\','
 								. $active . ','
 								. $isGuest . ','
-								. $deleted . ','
-								 */ 
+								. $deleted . ')'*/
 								or die ("<p>" . odbc_errormsg() . "</p>");
-								
 				odbc_exec($this->sqlServerConnection,'INSERT INTO CONTACTS (
 																	CCT_NUMERO,
 																	CCT_CODE,
@@ -390,7 +397,7 @@ class CustomersMonkey implements monkey{
 								. '\'\' ,' //CCT_CIVILE
 								. '\'' . preg_replace('/\'/','\'\'',$firstname) . '\','//CCT_PRENOM
 								. '\'' . preg_replace('/\'/','\'\'',$lastname) . '\','//CCT_NOM
-								. '\'' . preg_replace('/\'/','\'\'',$email) . '\'')//CCT_EMAIL
+								. '\'' . preg_replace('/\'/','\'\'',$email) . '\')')//CCT_EMAIL
 								or die ("<p>" . odbc_errormsg() . "</p>");
 								
 				odbc_exec($this->sqlServerConnection,'INSERT INTO ADRESSES (
@@ -416,33 +423,7 @@ class CustomersMonkey implements monkey{
 								. '\'' . preg_replace('/\'/','\'\'',$postcode) . '\',' //ADR_CP
 								. '\'' . preg_replace('/\'/','\'\'',$city) . '\',' //ADR_VILLE
 								. '\'' . preg_replace('/\'/','\'\'',$phone) . '\',' //ADR_TEL1
-								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\'') //ADR_TEL2
-								or die ("<p>" . odbc_errormsg() . "</p>");
-								
-				odbc_exec($this->sqlServerConnection,'INSERT INTO ADRESSES (
-															  ADR_TBL,
-															  ADR_CODE,
-															  ADR_NUMERO,
-															  ADR_RS,
-															  ADR_RS2,
-															  ADR_RUE,
-															  ADR_COMP,
-															  ADR_CP,
-															  ADR_VILLE,
-															  ADR_TEL1,
-															  ADR_TEL2
-															 ) VALUES ('
-								. '\'PCF\' ,' //ADR_TBL
-								. '\'' . $PcfCode. '\',' //ADR_CODE
-								. '\'002\' ,' //ADR_NUMERO
-								. 'UPPER(\'' . $company . '\'),' //ADR_RS
-								. 'UPPER(\'' . $Rs2 . '\'),' //ADR_RS2
-								. '\'' . preg_replace('/\'/','\'\'',$address1) . '\',' //ADR_RUE
-								. '\'' . preg_replace('/\'/','\'\'',$address2) . '\',' //ADR_COMP
-								. '\'' . preg_replace('/\'/','\'\'',$postcode) . '\',' //ADR_CP
-								. '\'' . preg_replace('/\'/','\'\'',$city) . '\',' //ADR_VILLE
-								. '\'' . preg_replace('/\'/','\'\'',$phone) . '\',' //ADR_TEL1
-								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\'') //ADR_TEL2
+								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\')') //ADR_TEL2
 								or die ("<p>" . odbc_errormsg() . "</p>");
 					}
 				}
