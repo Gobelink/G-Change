@@ -1,9 +1,17 @@
 <?php
 class ProductsConstants{
 
-	public static function getSelectARTCODEString($CodeArticle){
+	public static function getSelectProductsForCreationStoredProcedureCallString($siteOrigin){
+		return ' EXEC dbo.Presta_Synchro_Get_Articles_For_Creation ' . $siteOrigin;
+	}
+
+	public static function getSelectProductsForUpdateStoredProcedureCallString($siteOrigin){
+		return ' EXEC dbo.Presta_Synchro_Get_Articles_For_Creation ' . $siteOrigin;
+	}
+
+	public static function getSelectARTCODEString($productCode){
 		return 
-			'SELECT COUNT(*) FROM ARTICLES A WHERE A.ART_CODE = \''. $CodeArticle .'\'';
+			'SELECT COUNT(*) FROM ARTICLES A WHERE A.ART_CODE = \''. $productCode .'\'';
 	}
 
 	public static function getProductUpdatingString(

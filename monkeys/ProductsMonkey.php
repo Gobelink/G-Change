@@ -232,12 +232,19 @@ class productsMonkey implements monkey{
 		return $productsHashmap;
 	}
 
-	public function getProductsFromGestimum(){
+	public function getProductsFromGestimum($forCreation){
 		
 		$products = array();
-		$query = ' EXEC dbo.Presta_Synhro_Article_Site_Catalogue 1';
-		$res = odbc_exec($this->sqlServerConnection, $query);
-		
+
+		if($forCreation){
+			$res = odbc_exec(
+				$this->sqlServerConnection,
+				ProductsConstants::getSelectProductsForCreationStoredProcedureCallString($this->origin))
+				or die ("<p>" . odbc_errormsg() . "</p>");
+		}else{
+			$res = odbc_exec($this->sqlServerConnection, ProductsConstants::getSelectProductsForUpdateStoredProcedureCallString($this->origin));
+		}
+
 		while( $row = odbc_fetch_array($res) ) {
    	 		$products[] = $row;
    	 		print_r($row);
@@ -245,10 +252,12 @@ class productsMonkey implements monkey{
 		return $products;
 	}
 
-	public function insertProductsIntoPrestashop(){
+	public function insertProductsIntoPrestashop($gestimumProducts = NULL){
 
-		//$products = this->getProductsFromGestimum();
-		$product = array(
+		//foreach ($gestimumProducts as $key => $product) {
+	
+			//$products = this->getProductsFromGestimum();
+			$product = array(
 						  	  // Language
 						  	  'name' => 'Chemise pour singe',
 						  	  'description' => 'enjoy it bitch',
@@ -279,10 +288,11 @@ class productsMonkey implements monkey{
 							  ),
 						'customers'
 					 );*/
+		//}
 	}
 
 	public function synchronizeGestimumToPrestashop(){
-		$this->getProductsFromGestimum();
+		$this->getProductsFromGestimum(true);
 		//$this->insertProductsIntoPrestashop();
 	}
 
@@ -541,7 +551,7 @@ class productsMonkey implements monkey{
 	}
 
 	public function synchronizeAll(){
-		$this->synchronizePrestashopToGestimum();
-		//$this->synchronizeGestimumToPrestashop();
+		//$this->synchronizePrestashopToGestimum();
+		$this->synchronizeGestimumToPrestashop();
 	}
 }
