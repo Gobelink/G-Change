@@ -495,10 +495,16 @@ class productsMonkey implements monkey{
 				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$key)),-5);
 				$CodeArticle = $reference . $IdDeclinaison;
 				
-				$verif = odbc_exec($this->sqlServerConnection,'SELECT A.ART_CODE FROM ARTICLES A WHERE A.ART_CODE = \''. $CodeArticle .'\'');
-				$result = odbc_result($verif,1);
-
-				if (!empty($result)){
+				$verif = odbc_exec($this->sqlServerConnection, ProductsConstants::getSelectARTCODEString($CodeArticle));
+				
+				$countArray = odbc_fetch_array($verif);
+				
+				foreach ($countArray as $key => $value) {
+					$exists = $value;
+				}
+				$exists = $exists > 0;
+				
+				if ($exists){
 					odbc_exec($this->sqlServerConnection, ProductsConstants::getProductUpdatingString(
 																						$productArray['name'],
  																						$declension,
@@ -531,7 +537,6 @@ class productsMonkey implements monkey{
 						) or die ("<p>" . odbc_errormsg() . "</p>");
 				}
 			}
-			echo $idProduct . '<br/>';
 		}
 	}
 

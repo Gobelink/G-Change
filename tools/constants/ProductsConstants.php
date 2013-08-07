@@ -1,6 +1,11 @@
 <?php
 class ProductsConstants{
 
+	public static function getSelectARTCODEString($CodeArticle){
+		return 
+			'SELECT COUNT(*) FROM ARTICLES A WHERE A.ART_CODE = \''. $CodeArticle .'\'';
+	}
+
 	public static function getProductUpdatingString(
  		$productName,
  		$declension,
