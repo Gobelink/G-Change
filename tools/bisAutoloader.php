@@ -40,6 +40,10 @@ public static function performRequire($className){
 		require_once('tools/lib/' . $className . '.php');
 		return;
 	}
+	if(file_exists('tools/constants/' . $className . '.php')){
+		require_once('tools/constants/' . $className . '.php');
+		return;
+	}
 	if(file_exists('monkeys/' . $className . '.php')){
 		require_once('monkeys/' . $className . '.php');
 		return;
