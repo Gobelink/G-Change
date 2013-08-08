@@ -247,53 +247,77 @@ class productsMonkey implements monkey{
 
 		while( $row = odbc_fetch_array($res) ) {
    	 		$products[] = $row;
-   	 		print_r($row);
+   	 		//print_r($row);
 		}
 		return $products;
 	}
 
 	public function insertProductsIntoPrestashop($gestimumProducts = NULL){
+		$successfullyInsertedProducts = array();
 
-		//foreach ($gestimumProducts as $key => $product) {
-	
-			//$products = this->getProductsFromGestimum();
-			$product = array(
-						  	  // Language
-						  	  'name' => 'Chemise pour singe',
-						  	  'description' => 'enjoy it bitch',
-						  	  'description_short' => 'c short',
-						  	  'link_rewrite' => 'rewrite',
-						  	  'meta_title' => 'title',
-						  	  'meta_description' => 'descr',
-						  	  'meta_keywords' => 'hodor,ggg,lol',
-						  	  'available_now' => 'hm yes',
-						  	  'available_later' => 'yes too',
-						  	  // Simple
-						  	  'id_category_default' => '1',
-						  	  'price' => '1500',
-						  	  'active' => '1',
-						  	  'available_for_order' => '1',
-						  	  'show_price' => '1',
-						  	  // addChild
-						  	  'id_category' => '1'
-							  );
-		$this->myAdvancedManipulationEngine->createProduct($product);
-		/*$this->myAdvancedManipulationEngine->createData(
-						array(
-							  'lastname' => 'tamerlank',
-						  	  'firstname' => 'titi',
-							  'email' => 'mayus@name.com',
-							  'passwd' => 'mayus',
-							  'note' => 'Homme à Lynda'
-							  ),
-						'customers'
-					 );*/
-		//}
+		foreach ($gestimumProducts as $key => $product) {
+			
+			$productToInsertIntoPrestashop = array(
+					  	  // Language
+					  	  'name' => $product['name'],
+					  	  //'description' => 'enjoy it bitch',
+					  	  //'description_short' => 'c short',
+					  	  'link_rewrite' => Utility::getProductLinkRewrite($product['name']),
+					  	  //'meta_title' => 'title',
+					  	  //'meta_description' => 'descr',
+					  	  //'meta_keywords' => 'hodor,ggg,lol',
+					  	  //'available_now' => 'hm yes',
+					  	  //'available_later' => 'yes too',
+					  	  // Simple
+					  	  //'id_category_default' => '1',
+					  	  'price' => Utility::getProductPrice(
+											$product['PrixGrille'],
+											$product['PrixPromo'],
+											$product['PrixArticle'],
+											$this->origin	
+										)
+					  	  //'active' => '1',
+					  	  //'available_for_order' => '1',
+					  	  //'show_price' => '1',
+					  	  // addChild
+					  	  //'id_category' => '1'
+							);
+			if($product['width'] > 0){
+				$productToInsertIntoPrestashop['width'] = $product['width'];
+			}
+			if($product['height'] > 0){
+				$productToInsertIntoPrestashop['height'] = $product['height'];
+			}
+			if($product['ean13'] > 0){
+				$productToInsertIntoPrestashop['ean13'] = $product['ean13'];
+			}
+			if($product['minimal_quantity'] > 0){
+				$productToInsertIntoPrestashop['minimal_quantity'] = $product['minimal_quantity'];
+			}
+
+			if($this->myAdvancedManipulationEngine->createProduct($productToInsertIntoPrestashop)){
+				$successfullyInsertedProducts[] = $product['id_product'];
+			}
+		}
+		return $successfullyInsertedProducts;
 	}
 
 	public function synchronizeGestimumToPrestashop(){
-		$this->getProductsFromGestimum(true);
-		//$this->insertProductsIntoPrestashop();
+
+		$successfullyInsertedProducts = $this->insertProductsIntoPrestashop($this->getProductsFromGestimum(true));
+		//echo ProductsConstants::generateSqlInClauseString($successfullyInsertedProducts);
+		
+		$now = new DateTime();
+		$now = $now->format('Y-m-d H:i:s');
+		
+		odbc_exec(
+			$this->sqlServerConnection, 
+			ProductsConstants::getUpdateProductLastSynchronizedString(
+				ProductsConstants::generateSqlInClauseString($successfullyInsertedProducts), 
+				$this->origin,
+				$now
+			)
+		);
 	}
 
 	public function synchronizePrestashopToGestimum(){
@@ -528,7 +552,7 @@ class productsMonkey implements monkey{
 																				 		$CodeArticle
 																						)
 					)or die ("<p>" . odbc_errormsg() . "</p>");	
-				}				
+				}
 				else{	
 					odbc_exec($this->sqlServerConnection, ProductsConstants::getProductInsertingString(
 																						$CodeArticle,

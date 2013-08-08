@@ -63,8 +63,10 @@ class AdvancedManipulationEngine implements manipulationEngine {
 			$opt['postXml'] = $xml->asXML();
 			$xml = $this->prestashopWebService->add($opt);
 			echo "Successfully added! <br/>";
+			return true;
 		}catch(PrestaShopWebserviceException $e){
 			echo 'Error while creating ' . self::PRODUCTS_PSWS_RESOURCE . ' data: <br/>' . $e->getMessage();
+			return false;
 		}
 	}
 

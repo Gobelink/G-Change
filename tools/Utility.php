@@ -4,6 +4,35 @@ class Utility{
 
 	}
 
+	public static function getProductPrice(
+		$prixGrille,
+		$prixPromo,
+		$prixArticle,
+		$origin	
+		){
+
+		if($origin == 2){ // We are synchronizing with presentation site
+			return $prixGrille;
+		}
+		if ($prixPromo > 0) {
+			return $prixPromo;
+		}
+		return $prixArticle;
+	}
+
+	public static function getProductLinkRewrite($productName){
+
+		$stringWithoutSpecialChars = preg_replace('/[^a-z\h]/', '', strtolower($productName));
+		
+		$stringWithoutBlanks = preg_replace('/\h/',	'-', $stringWithoutSpecialChars);
+		
+		$stringWithoutMultipleDashes = preg_replace('/[-]+/',	'-', $stringWithoutBlanks);
+		
+		$correctRewrite = trim($stringWithoutMultipleDashes, '-');
+
+		return $correctRewrite;
+	}
+
 	public static function getNoZeroDate($dateString){
 		// This method makes sure that no 0-date is given from Prestashop, because SQLServer does not allow it
 		// -0001-11-30 00:00:00 is returned by DateTime::format('0000-00-00 00:00:00')

@@ -199,8 +199,18 @@ class ProductsConstants{
 		. '\'' . $dateAdd . '\','
 		. '\'' . $dateUpd . '\','
 		. (int) $advancedStockManagement . ','
-		 */;
-					
+		 */;				
 	}
 
+	public static function getUpdateProductLastSynchronizedString($productCodeRange, $origin, $now){
+		return 'UPDATE ARTICLES SET XXX_S'. $origin .'DSYN = \''. $now .'\' WHERE ART_CODE IN (' . $productCodeRange . ')';
+	}
+
+	public static function generateSqlInClauseString($successfullyInsertedProducts){
+		$successfullyInsertedProductsString = '';
+		foreach ($successfullyInsertedProducts as $key => $value) {
+			$successfullyInsertedProductsString = $successfullyInsertedProductsString . ',\'' . $value . '\'';
+		}
+		return trim($successfullyInsertedProductsString, ',');
+	}
 }
