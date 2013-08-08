@@ -29,7 +29,7 @@ GO
 -> 2 = Site e-commerce */
 
 /* La procédure qui récupère les produits à insérer */
-ALTER PROCEDURE [dbo].[Presta_Synchro_Get_Articles_For_Creation] 
+CREATE PROCEDURE [dbo].[Presta_Synchro_Get_Articles_For_Creation] 
 (@SiteDeSynchro INT)
 
 AS
