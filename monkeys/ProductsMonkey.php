@@ -305,8 +305,7 @@ class productsMonkey implements monkey{
 	public function synchronizeGestimumToPrestashop(){
 
 		$successfullyInsertedProducts = $this->insertProductsIntoPrestashop($this->getProductsFromGestimum(true));
-		//echo ProductsConstants::generateSqlInClauseString($successfullyInsertedProducts);
-		
+
 		$now = new DateTime();
 		$now = $now->format('Y-m-d H:i:s');
 		
@@ -314,8 +313,7 @@ class productsMonkey implements monkey{
 			$this->sqlServerConnection, 
 			ProductsConstants::getUpdateProductLastSynchronizedString(
 				ProductsConstants::generateSqlInClauseString($successfullyInsertedProducts), 
-				$this->origin,
-				$now
+				$this->origin
 			)
 		);
 	}

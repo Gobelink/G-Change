@@ -202,8 +202,8 @@ class ProductsConstants{
 		 */;				
 	}
 
-	public static function getUpdateProductLastSynchronizedString($productCodeRange, $origin, $now){
-		return 'UPDATE ARTICLES SET XXX_S'. $origin .'DSYN = \''. $now .'\' WHERE ART_CODE IN (' . $productCodeRange . ')';
+	public static function getUpdateProductLastSynchronizedString($productCodeRange, $origin){
+		return 'UPDATE ARTICLES SET XXX_S'. $origin .'DSYN = GETDATE() WHERE ART_CODE IN (' . $productCodeRange . ')';
 	}
 
 	public static function generateSqlInClauseString($successfullyInsertedProducts){
