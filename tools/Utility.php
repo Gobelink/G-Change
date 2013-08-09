@@ -32,8 +32,7 @@ class Utility{
 
 		return $correctRewrite;
 	}
-
-	public static 
+	
 	public static function getNoZeroDate($dateString){
 		// This method makes sure that no 0-date is given from Prestashop, because SQLServer does not allow it
 		// -0001-11-30 00:00:00 is returned by DateTime::format('0000-00-00 00:00:00')
