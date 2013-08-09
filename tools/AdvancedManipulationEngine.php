@@ -37,27 +37,8 @@ class AdvancedManipulationEngine implements manipulationEngine {
 			$resources = self::getGrandChildren($xml);
 
 			$resources->associations->categories = '';
-			foreach ($productArray as $insertingAttribute => $insertingAttributeValue) {
-				switch ($insertingAttribute) {
-					case 'name': 
-					case 'description': 
-					case 'link_rewrite':
-					case 'short_description':
-					case 'meta_title':
-					case 'meta_description': 
-					case 'meta_keywords':
-					case 'available_now':
-					case 'available_later':
-						$resources->$insertingAttribute->language[0] = $insertingAttributeValue; 
-						break;
-					case 'id_category':
-						$resources->associations->categories->addChild('category')->addChild('id', $insertingAttributeValue);
-						break;
-					default:
-						$resources->$insertingAttribute = $insertingAttributeValue;
-						break;
-				}
-			}
+			$resources = self::getFilledResources($resources, $productArray);
+
 			$opt = array('resource' => self::PRODUCTS_PSWS_RESOURCE);
 			//$xml = new SimpleXMLElement(Utility::getString());
 			$opt['postXml'] = $xml->asXML();
@@ -139,13 +120,34 @@ class AdvancedManipulationEngine implements manipulationEngine {
 					$resources->$nodeKey = $entity[$nodeKey];
 				}
 			}
-			$opt = array('resource' => $entityResource);
 			$opt['putXml'] = $xml->asXML();
 			$opt['id'] = $entity['id'];
 			$xml = $this->prestashopWebService->edit($opt);
 			echo "Successfully updated!  <br/>";
 		}catch(PrestaShopWebserviceException $e){
 			echo 'Error while updating ' . $entityResource . ' data: <br/>' . $e->getMessage();
+		}
+	}
+
+	public function updateProduct($productArray){
+		try{
+			if(!array_key_exists('id', $productArray)){ // PHP >= 4.0.7
+				echo 'You must provide the id of the product you want to update.  <br/>';
+				return;
+			}
+			$opt = array('resource' => self::PRODUCTS_PSWS_RESOURCE);
+			$opt['id'] = $productArray['id'];
+			$xml = $this->prestashopWebService->get($opt);
+			$resources = self::getgRandcHildren($xml);
+			
+			$resources = self::getFilledResources($resources, $productArray);
+
+			$opt['putXml'] = $xml->asXML();
+			//$opt['id'] = $productArray['id'];
+			$xml = $this->prestashopWebService->edit($opt);
+			echo "Successfully updated!  <br/>";
+		}catch(PrestaShopWebserviceException $e){
+			echo 'Error while updating ' . self::PRODUCTS_PSWS_RESOURCE . ' data: <br/>' . $e->getMessage();
 		}
 	}
 
@@ -173,13 +175,40 @@ class AdvancedManipulationEngine implements manipulationEngine {
 												);
 	}
 
+	public static function getFilledResources($resources, $productArray){
+	
+		foreach ($productArray as $insertingAttribute => $insertingAttributeValue) {
+			switch ($insertingAttribute) {
+				case 'name': 
+				case 'description': 
+				case 'link_rewrite':
+				case 'short_description':
+				case 'meta_title':
+				case 'meta_description': 
+				case 'meta_keywords':
+				case 'available_now':
+				case 'available_later':
+					$resources->$insertingAttribute->language[0] = $insertingAttributeValue; 
+					break;
+				case 'id_category':
+					$resources->associations->categories->addChild('category')->addChild('id', $insertingAttributeValue);
+					break;
+				case 'id':
+					break;
+				default:
+					$resources->$insertingAttribute = $insertingAttributeValue;
+					break;
+			}
+		}
+		return $resources;
+	}
 	function __construct($shopURL, $key){
 		
 		$this->shopURL = $shopURL;
 		$this->key = $key;
 
 		try{
-			$this->prestashopWebService = new PrestaShopWebservice($shopURL, $key, false);
+			$this->prestashopWebService = new PrestaShopWebservice($shopURL, $key, true);
 		}catch(PrestaShopWebserviceException $e){
 				echo 'Error while building object: <br/>' . $e->getMessage();
 		}

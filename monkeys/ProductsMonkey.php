@@ -239,20 +239,25 @@ class productsMonkey implements monkey{
 		if($forCreation){
 			$res = odbc_exec(
 				$this->sqlServerConnection,
-				ProductsConstants::getSelectProductsForCreationStoredProcedureCallString($this->origin))
-				or die ("<p>" . odbc_errormsg() . "</p>");
+				ProductsConstants::getSelectProductsForCreationStoredProcedureCallString($this->origin)
+			)
+			or die ("<p>" . odbc_errormsg() . "</p>");
 		}else{
-			$res = odbc_exec($this->sqlServerConnection, ProductsConstants::getSelectProductsForUpdateStoredProcedureCallString($this->origin));
+			$res = odbc_exec(
+				$this->sqlServerConnection, 
+				ProductsConstants::getSelectProductsForUpdateStoredProcedureCallString($this->origin)
+			)
+			or die ("<p>" . odbc_errormsg() . "</p>");
 		}
 
 		while( $row = odbc_fetch_array($res) ) {
    	 		$products[] = $row;
-   	 		//print_r($row);
 		}
 		return $products;
 	}
 
 	public function insertProductsIntoPrestashop($gestimumProducts = NULL){
+		
 		$successfullyInsertedProducts = array();
 
 		foreach ($gestimumProducts as $key => $product) {
@@ -294,7 +299,6 @@ class productsMonkey implements monkey{
 			if($product['minimal_quantity'] > 0){
 				$productToInsertIntoPrestashop['minimal_quantity'] = $product['minimal_quantity'];
 			}
-
 			if($this->myAdvancedManipulationEngine->createProduct($productToInsertIntoPrestashop)){
 				$successfullyInsertedProducts[] = $product['id_product'];
 			}
@@ -302,20 +306,91 @@ class productsMonkey implements monkey{
 		return $successfullyInsertedProducts;
 	}
 
+	public function updateProductsIntoPrestashop($gestimumProducts = NULL){
+		// TODO
+		$successfullyInsertedProducts = array();
+
+		foreach ($gestimumProducts as $key => $product) {
+
+			$productToInsertIntoPrestashop = array(
+					  	  // Language
+					  	  //'name' => $product['name'],
+					  	  //'description' => 'enjoy it bitch',
+					  	  //'description_short' => 'c short',
+					  	  'link_rewrite' => Utility::getProductLinkRewrite($product['name']),
+					  	  //'meta_title' => 'title',
+					  	  //'meta_description' => 'descr',
+					  	  //'meta_keywords' => 'hodor,ggg,lol',
+					  	  //'available_now' => 'hm yes',
+					  	  //'available_later' => 'yes too',
+					  	  // Simple
+					  	  //'id_category_default' => '1',
+					  	  'price' => Utility::getProductPrice(
+											$product['PrixGrille'],
+											$product['PrixPromo'],
+											$product['PrixArticle'],
+											$this->origin	
+										),
+					  	  //'active' => '1',
+					  	  //'available_for_order' => '1',
+					  	  //'show_price' => '1',
+					  	  // addChild
+					  	  //'id_category' => '1'
+					  	  'id' => $product['id_prestashop']
+							);
+			if($product['width'] > 0){
+				$productToInsertIntoPrestashop['width'] = $product['width'];
+			}
+			if($product['height'] > 0){
+				$productToInsertIntoPrestashop['height'] = $product['height'];
+			}
+			if($product['ean13'] > 0){
+				$productToInsertIntoPrestashop['ean13'] = $product['ean13'];
+			}
+			if($product['minimal_quantity'] > 0){
+				$productToInsertIntoPrestashop['minimal_quantity'] = $product['minimal_quantity'];
+			}
+			if($product['reference'] > 0){
+				$productToInsertIntoPrestashop['reference'] = $product['reference'];
+			}
+			if($this->myAdvancedManipulationEngine->updateProduct($productToInsertIntoPrestashop)){
+				$successfullyInsertedProducts[] = $product['reference'];
+			}
+		}
+		return $successfullyInsertedProducts;
+	}
+
+	public function updateGestimumProductLastSyncDate($successfullySynchronizedProducts){
+		
+		if(sizeof($successfullySynchronizedProducts)){
+		
+			return odbc_exec(
+				$this->sqlServerConnection, 
+				ProductsConstants::getUpdateProductLastSynchronizedString(
+					ProductsConstants::generateSqlInClauseString(
+						$successfullySynchronizedProducts
+					), 
+					$this->origin
+				)
+			);
+		}
+	}
+
 	public function synchronizeGestimumToPrestashop(){
 
 		$successfullyInsertedProducts = $this->insertProductsIntoPrestashop($this->getProductsFromGestimum(true));
-
-		$now = new DateTime();
-		$now = $now->format('Y-m-d H:i:s');
+		$this->updateGestimumProductLastSyncDate($successfullyInsertedProducts);
 		
-		odbc_exec(
-			$this->sqlServerConnection, 
-			ProductsConstants::getUpdateProductLastSynchronizedString(
-				ProductsConstants::generateSqlInClauseString($successfullyInsertedProducts), 
-				$this->origin
-			)
-		);
+		/*$this->myAdvancedManipulationEngine->updateData(
+						array(
+							  'id' => '1',
+							  'lastname' => 'Vlodvek'
+							  ),
+						'customers'
+					 );
+		$successfullyUpdatedProducts = $this->updateProductsIntoPrestashop($this->getProductsFromGestimum(false));
+		$this->updateGestimumProductLastSyncDate($successfullyUpdatedProducts);
+		*/
 	}
 
 	public function synchronizePrestashopToGestimum(){

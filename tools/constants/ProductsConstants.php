@@ -6,7 +6,7 @@ class ProductsConstants{
 	}
 
 	public static function getSelectProductsForUpdateStoredProcedureCallString($siteOrigin){
-		return ' EXEC dbo.Presta_Synchro_Get_Articles_For_Creation ' . $siteOrigin;
+		return ' EXEC dbo.Presta_Synchro_Get_Articles_For_Update ' . $siteOrigin;
 	}
 
 	public static function getSelectARTCODEString($productCode){
