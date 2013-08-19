@@ -9,7 +9,9 @@
 
 #header-content
 {
-	color: white;
+	color: orange;
+	background-color: white;
+	margin-right: 80%;
 }
 
 #header-menu
