@@ -34,7 +34,7 @@ class MainMonkey{
 
 	public function synchronizeCustomers($from, $to, $origin){
 		
-	$customersMonkey = new customersMonkey(
+		$customersMonkey = new customersMonkey(
 			$this->getDatabaseConnection(), 
 			$this->getEngineAdvancedEngine(),
 			$from, 
@@ -54,7 +54,7 @@ class MainMonkey{
 		$ordersMonkey->synchronizeAll();
 	}
 	
-	public function synchronizeProducts($from, $to, $origin){
+	public function synchronizeProducts($from, $to, $origin, $syncToPrestashop){
 		$productsMonkey = new productsMonkey(
 			$this->getDatabaseConnection(), 
 			$this->getEngineAdvancedEngine(),
@@ -62,8 +62,14 @@ class MainMonkey{
 			$to,
 			$origin
 		);
-		$productsMonkey->synchronizeAll();
+
+		if($syncToPrestashop){
+			$productsMonkey->synchronizeGestimumToPrestashop();
+		}else{
+			$productsMonkey->synchronizePrestashopToGestimum();
+		}
 	}
+
 	public function finalActionFormListener($form){
 		
 		if(isset($_POST[$form])){
@@ -89,15 +95,27 @@ class MainMonkey{
 						}
 					}
 					break;
-				case 'syncProducts':
+				case 'productsPrestashopToGestimum':
 					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin'])){
 						if($_POST['from'] <= $_POST['to']){
 							$this->synchronizeProducts(
 								(int) $_POST['from'],
 								(int) $_POST['to'],
-								(int) $_POST['origin']
+								(int) $_POST['origin'],
+								false
 							);
 						}
+					}
+					break;
+				case 'productsGestimumToPrestashop':
+					if(!empty($_POST['origin'])){
+	
+						$this->synchronizeProducts(
+							1,
+							1,
+							(int) $_POST['origin'],
+							true
+						);
 					}
 					break;
 				default:
