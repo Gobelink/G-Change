@@ -649,6 +649,6 @@ class productsMonkey implements monkey{
 
 	public function synchronizeAll(){
 		//$this->synchronizePrestashopToGestimum();
-		$this->synchronizeGestimumToPrestashop();
+		//$this->synchronizeGestimumToPrestashop();
 	}
 }
