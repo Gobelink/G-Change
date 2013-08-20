@@ -3,6 +3,7 @@ class MainMonkey{
 	
 	protected $loader;
 	protected $twigInstance;
+	protected $constantsInstance;
 
 	function __construct(){
 		
@@ -13,22 +14,23 @@ class MainMonkey{
 		$this->twigInstance = new Twig_Environment($this->loader, array(
     												'cache' => false
 													));
+		$this->constantsInstance = new Constants();
 	}
 
-	public function getEngineAdvancedEngine(){
+	public function getAdvancedEngine($shopId){
 
 		return new AdvancedManipulationEngine(
-			Constants::getShopAddress(), 
-			Constants::getWebServiceKey()
+			$this->constantsInstance->getShopAddress($shopId), 
+			$this->constantsInstance->getWebServiceKey($shopId)
 		);
 	}
 
 	public function getDatabaseConnection(){
 	
 		return odbc_connect(
-			Constants::getSQLServerConnectionString(),
-			Constants::getDataBaseUsername(),
-			Constants::getDataBasePassword()
+			$this->constantsInstance->getSQLServerConnectionString(),
+			$this->constantsInstance->getDataBaseUsername(),
+			$this->constantsInstance->getDataBasePassword()
 		);
 	}
 
@@ -36,7 +38,7 @@ class MainMonkey{
 		
 		$customersMonkey = new customersMonkey(
 			$this->getDatabaseConnection(), 
-			$this->getEngineAdvancedEngine(),
+			$this->getAdvancedEngine($origin),
 			$from, 
 			$to, 
 			$origin
@@ -47,7 +49,7 @@ class MainMonkey{
 	public function synchronizeOrders($from, $to){
 		$ordersMonkey = new ordersMonkey(
 			$this->getDatabaseConnection(), 
-			$this->getEngineAdvancedEngine(),
+			$this->getAdvancedEngine(),
 			$from, 
 			$to
 		);
@@ -57,7 +59,7 @@ class MainMonkey{
 	public function synchronizeProducts($from, $to, $origin, $syncToPrestashop){
 		$productsMonkey = new productsMonkey(
 			$this->getDatabaseConnection(), 
-			$this->getEngineAdvancedEngine(),
+			$this->getAdvancedEngine($origin),
 			$from,
 			$to,
 			$origin

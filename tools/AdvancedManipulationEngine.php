@@ -208,7 +208,7 @@ class AdvancedManipulationEngine implements manipulationEngine {
 		$this->key = $key;
 
 		try{
-			$this->prestashopWebService = new PrestaShopWebservice($shopURL, $key, true);
+			$this->prestashopWebService = new PrestaShopWebservice($shopURL, $key, false);
 		}catch(PrestaShopWebserviceException $e){
 				echo 'Error while building object: <br/>' . $e->getMessage();
 		}
