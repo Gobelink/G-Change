@@ -256,7 +256,7 @@ class productsMonkey implements monkey{
 		return $products;
 	}
 
-	public function insertProductsIntoPrestashop($gestimumProducts = NULL){
+	public function insertProductsIntoPrestashop($gestimumProducts = array()){
 		
 		$successfullyInsertedProducts = array();
 
@@ -306,7 +306,7 @@ class productsMonkey implements monkey{
 		return $successfullyInsertedProducts;
 	}
 
-	public function updateProductsIntoPrestashop($gestimumProducts = NULL){
+	public function updateProductsIntoPrestashop($gestimumProducts = array()){
 		// TODO
 		$successfullyInsertedProducts = array();
 
