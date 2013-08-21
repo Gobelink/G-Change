@@ -20,6 +20,18 @@ class Utility{
 		return $prixArticle;
 	}
 
+public static function getProductReference(
+		$reference_site_1,
+		$reference_site_2,
+		$origin	
+		){
+
+		if($origin == 1){ // We are synchronizing with online shop
+			return $reference_site_1;
+		}
+		return $reference_site_2;
+	}
+
 	public static function getProductLinkRewrite($productName){
 
 		$stringWithoutSpecialChars = preg_replace('/[^a-z\h]/', '', strtolower($productName));

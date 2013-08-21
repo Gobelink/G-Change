@@ -100,6 +100,7 @@ class MainMonkey{
 				case 'productsPrestashopToGestimum':
 					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin'])){
 						if($_POST['from'] <= $_POST['to']){
+							
 							$this->synchronizeProducts(
 								(int) $_POST['from'],
 								(int) $_POST['to'],

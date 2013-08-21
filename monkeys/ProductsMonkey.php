@@ -261,7 +261,6 @@ class productsMonkey implements monkey{
 		$successfullyInsertedProducts = array();
 
 		foreach ($gestimumProducts as $key => $product) {
-			
 			$productToInsertIntoPrestashop = array(
 					  	  // Language
 					  	  'name' => $product['name'],
@@ -279,6 +278,11 @@ class productsMonkey implements monkey{
 											$product['PrixGrille'],
 											$product['PrixPromo'],
 											$product['PrixArticle'],
+											$this->origin	
+										),
+					  	  'reference' => Utility::getProductReference(
+											$product['reference_site_1'],
+											$product['reference_site_2'],
 											$this->origin	
 										)
 					  	  //'active' => '1',
@@ -331,6 +335,11 @@ class productsMonkey implements monkey{
 											$product['PrixArticle'],
 											$this->origin	
 										),
+					  	  'reference' => Utility::getProductReference(
+											$product['reference_site_1'],
+											$product['reference_site_2'],
+											$this->origin	
+										)
 					  	  //'active' => '1',
 					  	  //'available_for_order' => '1',
 					  	  //'show_price' => '1',
@@ -349,9 +358,6 @@ class productsMonkey implements monkey{
 			}
 			if($product['minimal_quantity'] > 0){
 				$productToInsertIntoPrestashop['minimal_quantity'] = $product['minimal_quantity'];
-			}
-			if($product['reference'] > 0){
-				$productToInsertIntoPrestashop['reference'] = $product['reference'];
 			}
 			if($this->myAdvancedManipulationEngine->updateProduct($productToInsertIntoPrestashop)){
 				$successfullyInsertedProducts[] = $product['reference'];
