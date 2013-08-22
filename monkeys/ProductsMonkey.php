@@ -339,7 +339,7 @@ class productsMonkey implements monkey{
 											$product['reference_site_1'],
 											$product['reference_site_2'],
 											$this->origin	
-										)
+										),
 					  	  //'active' => '1',
 					  	  //'available_for_order' => '1',
 					  	  //'show_price' => '1',
