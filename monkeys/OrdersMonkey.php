@@ -205,11 +205,11 @@ class OrdersMonkey implements monkey{
 			
 			$DocNumero = substr (str_repeat("0",10).odbc_result($IdDocGestimum,1),-10);
 			odbc_close($this->sqlServerConnection);
-			
+			$constantsInstance = new Constants();
 			$connect = odbc_connect(
-									Constants::getSQLServerConnectionString(),
-									Constants::getDataBaseUsername(),
-									Constants::getDataBasePassword()
+									$constantsInstance->getSQLServerConnectionString(),
+									$constantsInstance->getDataBaseUsername(),
+									$constantsInstance->getDataBasePassword()
 									);
 			$IdDocPiece = odbc_exec(
 									$connect,
