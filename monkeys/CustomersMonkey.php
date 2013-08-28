@@ -320,7 +320,7 @@ class CustomersMonkey implements monkey{
 					 		$dateAdd,
 					 		$dateUpd
 					 	)
-					);
+					) or die("<p>" . odbc_errormsg() . "</p>");
 				}
 			}
 		}

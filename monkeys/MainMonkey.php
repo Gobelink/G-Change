@@ -26,7 +26,7 @@ class MainMonkey{
 	}
 
 	public function getDatabaseConnection(){
-	
+		
 		return odbc_connect(
 			$this->constantsInstance->getSQLServerConnectionString(),
 			$this->constantsInstance->getDataBaseUsername(),
@@ -46,10 +46,11 @@ class MainMonkey{
 		$customersMonkey->synchronizeAll();
 	}
 
-	public function synchronizeOrders($from, $to){
+	public function synchronizeOrders($from, $to, $origin){
+		
 		$ordersMonkey = new ordersMonkey(
 			$this->getDatabaseConnection(), 
-			$this->getAdvancedEngine(),
+			$this->getAdvancedEngine($origin),
 			$from, 
 			$to
 		);
@@ -88,11 +89,12 @@ class MainMonkey{
 					}
 					break;
 				case 'syncOrders':
-					if(!empty($_POST['from']) && !empty($_POST['to'])){
+					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin'])){
 						if($_POST['from'] <= $_POST['to']){
 							$this->synchronizeOrders(
 								(int) $_POST['from'],
-								(int) $_POST['to']
+								(int) $_POST['to'],
+								(int) $_POST['origin']
 							);
 						}
 					}
