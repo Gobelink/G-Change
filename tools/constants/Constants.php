@@ -36,14 +36,17 @@ class Constants{
         }
 
         public function getSQLServerConnectionString(){
+                
                 return $this->sqlServerConnectionString;
         }
  
         public function getDataBaseUsername(){
+          
                 return $this->sqlServerUsername;
         }
  
         public function getDataBasePassword(){
+        
                 return $this->sqlServerPassword;
         }
 
