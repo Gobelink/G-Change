@@ -159,8 +159,8 @@ class ProductsConstants{
 		. $IdDeclinaison .',' //XXX_IDDECL
 		. '\'' . preg_replace('/\'/','\'\'', $declension) . '\',' //XXX_DECLIN
 		. $origin  .',' //XXX_ORIGIN
-		. '\'' . self::getOriginId($idProduct, $origin, 1) . ','//XXX_S1RFAR
-	   	. '\'' . self::getOriginId($idProduct, $origin, 2) //XXX_S2RFAR
+		. '\'' . self::getOriginId($reference, $origin, 1) . ','//XXX_S1RFAR
+	   	. '\'' . self::getOriginId($reference, $origin, 2) //XXX_S2RFAR
 		.')'
 		/*
 		
@@ -219,7 +219,7 @@ class ProductsConstants{
 
 	public static function getOriginId($idProduct, $synchrOrigin, $fieldOrigin){
 		if($synchrOrigin == $fieldOrigin){
-			return $idProduct;
+			return $reference;
 		}
 		return 'NULL';
 	}
