@@ -108,10 +108,11 @@ class ProductsConstants{
 	   ,ART_USRMAJ
 	   ,ART_NUMMAJ
 	   ,XXX_IDCATE
-	   ,XXX_IDPRES
 	   ,XXX_IDDECL
 	   ,XXX_DECLIN
 	   ,XXX_ORIGIN
+	   ,XXX_S1RFAR
+	   ,XXX_S2RFAR
 	   ) VALUES ('
 		. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_CODE
 		. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_REF
@@ -155,10 +156,12 @@ class ProductsConstants{
 		. '\'WEB\',' //ART_USRMAJ
 		. '1,' //ART_NUMMAJ
 		. '\'' . $idCategoryDefault . '\',' //XXX_IDCATE
-		. '\'' . $idProduct . '\',' //XXX_IDPRES
 		. $IdDeclinaison .',' //XXX_IDDECL
 		. '\'' . preg_replace('/\'/','\'\'', $declension) . '\',' //XXX_DECLIN
-		. (int)$origin .')'
+		. $origin  .',' //XXX_ORIGIN
+		. '\'' . self::getOriginId($idProduct, $origin, 1) . ','//XXX_S1RFAR
+	   	. '\'' . self::getOriginId($idProduct, $origin, 2) //XXX_S2RFAR
+		.')'
 		/*
 		
 		. $idSupplier . ','
@@ -212,5 +215,12 @@ class ProductsConstants{
 			$successfullyInsertedProductsString = $successfullyInsertedProductsString . ',\'' . $value . '\'';
 		}
 		return trim($successfullyInsertedProductsString, ',');
+	}
+
+	public static function getOriginId($idProduct, $synchrOrigin, $fieldOrigin){
+		if($synchrOrigin == $fieldOrigin){
+			return $idProduct;
+		}
+		return 'NULL';
 	}
 }
