@@ -9,26 +9,26 @@ class ProductsConstants{
 		return ' EXEC dbo.Presta_Synchro_Get_Articles_For_Update ' . $siteOrigin;
 	}
 
-	public static function getSelectARTCODEString($productCode){
+	public static function getSelectARTCODEString($siteOrigin, $idPres){
 		return 
-			'SELECT COUNT(*) FROM ARTICLES A WHERE A.ART_CODE = \''. $productCode .'\'';
+			'SELECT COUNT(*) FROM ARTICLES A WHERE A.XXX_ORIGIN = \''. $siteOrigin . '\' AND A.XXX_IDPRES = \'' .  $idPres . '\'';
 	}
 
 	public static function getProductUpdatingString(
  		$productName,
  		$declension,
- 		$reference,
  		$minimalQuantit,
  		$weight,
  		$width,
  		$height,
  		$dateUpd,
  		$IdDeclinaison,
- 		$CodeArticle){
+ 		$CodeArticle,
+ 		$origin,
+ 		$idProduct){
  		
  		return 'UPDATE ARTICLES SET '
 		. ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $productName) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
-		. ' ,[ART_LIBC] =  \'' . preg_replace('/\'/','\'\'', $reference) . '\''
 		. ' ,[ART_QTEDFT] = ' . $minimalQuantit
 		. ' ,[ART_POIDSB] = ' . $weight
 		. ' ,[ART_POIDST] = 0' 
@@ -45,8 +45,9 @@ class ProductsConstants{
 		. ' ,[ART_DTMAJ] = \'' . Utility::getNoZeroDate($dateUpd) . '\''
 		. ' ,[ART_USRMAJ] = \'WEB\''
 		. ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
-		. ',[XXX_IDDECL] =' . $IdDeclinaison
-		. 'WHERE [ART_CODE] = \'' . $CodeArticle . '\'';
+		. '	,[XXX_IDDECL] =' . $IdDeclinaison
+		. '	,XXX_S'. $origin .'DSYN = GETDATE() '
+		. 'WHERE XXX_ORIGIN = \''. $origin . '\' AND XXX_IDPRES = \'' .  $idProduct . '\'';
 	}
 
 	public static function getProductInsertingString(
@@ -67,15 +68,15 @@ class ProductsConstants{
 
 		return 'INSERT INTO dbo.ARTICLES
 		(ART_CODE
-		,ART_REF
-		,ART_CBAR
-		,ART_TYPE
-		,ART_CATEG
-		,ART_TGAMME
-		,ART_LIB
-        ,ART_LIBC
-		,ART_QTEDFT
-		,ART_POIDSB
+	   ,ART_REF
+	   ,ART_CBAR
+	   ,ART_TYPE
+	   ,ART_CATEG
+	   ,ART_TGAMME
+	   ,ART_LIB
+       ,ART_LIBC
+	   ,ART_QTEDFT
+	   ,ART_POIDSB
 	   ,ART_POIDST
 	   ,ART_POIDSN
 	   ,ART_UB_ACH
@@ -109,7 +110,9 @@ class ProductsConstants{
 	   ,ART_NUMMAJ
 	   ,XXX_IDCATE
 	   ,XXX_IDDECL
+	   ,XXX_IDPRES
 	   ,XXX_DECLIN
+	   ,XXX_S'. $origin .'DSYN
 	   ,XXX_ORIGIN
 	   ,XXX_S1RFAR
 	   ,XXX_S2RFAR
@@ -157,10 +160,12 @@ class ProductsConstants{
 		. '1,' //ART_NUMMAJ
 		. '\'' . $idCategoryDefault . '\',' //XXX_IDCATE
 		. $IdDeclinaison .',' //XXX_IDDECL
+		. $idProduct .',' //XXX_IDPRES
 		. '\'' . preg_replace('/\'/','\'\'', $declension) . '\',' //XXX_DECLIN
+		. 'GETDATE() ,'
 		. $origin  .',' //XXX_ORIGIN
-		. '\'' . self::getOriginId($reference, $origin, 1) . ','//XXX_S1RFAR
-	   	. '\'' . self::getOriginId($reference, $origin, 2) //XXX_S2RFAR
+		. '\'' . self::getOriginId($reference, $origin, 1) . '\','//XXX_S1RFAR
+	   	. '\'' . self::getOriginId($reference, $origin, 2) . '\''//XXX_S2RFAR
 		.')'
 		/*
 		
@@ -217,7 +222,7 @@ class ProductsConstants{
 		return trim($successfullyInsertedProductsString, ',');
 	}
 
-	public static function getOriginId($idProduct, $synchrOrigin, $fieldOrigin){
+	public static function getOriginId($reference, $synchrOrigin, $fieldOrigin){
 		if($synchrOrigin == $fieldOrigin){
 			return $reference;
 		}

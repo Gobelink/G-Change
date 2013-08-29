@@ -608,28 +608,29 @@ class productsMonkey implements monkey{
 				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$key)),-5);
 				$CodeArticle = $reference . $IdDeclinaison;
 				
-				$verif = odbc_exec($this->sqlServerConnection, ProductsConstants::getSelectARTCODEString($CodeArticle));
+				$verif = odbc_exec($this->sqlServerConnection, ProductsConstants::getSelectARTCODEString($this->origin, $idProduct));
 				
 				$countArray = odbc_fetch_array($verif);
 				
 				foreach ($countArray as $key => $value) {
 					$exists = $value;
 				}
-				$exists = $exists > 0;
 				
+				$exists = $exists > 0;
+
 				if ($exists){
 					odbc_exec($this->sqlServerConnection, ProductsConstants::getProductUpdatingString(
 																						$productArray['name'],
  																						$declension,
- 																						$reference,
  																						$minimalQuantit,
  																						$weight,
  																						$width,
  																						$height,
  																						$dateUpd,
 						 																$IdDeclinaison,
-																				 		$CodeArticle
-																						)
+																				 		$CodeArticle,
+																				 		$this->origin,
+																				 		$idProduct)
 					)or die ("<p>" . odbc_errormsg() . "</p>");	
 				}
 				else{	
