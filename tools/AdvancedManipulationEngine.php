@@ -139,9 +139,13 @@ class AdvancedManipulationEngine implements manipulationEngine {
 			$opt['id'] = $productArray['id'];
 			$xml = $this->prestashopWebService->get($opt);
 			$resources = self::getgRandcHildren($xml);
-			
 			$resources = self::getFilledResources($resources, $productArray);
-
+			unset($xml->product->id_default_image);
+        	unset($xml->product->position_in_category);
+        	unset($xml->product->manufacturer_name);
+        	unset($xml->product->unity);
+        	unset($xml->product->date_add);
+        	unset($xml->product->date_upd);
 			$opt['putXml'] = $xml->asXML();
 			//$opt['id'] = $productArray['id'];
 			$xml = $this->prestashopWebService->edit($opt);
