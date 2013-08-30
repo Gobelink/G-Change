@@ -9,6 +9,7 @@ class Constants{
         protected $sqlServerConnectionString;
         protected $sqlServerUsername;
         protected $sqlServerPassword;
+        protected $plateformNames;
 
         public static function getShopNameFromId($shopId){
                 if ($shopId == 1) {
@@ -98,7 +99,9 @@ class Constants{
                                                                 case 'pswd':
                                                                         $dbPswd = $entityAttribute[1];
                                                                 break;
-
+                                                                case 'name':
+                                                                        $platformName = $entityAttribute[1];
+                                                                break;
                                                                 default:
                                                                 break;
                                                         }
@@ -107,13 +110,27 @@ class Constants{
                                 }
                         }
 
-                        if($shop != '' && $shopUrl != '' && $shopKey != ''){                                
-                                $this->prestashopUrls[$shop] = $shopUrl;  
-                                $this->webServiceKeys[$shop] = $shopKey;
+                        if($shop != ''){ 
+                                if ($shopUrl != '' && $shopKey != '') {
+                                        $this->prestashopUrls[$shop] = $shopUrl;  
+                                        $this->webServiceKeys[$shop] = $shopKey;                                            
+                                }                               
+                                
+                                if ($platformName != '') {
+                                        if(in_array($platformName, array_values($this->plateformNames))){
+                                                throw new DuplicatePlatformNameException(
+                                                        "You must provide a unique name per Platform", 
+                                                        1
+                                                );
+                                        }
+                                        $this->plateformNames[$shop] = $platformName;
+                                }
+                                
                                 // Reinitializing the variables
                                 $shop = '';
                                 $shopUrl = '';
-                                $shopKey = '';                  
+                                $shopKey = '';
+                                $platformName = '';               
                         }elseif ($sqlServer != '' && $dbConnectionString != '' && $dbUsername != '' && $dbPswd != '') {
                                 $this->sqlServerConnectionString = $dbConnectionString;
                                 $this->sqlServerUsername = $dbUsername;
@@ -127,8 +144,9 @@ class Constants{
                         }
                 }
         }
-
+        
         function __construct(){
+                $this->plateformNames = array();
                 if(file_exists(self::INI_FILE)){
                         $handle = fopen(self::INI_FILE, 'r');
                         if(filesize(self::INI_FILE) > 0){
@@ -146,6 +164,7 @@ class Constants{
 
 class EmptyIniFileException extends Exception {}
 class IniFileNotFoundException extends Exception {}
+class DuplicatePlatformNameException extends Exception {}
 /*
 boutique
 name:
