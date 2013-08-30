@@ -130,6 +130,16 @@ class MainMonkey{
 						);
 					}
 					break;
+					case 'newOrderFromPrestashop':
+					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin']) && !empty($_POST['key'])){
+						if($_POST['from'] <= $_POST['to'] && $this->constantsInstance->isKnown($_POST['key'])){
+							$this->synchronizeOrders(
+								(int) $_POST['from'],
+								(int) $_POST['to'],
+								(int) $_POST['origin']
+							);
+						}
+					}
 				default:
 					break;
 			}

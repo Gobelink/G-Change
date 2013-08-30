@@ -144,7 +144,14 @@ class Constants{
                         }
                 }
         }
-        
+        public function getPlatformNames(){
+                return $this->plateformNames;
+        }
+
+        public function isKnown($key)
+        {
+                return in_array($key, array_values($this->getPlatformNames()));
+        }
         function __construct(){
                 $this->plateformNames = array();
                 if(file_exists(self::INI_FILE)){
