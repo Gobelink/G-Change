@@ -57,7 +57,12 @@ class MainMonkey{
 		$ordersMonkey->synchronizeAll();
 	}
 	
-	public function synchronizeProducts($from, $to, $origin, $syncToPrestashop){
+	public function synchronizeProducts($from, $to, $origin, $syncToPrestashop, $limit = 1, $gestimumProductId = ''){
+		
+		if(empty($limit)){
+			$limit = 1;
+		}
+		
 		$productsMonkey = new productsMonkey(
 			$this->getDatabaseConnection(), 
 			$this->getAdvancedEngine($origin),
@@ -67,7 +72,7 @@ class MainMonkey{
 		);
 
 		if($syncToPrestashop){
-			$productsMonkey->synchronizeGestimumToPrestashop();
+			$productsMonkey->synchronizeGestimumToPrestashop($limit, $gestimumProductId);
 		}else{
 			$productsMonkey->synchronizePrestashopToGestimum();
 		}
@@ -119,7 +124,9 @@ class MainMonkey{
 							1,
 							1,
 							(int) $_POST['origin'],
-							true
+							true,
+							$_POST['limit'],
+							$_POST['art-code']
 						);
 					}
 					break;

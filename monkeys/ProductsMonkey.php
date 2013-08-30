@@ -232,20 +232,20 @@ class productsMonkey implements monkey{
 		return $productsHashmap;
 	}
 
-	public function getProductsFromGestimum($forCreation){
+	public function getProductsFromGestimum($forCreation, $limit, $gestimumProductId){
 		
 		$products = array();
 
 		if($forCreation){
 			$res = odbc_exec(
 				$this->sqlServerConnection,
-				ProductsConstants::getSelectProductsForCreationStoredProcedureCallString($this->origin)
+				ProductsConstants::getSelectProductsForCreationStoredProcedureCallString($this->origin, $limit, $gestimumProductId)
 			)
 			or die ("<p>" . odbc_errormsg() . "</p>");
 		}else{
 			$res = odbc_exec(
 				$this->sqlServerConnection, 
-				ProductsConstants::getSelectProductsForUpdateStoredProcedureCallString($this->origin)
+				ProductsConstants::getSelectProductsForUpdateStoredProcedureCallString($this->origin, $limit, $gestimumProductId)
 			)
 			or die ("<p>" . odbc_errormsg() . "</p>");
 		}
@@ -312,11 +312,11 @@ class productsMonkey implements monkey{
 
 	public function updateProductsIntoPrestashop($gestimumProducts = array()){
 		// TODO
-		$successfullyInsertedProducts = array();
+		$successfullyUpdatedProducts = array();
 
 		foreach ($gestimumProducts as $key => $product) {
 
-			$productToInsertIntoPrestashop = array(
+			$productToUpdateIntoPrestashop = array(
 					  	  // Language
 					  	  //'name' => $product['name'],
 					  	  //'description' => 'enjoy it bitch',
@@ -348,22 +348,22 @@ class productsMonkey implements monkey{
 					  	  'id' => $product['id_prestashop']
 							);
 			if($product['width'] > 0){
-				$productToInsertIntoPrestashop['width'] = $product['width'];
+				$productToUpdateIntoPrestashop['width'] = $product['width'];
 			}
 			if($product['height'] > 0){
-				$productToInsertIntoPrestashop['height'] = $product['height'];
+				$productToUpdateIntoPrestashop['height'] = $product['height'];
 			}
 			if($product['ean13'] > 0){
-				$productToInsertIntoPrestashop['ean13'] = $product['ean13'];
+				$productToUpdateIntoPrestashop['ean13'] = $product['ean13'];
 			}
 			if($product['minimal_quantity'] > 0){
-				$productToInsertIntoPrestashop['minimal_quantity'] = $product['minimal_quantity'];
+				$productToUpdateIntoPrestashop['minimal_quantity'] = $product['minimal_quantity'];
 			}
-			if($this->myAdvancedManipulationEngine->updateProduct($productToInsertIntoPrestashop)){
-				$successfullyInsertedProducts[] = $product['reference'];
+			if($this->myAdvancedManipulationEngine->updateProduct($productToUpdateIntoPrestashop)){
+				$successfullyUpdatedProducts[] = $product['reference'];
 			}
 		}
-		return $successfullyInsertedProducts;
+		return $successfullyUpdatedProducts;
 	}
 
 	public function updateGestimumProductLastSyncDate($successfullySynchronizedProducts){
@@ -382,12 +382,27 @@ class productsMonkey implements monkey{
 		}
 	}
 
-	public function synchronizeGestimumToPrestashop(){
-
-		$successfullyInsertedProducts = $this->insertProductsIntoPrestashop($this->getProductsFromGestimum(true));
-		$this->updateGestimumProductLastSyncDate($successfullyInsertedProducts);
+	public function synchronizeGestimumToPrestashop($limit, $gestimumProductId){
 		
-		/*$this->myAdvancedManipulationEngine->updateData(
+		$successfullyInsertedProducts = $this->insertProductsIntoPrestashop(
+			$this->getProductsFromGestimum(
+					true, 
+					$limit, 
+					$gestimumProductId
+				)
+			);
+		$this->updateGestimumProductLastSyncDate($successfullyInsertedProducts);
+		/*
+		$successfullyUpdatedProducts = $this->updateProductsIntoPrestashop(
+			$this->getProductsFromGestimum(
+					false, 
+					$limit, 
+					$gestimumProductId
+				)
+			);
+		$this->updateGestimumProductLastSyncDate($successfullyUpdatedProducts);
+		/*
+		$this->myAdvancedManipulationEngine->updateData(
 						array(
 							  'id' => '1',
 							  'lastname' => 'Vlodvek'

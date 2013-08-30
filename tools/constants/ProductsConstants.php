@@ -1,12 +1,12 @@
 <?php
 class ProductsConstants{
 
-	public static function getSelectProductsForCreationStoredProcedureCallString($siteOrigin){
-		return ' EXEC dbo.Presta_Synchro_Get_Articles_For_Creation ' . $siteOrigin;
+	public static function getSelectProductsForCreationStoredProcedureCallString($siteOrigin, $limit, $gestimumProductId){
+		return ' EXEC dbo.Presta_Synchro_Get_Articles_For_Creation ' . $siteOrigin . ',' . $limit . ',\'' . $gestimumProductId . '\'';
 	}
 
-	public static function getSelectProductsForUpdateStoredProcedureCallString($siteOrigin){
-		return ' EXEC dbo.Presta_Synchro_Get_Articles_For_Update ' . $siteOrigin;
+	public static function getSelectProductsForUpdateStoredProcedureCallString($siteOrigin, $limit, $gestimumProductId){
+		return ' EXEC dbo.Presta_Synchro_Get_Articles_For_Update ' . $siteOrigin . ',' . $limit . ',\'' . $gestimumProductId . '\'';
 	}
 
 	public static function getSelectARTCODEString($siteOrigin, $idPres){
