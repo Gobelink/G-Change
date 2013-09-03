@@ -1,6 +1,0 @@
-
-function checkData(form){
-	var numberOfEntities = form.to.value - form.from.value;
-	var stringOfNumberOfv = numberOfProducts.toString();
-	return confirm("Vous êtes sur le point de mettre à jour " + stringOfNumberOfProducts + " commande(s)");
-}
