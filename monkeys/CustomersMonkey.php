@@ -259,16 +259,12 @@ class CustomersMonkey implements monkey{
 					$Rs2= $firstname .' '.$lastname;
 				} 
 
-				$verif = odbc_exec($this->sqlServerConnection, CustomersConstants::getSelectPCFCODEString($PcfCode));
-				
-				$countArray = odbc_fetch_array($verif);
-				
-				foreach ($countArray as $key => $value) {
-					$exists = $value;
-				}
-				$exists = $exists > 0;
-				
-				if ($exists){
+				if (
+						Constants::existsInDB(
+							CustomersConstants::getSelectPCFCODEString($PcfCode),
+							$this->sqlServerConnection
+						)
+					){
 
 					odbc_exec(
 						$this->sqlServerConnection,
