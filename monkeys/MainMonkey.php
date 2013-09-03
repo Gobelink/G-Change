@@ -57,10 +57,10 @@ class MainMonkey{
 		$ordersMonkey->synchronizeAll();
 	}
 	
-	public function synchronizeProducts($from, $to, $origin, $syncToPrestashop, $limit = 1, $gestimumProductId = ''){
+	public function synchronizeProducts($from, $to, $origin, $syncToPrestashop, $limit = 0, $gestimumProductId = ''){
 		
 		if(empty($limit)){
-			$limit = 1;
+			$limit = 0;
 		}
 		
 		$productsMonkey = new productsMonkey(
