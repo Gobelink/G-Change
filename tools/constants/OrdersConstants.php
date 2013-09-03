@@ -141,18 +141,20 @@ class OrdersConstants{
                                 . '19.6,' //NAT_TVATX
                                 . '\'F\')'
 								. ' UPDATE LIGNES SET ART_CODE = A.ART_CODE FROM LIGNES L INNER JOIN ARTICLES A ON CAST(A.XXX_IDPRES AS VARCHAR(50))+CAST(A.XXX_IDDECL AS VARCHAR(50)) = ' . $productAttributeId
+								. ' UPDATE ART_STOCK SET STK_CMDCLI = STK_CMDCLI + ISNULL('. $productQuantity .',0) FROM ART_STOCK ST INNER JOIN ARTICLES A ON A.ART_CODE = ST.ART_CODE WHERE CAST(A.XXX_IDPRES AS VARCHAR(50))+CAST(A.XXX_IDDECL AS VARCHAR(50)) = ' . $productAttributeId . '\' AND ST.DEP_CODE = \'001\''
                 ;
-       
         }
-
+				
         public static function getOrdersDocumentsInsertionString(
                 $invoiceNumber,
                 $invoiceDate,
                 $CodeClient,
                 $DocPiece,
+				$invoiceAdressRs,
                 $invoiceAddressOne,
                 $invoiceAddressPostCode,
                 $invoiceAddressCity,
+				$invoiceAdressRs,
                 $deliveryAddressOne,
                 $deliveryAddressPostCode,
                 $deliveryAddressCity,
@@ -250,14 +252,14 @@ class OrdersConstants{
                                                 . $CodeClient . ','//. '\'W'.$currentOrder['id_customer']. '\',' //PCF_PAYEUR
                                                 . '\'' . $DocPiece . '\',' //DOC_PIECE
                                                 . '\'FR\',' //PAY_CODE
-                                                . '\'\',' //DOC_F_RS
+                                                . '\' ' . preg_replace('/\'/','\'\'',$invoiceAddressRs)  . ' \','  //DOC_F_RS
                                                 . '\'\',' //DOC_F_RS2
                                                 . '\' ' . preg_replace('/\'/','\'\'',$invoiceAddressOne)  . ' \',' //DOC_F_RUE
                                                 . '\'\',' //DOC_F_COMP
                                                 . '\' '. preg_replace('/\'/','\'\'',$invoiceAddressPostCode) . ' \',' //DOC_F_CP
                                                 . '\' ' . preg_replace('/\'/','\'\'',$invoiceAddressCity) . '\',' //DOC_F_VILL
                                                 . '\'\',' //DOC_F_CBAR
-                                                . '\'\',' //DOC_L_RS
+                                                . '\''  . preg_replace('/\'/','\'\'',$deliveryAddressRs) . '\',' //DOC_L_RS
                                                 . '\'\',' //DOC_L_RS2
                                                 . '\''  . preg_replace('/\'/','\'\'',$deliveryAddressOne) . '\',' //DOC_L_RUE
                                                 . '\'\',' //DOC_L_COMP
@@ -331,7 +333,7 @@ class OrdersConstants{
 		 return 'SELECT T.PCF_CODE FROM TIERS T WHERE T.PCF_CODE = \'' . $CodeClient . '\'';
 		}
 		public static function GetProducts($productAttributeId) {
-		 return 'SELECT A.ART_CODE FROM ARTICLES A WHERE A.ART_CODE = \'' . $productAttributeId . '\'';
+		 return 'SELECT A.ART_CODE FROM ARTICLES A WHERE CAST(A.XXX_IDPRES AS VARCHAR(50))+CAST(A.XXX_IDDECL AS VARCHAR(50)) = \'' . $productAttributeId . '\'';
 		}
 		public static function GetOrders($IdOrders) {
 		 return 'SELECT D.XXX_IDORDE FROM DOCUMENTS D WHERE D.XXX_IDORDE = \'' . $IdOrders . '\'';
