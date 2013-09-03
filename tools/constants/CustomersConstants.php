@@ -36,7 +36,7 @@ class CustomersConstants{
 												      . ' ,[PCF_SIRET] = \'' . $siret . '\''
 												      . ' ,[PCF_APE] = \'' . $ape . '\''
 													  . ' ,[PCF_TEL1] = REPLACE(\'' . $phone . '\',\'NULL\',NULL)'
-													  . ' ,[PCF_TEL2] = \'' . $phoneMobile . '\''
+													  . ' ,[PCF_TEL2] = REPLACE(\'' . $phoneMobile . '\',\'NULL\',NULL)'
 												      . ' ,[PCF_NUMMAJ] = [PCF_NUMMAJ]+1 ' 
 													  . ' ,[XXX_MPAYDA] = ' . $maxPaymentDays
 													  . ' ,[XXX_IDGEND] = ' . $idGender 
