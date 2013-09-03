@@ -5,7 +5,8 @@ include_once('./tools/bisAutoloader.php');
 $myMonkey = new MainMonkey();
 $myMonkey->finalActionFormListener('syncCustomers');
 $myMonkey->finalActionFormListener('syncOrders');
-$myMonkey->finalActionFormListener('syncProducts');
+$myMonkey->finalActionFormListener('productsPrestashopToGestimum');
+$myMonkey->finalActionFormListener('productsGestimumToPrestashop');
 $myMonkey->render();
 
 /*

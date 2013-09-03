@@ -232,46 +232,186 @@ class productsMonkey implements monkey{
 		return $productsHashmap;
 	}
 
-	public function getProductsFromGestimum(){
+	public function getProductsFromGestimum($forCreation, $limit, $gestimumProductId){
 		
 		$products = array();
-		$query = ' EXEC dbo.Presta_Synhro_Article_Site_Catalogue 1';
-		$res = odbc_exec($this->sqlServerConnection, $query);
-		
+
+		if($forCreation){
+			$res = odbc_exec(
+				$this->sqlServerConnection,
+				ProductsConstants::getSelectProductsForCreationStoredProcedureCallString($this->origin, $limit, $gestimumProductId)
+			)
+			or die ("<p>" . odbc_errormsg() . "</p>");
+		}else{
+			$res = odbc_exec(
+				$this->sqlServerConnection, 
+				ProductsConstants::getSelectProductsForUpdateStoredProcedureCallString($this->origin, $limit, $gestimumProductId)
+			)
+			or die ("<p>" . odbc_errormsg() . "</p>");
+		}
+
 		while( $row = odbc_fetch_array($res) ) {
    	 		$products[] = $row;
-   	 		print_r($row);
 		}
 		return $products;
 	}
 
-	public function insertProductsIntoPrestashop(){
+	public function insertProductsIntoPrestashop($gestimumProducts = array()){
+		
+		$successfullyInsertedProducts = array();
 
-		//$products = this->getProductsFromGestimum();
-		$product = array(
-						  	  'name' => 'Chemise pour singe',
-						  	  'reference' => 'AKL200008',
-						  	  'image' => 'www.example.com'
-							  );
-		$this->myAdvancedManipulationEngine->createData(
-						$product,
-						'products'
-					 );
-		/*$this->myAdvancedManipulationEngine->createData(
-						array(
-							  'lastname' => 'tamerlank',
-						  	  'firstname' => 'titi',
-							  'email' => 'mayus@name.com',
-							  'passwd' => 'mayus',
-							  'note' => 'Homme à Lynda'
-							  ),
-						'customers'
-					 );*/
+		foreach ($gestimumProducts as $key => $product) {
+			$productToInsertIntoPrestashop = array(
+					  	  // Language
+					  	  'name' => $product['name'],
+					  	  //'description' => 'enjoy it bitch',
+					  	  //'description_short' => 'c short',
+					  	  'link_rewrite' => Utility::getProductLinkRewrite($product['name']),
+					  	  //'meta_title' => 'title',
+					  	  //'meta_description' => 'descr',
+					  	  //'meta_keywords' => 'hodor,ggg,lol',
+					  	  //'available_now' => 'hm yes',
+					  	  //'available_later' => 'yes too',
+					  	  // Simple
+					  	  //'id_category_default' => '1',
+					  	  'price' => Utility::getProductPrice(
+											$product['PrixGrille'],
+											$product['PrixPromo'],
+											$product['PrixArticle'],
+											$this->origin	
+										),
+					  	  'reference' => Utility::getProductReference(
+											$product['reference_site_1'],
+											$product['reference_site_2'],
+											$this->origin	
+										)
+					  	  //'active' => '1',
+					  	  //'available_for_order' => '1',
+					  	  //'show_price' => '1',
+					  	  // addChild
+					  	  //'id_category' => '1'
+							);
+			if($product['width'] > 0){
+				$productToInsertIntoPrestashop['width'] = $product['width'];
+			}
+			if($product['height'] > 0){
+				$productToInsertIntoPrestashop['height'] = $product['height'];
+			}
+			if($product['ean13'] > 0){
+				$productToInsertIntoPrestashop['ean13'] = $product['ean13'];
+			}
+			if($product['minimal_quantity'] > 0){
+				$productToInsertIntoPrestashop['minimal_quantity'] = $product['minimal_quantity'];
+			}
+			if($this->myAdvancedManipulationEngine->createProduct($productToInsertIntoPrestashop)){
+				$successfullyInsertedProducts[] = $product['id_product'];
+			}
+		}
+		return $successfullyInsertedProducts;
 	}
 
-	public function synchronizeGestimumToPrestashop(){
-		//$this->getProductsFromGestimum();
-		$this->insertProductsIntoPrestashop();
+	public function updateProductsIntoPrestashop($gestimumProducts = array()){
+		// TODO
+		$successfullyUpdatedProducts = array();
+
+		foreach ($gestimumProducts as $key => $product) {
+
+			$productToUpdateIntoPrestashop = array(
+					  	  // Language
+					  	  //'name' => $product['name'],
+					  	  //'description' => 'enjoy it bitch',
+					  	  //'description_short' => 'c short',
+					  	  'link_rewrite' => Utility::getProductLinkRewrite($product['name']),
+					  	  //'meta_title' => 'title',
+					  	  //'meta_description' => 'descr',
+					  	  //'meta_keywords' => 'hodor,ggg,lol',
+					  	  //'available_now' => 'hm yes',
+					  	  //'available_later' => 'yes too',
+					  	  // Simple
+					  	  //'id_category_default' => '1',
+					  	  'price' => Utility::getProductPrice(
+											$product['PrixGrille'],
+											$product['PrixPromo'],
+											$product['PrixArticle'],
+											$this->origin	
+										),
+					  	  'reference' => Utility::getProductReference(
+											$product['reference_site_1'],
+											$product['reference_site_2'],
+											$this->origin	
+										),
+					  	  //'active' => '1',
+					  	  //'available_for_order' => '1',
+					  	  //'show_price' => '1',
+					  	  // addChild
+					  	  //'id_category' => '1'
+					  	  'id' => $product['id_prestashop']
+							);
+			if($product['width'] > 0){
+				$productToUpdateIntoPrestashop['width'] = $product['width'];
+			}
+			if($product['height'] > 0){
+				$productToUpdateIntoPrestashop['height'] = $product['height'];
+			}
+			if($product['ean13'] > 0){
+				$productToUpdateIntoPrestashop['ean13'] = $product['ean13'];
+			}
+			if($product['minimal_quantity'] > 0){
+				$productToUpdateIntoPrestashop['minimal_quantity'] = $product['minimal_quantity'];
+			}
+			if($this->myAdvancedManipulationEngine->updateProduct($productToUpdateIntoPrestashop)){
+				$successfullyUpdatedProducts[] = $product['reference'];
+			}
+		}
+		return $successfullyUpdatedProducts;
+	}
+
+	public function updateGestimumProductLastSyncDate($successfullySynchronizedProducts){
+		
+		if(sizeof($successfullySynchronizedProducts)){
+		
+			return odbc_exec(
+				$this->sqlServerConnection, 
+				ProductsConstants::getUpdateProductLastSynchronizedString(
+					ProductsConstants::generateSqlInClauseString(
+						$successfullySynchronizedProducts
+					), 
+					$this->origin
+				)
+			);
+		}
+	}
+
+	public function synchronizeGestimumToPrestashop($limit, $gestimumProductId){
+		
+		$successfullyInsertedProducts = $this->insertProductsIntoPrestashop(
+			$this->getProductsFromGestimum(
+					true, 
+					$limit, 
+					$gestimumProductId
+				)
+			);
+		$this->updateGestimumProductLastSyncDate($successfullyInsertedProducts);
+		/*
+		$successfullyUpdatedProducts = $this->updateProductsIntoPrestashop(
+			$this->getProductsFromGestimum(
+					false, 
+					$limit, 
+					$gestimumProductId
+				)
+			);
+		$this->updateGestimumProductLastSyncDate($successfullyUpdatedProducts);
+		/*
+		$this->myAdvancedManipulationEngine->updateData(
+						array(
+							  'id' => '1',
+							  'lastname' => 'Vlodvek'
+							  ),
+						'customers'
+					 );
+		$successfullyUpdatedProducts = $this->updateProductsIntoPrestashop($this->getProductsFromGestimum(false));
+		$this->updateGestimumProductLastSyncDate($successfullyUpdatedProducts);
+		*/
 	}
 
 	public function synchronizePrestashopToGestimum(){
@@ -483,179 +623,54 @@ class productsMonkey implements monkey{
 				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$key)),-5);
 				$CodeArticle = $reference . $IdDeclinaison;
 				
-				$verif = odbc_exec($this->sqlServerConnection,'SELECT A.ART_CODE FROM ARTICLES A WHERE A.ART_CODE = \''. $CodeArticle .'\'');
-				$result = odbc_result($verif,1);
+				$verif = odbc_exec($this->sqlServerConnection, ProductsConstants::getSelectARTCODEString($this->origin, $idProduct));
+				
+				$countArray = odbc_fetch_array($verif);
+				
+				foreach ($countArray as $key => $value) {
+					$exists = $value;
+				}
+				
+				$exists = $exists > 0;
 
-				if (!empty($result)){
-					odbc_exec($this->sqlServerConnection,'UPDATE ARTICLES SET '
-													  . ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $productArray['name']) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
-												      . ' ,[ART_LIBC] =  \'' . preg_replace('/\'/','\'\'', $reference) . '\''
-													  . ' ,[ART_QTEDFT] = ' . $minimalQuantit
-													  . ' ,[ART_POIDSB] = ' . $weight
-												      . ' ,[ART_POIDST] = 0' 
-												      . ' ,[ART_POIDSN] = ' . $weight
-												      . ' ,[ART_LONG] = ' . $width
-												      . ' ,[ART_LARG] = '. $height
-													  . ' ,[ART_DORT] = 0'
-													  . ' ,[ART_P_ACH] = 0'
-													  . ' ,[ART_P_PRV] = 0'
-													  . ' ,[ART_P_COEF] = 0'
-													  . ' ,[ART_P_VTEB] = 0'
-													  . ' ,[ART_P_VTE] = 0'
-													  . ' ,[ART_P_EURO] = 0'
-													  . ' ,[ART_DTMAJ] = \'' . Utility::getNoZeroDate($dateUpd) . '\''
-													  . ' ,[ART_USRMAJ] = \'WEB\''
-													  . ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
-													  . ',[XXX_IDDECL] =' . $IdDeclinaison
-													  . 'WHERE [ART_CODE] = \'' . $CodeArticle . '\''
-													  ) 
-					or die ("<p>" . odbc_errormsg() . "</p>");	
-				}				
+				if ($exists){
+					odbc_exec($this->sqlServerConnection, ProductsConstants::getProductUpdatingString(
+																						$productArray['name'],
+ 																						$declension,
+ 																						$minimalQuantit,
+ 																						$weight,
+ 																						$width,
+ 																						$height,
+ 																						$dateUpd,
+						 																$IdDeclinaison,
+																				 		$CodeArticle,
+																				 		$this->origin,
+																				 		$idProduct)
+					)or die ("<p>" . odbc_errormsg() . "</p>");	
+				}
 				else{	
-					odbc_exec($this->sqlServerConnection,'INSERT INTO dbo.ARTICLES
-													   (ART_CODE
-													   ,ART_REF
-													   ,ART_CBAR
-													   ,ART_TYPE
-													   ,ART_CATEG
-													   ,ART_TGAMME
-													   ,ART_LIB
-													   ,ART_LIBC
-													   ,ART_QTEDFT
-													   ,ART_POIDSB
-													   ,ART_POIDST
-													   ,ART_POIDSN
-													   ,ART_UB_ACH
-													   ,ART_CD_ACH
-													   ,ART_UC_ACH
-													   ,ART_UB_STK
-													   ,ART_CD_STK
-													   ,ART_UC_STK
-													   ,ART_UB_VTE
-													   ,ART_CD_VTE
-													   ,ART_UC_VTE
-													   ,ART_R_UAUV
-													   ,ART_R_USUV
-													   ,ART_LONG
-													   ,ART_LARG
-													   ,ART_STOCK
-													   ,ART_DORT
-													   ,ART_P_ACH
-													   ,ART_M_PRV
-													   ,ART_I_PRV
-													   ,ART_D_PRV
-													   ,ART_S_PRV
-													   ,ART_P_PRV
-													   ,ART_P_COEF
-													   ,ART_P_VTEB
-													   ,ART_P_VTE
-													   ,ART_P_EURO
-													   ,ART_DTCREE
-													   ,ART_DTMAJ
-													   ,ART_USRMAJ
-													   ,ART_NUMMAJ
-													   ,XXX_IDCATE
-													   ,XXX_IDPRES
-													   ,XXX_IDDECL
-													   ,XXX_DECLIN
-													   ,XXX_ORIGIN
-													   ) VALUES ('
-														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_CODE
-														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_REF
-														. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_CBAR
-														. '\'P\',' //ART_TYPE
-														. '\'F\',' //ART_CATEG
-														. '\'\',' // ART_TGAMME
-														. '\'' . preg_replace('/\'/','\'\'', $productArray['name']) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\',' //ART_LIB
-														. '\'' . preg_replace('/\'/','\'\'', $reference) . '\',' //ART_LIBC
-														. $minimalQuantit . ',' //ART_QTEDFT
-														. $weight . ',' //ART_POIDSB
-														. '0,' //ART_POIDST
-														. $weight . ',' //ART_POIDSN
-														. '\'U\',' // ART_UB_ACH
-														. '1,' //ART_CD_ACH
-													    . '\'U\',' //ART_UC_ACH
-													    . '\'U\',' //ART_UB_STK
-													    . '1,' //ART_CD_STK
-													    . '\'U\',' //ART_UC_STK
-													    . '\'U\',' //ART_UB_VTE
-													    . '1,' //ART_CD_VTE
-													    . '\'U\',' //ART_UC_VTE
-													    . '1,' //ART_R_UAUV
-													    . '1,' //ART_R_USUV
-														. $width . ',' //ART_LONG
-														. $height . ',' //ART_LARG
-														. '\'M\',' //ART_STOCK
-														. '0,' //ART_DORT
-														. '0,' //ART_P_ACH
-														. '\'M\',' //ART_M_PRV
-														. '\'P\',' //ART_I_PRV
-														. '\'S\',' //ART_D_PRV
-														. '\'A\',' //ART_S_PRV
-														. '0,' //ART_P_PRV
-														. '0,' //ART_P_COEF
-														. '0,' //ART_P_VTEB
-														. '0,' //ART_P_VTE
-														. '0,' //ART_P_EURO
-														. '\''. Utility::getNoZeroDate($dateUpd) .'\',' //ART_DTCREE
-														. '\''. Utility::getNoZeroDate($dateUpd) .'\',' //ART_DTMAJ
-														. '\'WEB\',' //ART_USRMAJ
-														. '1,' //ART_NUMMAJ
-														. '\'' . $idCategoryDefault . '\',' //XXX_IDCATE
-														. '\'' . $idProduct . '\',' //XXX_IDPRES
-														. $IdDeclinaison .',' //XXX_IDDECL
-														. '\'' . preg_replace('/\'/','\'\'', $declension) . '\',' //XXX_DECLIN
-														. (int)$this->origin .')'
-														/*
-														
-														. $idSupplier . ','
-														. $idManufacturer . ','
-														. $idShopDefault . ','
-														. $idTaxRulesGroup . ','
-														. (int) $onSale . ','
-														. (int) $onlineOnly . ','
-														. $ean13 . ','
-														. $upc . ','
-														. $ecotax . ','
-														. $quantity . ','
-														. $price . ','
-														. $wholesalePrice . ','
-														. $unity . ','
-														. $unitPriceRatio . ','
-														. $additionalShippingCost . ','
-														. $reference . ','
-														. $supplierReference . ','
-														. $location . ','
-														. $depth . ','
-														. $outOfStock . ','
-														. (int) $quantityDiscount . ','
-														. (int) $customizable . ','
-														. (int) $uploadableFiles . ','
-														. (int) $textFields . ','
-														. (int) $active . ','
-														. (int) $availableForOrder . ','
-														. '\'' . $availableDate . '\','
-														. $condition . ','
-														. $showPrice . ','
-														. $indexed . ','
-														. $visibility . ','
-														. (int) $cacheIsPack . ','
-														. (int) $cacheHasAttachments . ','
-														. (int) $isVirtual . ','
-														. $cacheDefaultAttribute . ','
-														. '\'' . $dateAdd . '\','
-														. '\'' . $dateUpd . '\','
-														. (int) $advancedStockManagement . ','
-														 */
-					) or die ("<p>" . odbc_errormsg() . "</p>");
+					odbc_exec($this->sqlServerConnection, ProductsConstants::getProductInsertingString(
+																						$CodeArticle,
+																						$productArray['name'],
+																						$declension,
+																						$reference,
+																						$minimalQuantit,
+																						$weight,
+																						$width,
+																						$height,
+																						$dateUpd,
+																						$idCategoryDefault,
+																						$idProduct,
+																						$IdDeclinaison,
+																						$this->origin)
+						) or die ("<p>" . odbc_errormsg() . "</p>");
 				}
 			}
-			echo $idProduct . '<br/>';
 		}
 	}
 
 	public function synchronizeAll(){
 		//$this->synchronizePrestashopToGestimum();
-		$this->synchronizeGestimumToPrestashop();
+		//$this->synchronizeGestimumToPrestashop();
 	}
 }

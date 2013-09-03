@@ -9,7 +9,9 @@
 
 #header-content
 {
-	color: white;
+	color: orange;
+	background-color: white;
+	margin-right: 77%;
 }
 
 #header-menu
@@ -38,8 +40,4 @@
 {
 	color: white;
 	text-decoration:none;
-}
-#logo
-{
-	position: absolute;
 }

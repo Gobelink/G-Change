@@ -1,10 +1,39 @@
-<form name="input" action="#" method="post">
-ID du premier produit Prestashop à synchroniser : <input type="text" name="from"><br/>
-ID du dernier produit Prestashop à synchroniser : <input type="text" name="to"><br/>
-Synchronisation avec : 
-	<select name="origin">
-		<option value="1">Site catalogue</option>
-		<option value="2">Site de vente</option>
-	</select><br/>
-<input type="submit" name="syncProducts" value="Submit">
-</form>
+	<div>
+		Remonter des articles Prestashop vers Gestimum
+		<form name="input" action="#" method="post">
+			ID du premier produit Prestashop : <input type="text" name="from"><br/>
+			ID du dernier produit Prestashop : <input type="text" name="to"><br/>
+			Plateforme Prestashop d'origine  :
+			<select name="origin">
+				<option value="1">Site catalogue</option>
+				<option value="2">Site de vente</option>
+			</select><br/>
+			<input type="submit" name="productsPrestashopToGestimum" value="Submit">
+		</form>
+	</div>
+
+	<div>
+		Descendre les articles Gestimum vers Prestashop
+		<form name="input" action="#" method="post">
+			Plateforme Prestashop cible :
+				<select name="origin">
+					<option value="1">Site catalogue</option>
+					<option value="2">Site de vente</option>
+				</select><br/>
+			Nombre d'articles à descendre (*)(**) : <input type="text" name="limit"><br/>
+			Sinon, le code d'un article en particulier (***): <input type="text" name="art-code"><br/>
+			<input type="submit" name="productsGestimumToPrestashop" value="Submit">
+		</form>
+	</div>
+
+	<div>
+		<p>
+			(*) Par défaut, un article à descendre à la fois.
+		</p>
+		<p>
+			(**) Pour des raisons de fluidité, il est préférable de ne pas descendre plus de 500 articles à la fois. 
+		</p>
+		<p>
+			(***) Le code article Gestimum.
+		</p>
+	</div>

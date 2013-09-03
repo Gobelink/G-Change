@@ -76,8 +76,8 @@ class OrdersConstants{
                                                                          NAT_TVATX, -- 63
                                                                          NAT_TVATYP -- 64
                                                                  ) VALUES ('
-                                . '\''.$DocNumero. '\','//DOC_NUMERO -- 1
-                                . 'RIGHT(REPLICATE(\'0\',5)+CAST('.$lineNumber. ' AS VARCHAR(5)),5),' //LIG_NUMERO -- 2
+                                . '\'' . $DocNumero . '\','//DOC_NUMERO -- 1
+                                . 'RIGHT(REPLICATE(\'0\',5)+CAST(' . $lineNumber . ' AS VARCHAR(5)),5),' //LIG_NUMERO -- 2
                                 . '00000,' //LIG_SUBNUM -- 3
                                 . '001,' // DEP_CODE -- 4
                                 . '0,' //LIG_NLOT -- 5
@@ -87,17 +87,17 @@ class OrdersConstants{
                                 . '\'\',' //ART_GAMME -- 9 Id_declinaison
                                 . '\'\',' //ART_REFFRS -- 10
                                 . '\'\',' //ART_REFCLI -- 11
-                                . '\''. preg_replace('/\'/','\'\'',$productName) . '\',' //LIG_LIB -- 12
+                                . '\''. preg_replace('/\'/','\'\'', $productName) . '\',' //LIG_LIB -- 12
                                 . $productQuantity . ',' //LIG_QTE -- 13
                                 . $productPrice . ',' //LIG_P_BRUT -- 14
                                 . '\'\',' //LIG_REMISE -- 15
                                 . $productPrice . ',' //LIG_P_NET -- 16
                                 . $priceOfQuantity . ',' //LIG_TOTAL -- 17
-                                . $productQuantity. ',' //LIG_Q_CMDE -- 18
+                                . $productQuantity . ',' //LIG_Q_CMDE -- 18
                                 . '0,' //LIG_Q_REL -- 19
                                 . '0,' //LIG_Q_LIVR -- 20
                                 . '0,' //LIG_Q_FACT -- 21 
-                                . $productPrice. ',' //LIG_P_BASE -- 22
+                                . $productPrice . ',' //LIG_P_BASE -- 22
                                 . '0,' //LIG_FRENDU -- 23
                                 . '\'\',' //LIG_GP -- 24
                                 . '\'\',' //PRM_CODE -- 25
@@ -132,7 +132,7 @@ class OrdersConstants{
                                 . '0,' //LIG_FRAIS3 -- 54
                                 . '0,' //PRJ_CODE -- 55
                                 . '\'' . Utility::getNoZeroDate($invoiceDate) . '\','//LIG_DT_CMD -- 56
-                                . '\''.$DocPiece. '\',' //LIG_N_CMD -- 57
+                                . '\'' . $DocPiece . '\',' //LIG_N_CMD -- 57
                                 . 'GETDATE(),' //LIG_DTCRE
                                 . '\'WEB\',' //LIG_USRCRE
                                 . 'GETDATE(),' //LIG_DTMAJ
@@ -233,76 +233,76 @@ class OrdersConstants{
                           DOC_POIDSN, 
                           DOC_NCOLIS,
                           DOC_VOLUME) VALUES ('
-                                                .'\'V\',' //DOC_TYPE
-                                                .'\'C\',' //DOC_STYPE
-                                                .'\'\',' //DOC_RPIECE
-                                                .'0,'//DOC_FACTRA
-                                                .'\'E\',' //DOC_ETAT
-                                                .'0,' //DOC_EN_TTC
-                                                .'\'Commande Web : '.$invoiceNumber.' \','//DOC_REFPCF
-                                                .'\'\',' //DOC_MEMO
-                                                .'\''.$DocNumero .'\',' //DOC_NUMERO
-                                                .'\'' . Utility::getNoZeroDate($invoiceDate) . '\','//DOC_DATE -- A voir !!!
-                                                .'\'' . Utility::getNoZeroDate($invoiceDate) . '\','//DOC_DT_PRV -- A voir !!!
-                                                .'GETDATE(),' //DOC_DTCRE
-                                                .'GETDATE(),' //DOC_DTMAJ
-                                                .$CodeClient.','//.'\'W'.$currentOrder['id_customer'].'\',' //PCF_CODE
-                                                .$CodeClient.','//.'\'W'.$currentOrder['id_customer'].'\',' //PCF_PAYEUR
-                                                .'\''.$DocPiece.'\',' //DOC_PIECE
-                                                .'\'FR\',' //PAY_CODE
-                                                .'\'\',' //DOC_F_RS
-                                                .'\'\',' //DOC_F_RS2
-                                                .'\' ' . preg_replace('/\'/','\'\'',$invoiceAddressOne)  . ' \',' //DOC_F_RUE
-                                                .'\'\',' //DOC_F_COMP
-                                                .'\' '. preg_replace('/\'/','\'\'',$invoiceAddressPostCode) . ' \',' //DOC_F_CP
-                                                .'\' ' . preg_replace('/\'/','\'\'',$invoiceAddressCity) . '\',' //DOC_F_VILL
-                                                .'\'\',' //DOC_F_CBAR
-                                                .'\'\',' //DOC_L_RS
-                                                .'\'\',' //DOC_L_RS2
-                                                .'\''  . preg_replace('/\'/','\'\'',$deliveryAddressOne) . '\',' //DOC_L_RUE
-                                                .'\'\',' //DOC_L_COMP
-                                                .'\'' . preg_replace('/\'/','\'\'',$deliveryAddressPostCode)  . '\',' //DOC_L_CP
-                                                .'\' ' . preg_replace('/\'/','\'\'',$deliveryAddressCity)  . ' \',' //DOC_L_VILL
-                                                .'\'FR\',' //DOC_L_PAYS
-                                                .'\'\',' //DOC_L_CBAR
-                                                .'\'COMPT\',' //REG_CODE
-                                                .'\'\',' //REP_CODE
-                                                .'\'001\',' //NAT_CODE
-                                                .'\'001\',' //DEP_CODE
-                                                .'\'WEB\',' //TAR_CODE
-                                                .'\'\',' //PRJ_CODE
-                                                .'\'\',' //TRP_CODE
-                                                .'\'\',' //DOC_CPORT
-                                                .'0,' //DOC_PORT
-                                                .'\'\',' //DOC_PPORT
-                                                .'\'\',' //DOC_CFRAIS
-                                                .'0,' //DOC_FRAIS
-                                                .'\'\',' //DOC_CSUPPL
-                                                .'0,' //DOC_SUPPL
-                                                .'0,' //DOC_ACPTE
-                                                .'0,' //DOC_TX_ESC
-                                                .'0,' //PCF_REMMIN
-                                                .'0,' //DOC_TXRFAC
-                                                .'0,' //DOC_REMFAC
-                                                .'\'WEB\',' //DOC_USRCRE
-                                                .'\'WEB\',' //DOC_USRMAJ
-                                                .'\'IMP\',' //DOC_TRTCRE
-                                                .'0,' //DOC_CONTRME
-                                                .'\'EUR\',' //DEV_CODE
-                                                .'1,' //DOC_TX_DEV
-                                                .$totalPaidTaxExcl.',' //DOC_BRUT
-                                                .$totalPaidTaxExcl.',' //DOC_MT_HT
-                                                .$Tva.',' //DOC_MT_TVA
-                                                .$totalPaidTaxIncl.',' //DOC_MT_TTC
-                                                .$totalPaidTaxIncl.',' //DOC_MT_NET
-                                                .$totalPaidTaxExcl.',' //DOC_TVA_B1
-                                                .'19.6,' //DOC_TVA_T1
-                                                .'\'F\',' //DOC_TVA_C1
-                                                .$totalProductsWt.',' //DOC_POIDSB
-                                                .$totalProductsWt.',' //DOC_POIDSN 
-                                                .'0,' //DOC_NCOLIS
-                                                .'0)'; //DOC_VOLUME
-                                                //.' EXEC dbo.CreatEcheances @DocNumero ';
+                                                . '\'V\',' //DOC_TYPE
+                                                . '\'C\',' //DOC_STYPE
+                                                . '\'\',' //DOC_RPIECE
+                                                . '0,'//DOC_FACTRA
+                                                . '\'E\',' //DOC_ETAT
+                                                . '0,' //DOC_EN_TTC
+                                                . '\'Commande Web : ' . $invoiceNumber . ' \','//DOC_REFPCF
+                                                . '\'\',' //DOC_MEMO
+                                                . '\'' . $DocNumero . '\',' //DOC_NUMERO
+                                                . '\'' . Utility::getNoZeroDate($invoiceDate) . '\','//DOC_DATE -- A voir !!!
+                                                . '\'' . Utility::getNoZeroDate($invoiceDate) . '\','//DOC_DT_PRV -- A voir !!!
+                                                . 'GETDATE(),' //DOC_DTCRE
+                                                . 'GETDATE(),' //DOC_DTMAJ
+                                                . $CodeClient . ','//. '\'W'.$currentOrder['id_customer']. '\',' //PCF_CODE
+                                                . $CodeClient . ','//. '\'W'.$currentOrder['id_customer']. '\',' //PCF_PAYEUR
+                                                . '\'' . $DocPiece . '\',' //DOC_PIECE
+                                                . '\'FR\',' //PAY_CODE
+                                                . '\'\',' //DOC_F_RS
+                                                . '\'\',' //DOC_F_RS2
+                                                . '\' ' . preg_replace('/\'/','\'\'',$invoiceAddressOne)  . ' \',' //DOC_F_RUE
+                                                . '\'\',' //DOC_F_COMP
+                                                . '\' '. preg_replace('/\'/','\'\'',$invoiceAddressPostCode) . ' \',' //DOC_F_CP
+                                                . '\' ' . preg_replace('/\'/','\'\'',$invoiceAddressCity) . '\',' //DOC_F_VILL
+                                                . '\'\',' //DOC_F_CBAR
+                                                . '\'\',' //DOC_L_RS
+                                                . '\'\',' //DOC_L_RS2
+                                                . '\''  . preg_replace('/\'/','\'\'',$deliveryAddressOne) . '\',' //DOC_L_RUE
+                                                . '\'\',' //DOC_L_COMP
+                                                . '\'' . preg_replace('/\'/','\'\'',$deliveryAddressPostCode)  . '\',' //DOC_L_CP
+                                                . '\' ' . preg_replace('/\'/','\'\'',$deliveryAddressCity)  . ' \',' //DOC_L_VILL
+                                                . '\'FR\',' //DOC_L_PAYS
+                                                . '\'\',' //DOC_L_CBAR
+                                                . '\'COMPT\',' //REG_CODE
+                                                . '\'\',' //REP_CODE
+                                                . '\'001\',' //NAT_CODE
+                                                . '\'001\',' //DEP_CODE
+                                                . '\'WEB\',' //TAR_CODE
+                                                . '\'\',' //PRJ_CODE
+                                                . '\'\',' //TRP_CODE
+                                                . '\'\',' //DOC_CPORT
+                                                . '0,' //DOC_PORT
+                                                . '\'\',' //DOC_PPORT
+                                                . '\'\',' //DOC_CFRAIS
+                                                . '0,' //DOC_FRAIS
+                                                . '\'\',' //DOC_CSUPPL
+                                                . '0,' //DOC_SUPPL
+                                                . '0,' //DOC_ACPTE
+                                                . '0,' //DOC_TX_ESC
+                                                . '0,' //PCF_REMMIN
+                                                . '0,' //DOC_TXRFAC
+                                                . '0,' //DOC_REMFAC
+                                                . '\'WEB\',' //DOC_USRCRE
+                                                . '\'WEB\',' //DOC_USRMAJ
+                                                . '\'IMP\',' //DOC_TRTCRE
+                                                . '0,' //DOC_CONTRME
+                                                . '\'EUR\',' //DEV_CODE
+                                                . '1,' //DOC_TX_DEV
+                                                . $totalPaidTaxExcl . ',' //DOC_BRUT
+                                                . $totalPaidTaxExcl . ',' //DOC_MT_HT
+                                                . $Tva. ',' //DOC_MT_TVA
+                                                . $totalPaidTaxIncl . ',' //DOC_MT_TTC
+                                                . $totalPaidTaxIncl . ',' //DOC_MT_NET
+                                                . $totalPaidTaxExcl . ',' //DOC_TVA_B1
+                                                . '19.6,' //DOC_TVA_T1
+                                                . '\'F\',' //DOC_TVA_C1
+                                                . $totalProductsWt . ',' //DOC_POIDSB
+                                                . $totalProductsWt . ',' //DOC_POIDSN 
+                                                . '0,' //DOC_NCOLIS
+                                                . '0)'; //DOC_VOLUME
+                                                //. ' EXEC dbo.CreatEcheances @DocNumero ';
         
         }
 

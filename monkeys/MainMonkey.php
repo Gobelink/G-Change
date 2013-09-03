@@ -3,6 +3,7 @@ class MainMonkey{
 	
 	protected $loader;
 	protected $twigInstance;
+	protected $constantsInstance;
 
 	function __construct(){
 		
@@ -13,30 +14,31 @@ class MainMonkey{
 		$this->twigInstance = new Twig_Environment($this->loader, array(
     												'cache' => false
 													));
+		$this->constantsInstance = new Constants();
 	}
 
-	public function getEngineAdvancedEngine(){
+	public function getAdvancedEngine($shopId){
 
 		return new AdvancedManipulationEngine(
-			Constants::getShopAddress(), 
-			Constants::getWebServiceKey()
+			$this->constantsInstance->getShopAddress($shopId), 
+			$this->constantsInstance->getWebServiceKey($shopId)
 		);
 	}
 
 	public function getDatabaseConnection(){
-	
+		
 		return odbc_connect(
-			Constants::getSQLServerConnectionString(),
-			Constants::getDataBaseUsername(),
-			Constants::getDataBasePassword()
+			$this->constantsInstance->getSQLServerConnectionString(),
+			$this->constantsInstance->getDataBaseUsername(),
+			$this->constantsInstance->getDataBasePassword()
 		);
 	}
 
 	public function synchronizeCustomers($from, $to, $origin){
 		
-	$customersMonkey = new customersMonkey(
+		$customersMonkey = new customersMonkey(
 			$this->getDatabaseConnection(), 
-			$this->getEngineAdvancedEngine(),
+			$this->getAdvancedEngine($origin),
 			$from, 
 			$to, 
 			$origin
@@ -44,26 +46,38 @@ class MainMonkey{
 		$customersMonkey->synchronizeAll();
 	}
 
-	public function synchronizeOrders($from, $to){
+	public function synchronizeOrders($from, $to, $origin){
+		
 		$ordersMonkey = new ordersMonkey(
 			$this->getDatabaseConnection(), 
-			$this->getEngineAdvancedEngine(),
+			$this->getAdvancedEngine($origin),
 			$from, 
 			$to
 		);
 		$ordersMonkey->synchronizeAll();
 	}
 	
-	public function synchronizeProducts($from, $to, $origin){
+	public function synchronizeProducts($from, $to, $origin, $syncToPrestashop, $limit = 1, $gestimumProductId = ''){
+		
+		if(empty($limit)){
+			$limit = 1;
+		}
+		
 		$productsMonkey = new productsMonkey(
 			$this->getDatabaseConnection(), 
-			$this->getEngineAdvancedEngine(),
+			$this->getAdvancedEngine($origin),
 			$from,
 			$to,
 			$origin
 		);
-		$productsMonkey->synchronizeAll();
+
+		if($syncToPrestashop){
+			$productsMonkey->synchronizeGestimumToPrestashop($limit, $gestimumProductId);
+		}else{
+			$productsMonkey->synchronizePrestashopToGestimum();
+		}
 	}
+
 	public function finalActionFormListener($form){
 		
 		if(isset($_POST[$form])){
@@ -80,19 +94,9 @@ class MainMonkey{
 					}
 					break;
 				case 'syncOrders':
-					if(!empty($_POST['from']) && !empty($_POST['to'])){
-						if($_POST['from'] <= $_POST['to']){
-							$this->synchronizeOrders(
-								(int) $_POST['from'],
-								(int) $_POST['to']
-							);
-						}
-					}
-					break;
-				case 'syncProducts':
 					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin'])){
 						if($_POST['from'] <= $_POST['to']){
-							$this->synchronizeProducts(
+							$this->synchronizeOrders(
 								(int) $_POST['from'],
 								(int) $_POST['to'],
 								(int) $_POST['origin']
@@ -100,6 +104,42 @@ class MainMonkey{
 						}
 					}
 					break;
+				case 'productsPrestashopToGestimum':
+					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin'])){
+						if($_POST['from'] <= $_POST['to']){
+							
+							$this->synchronizeProducts(
+								(int) $_POST['from'],
+								(int) $_POST['to'],
+								(int) $_POST['origin'],
+								false
+							);
+						}
+					}
+					break;
+				case 'productsGestimumToPrestashop':
+					if(!empty($_POST['origin'])){
+	
+						$this->synchronizeProducts(
+							1,
+							1,
+							(int) $_POST['origin'],
+							true,
+							$_POST['limit'],
+							$_POST['art-code']
+						);
+					}
+					break;
+					case 'newOrderFromPrestashop':
+					if(!empty($_POST['from']) && !empty($_POST['to']) && !empty($_POST['origin']) && !empty($_POST['key'])){
+						if($_POST['from'] <= $_POST['to'] && $this->constantsInstance->isKnown($_POST['key'])){
+							$this->synchronizeOrders(
+								(int) $_POST['from'],
+								(int) $_POST['to'],
+								(int) $_POST['origin']
+							);
+						}
+					}
 				default:
 					break;
 			}

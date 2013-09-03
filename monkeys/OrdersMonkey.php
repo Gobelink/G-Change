@@ -205,11 +205,11 @@ class OrdersMonkey implements monkey{
 			
 			$DocNumero = substr (str_repeat("0",10).odbc_result($IdDocGestimum,1),-10);
 			odbc_close($this->sqlServerConnection);
-			
+			$constantsInstance = new Constants();
 			$connect = odbc_connect(
-									Constants::getSQLServerConnectionString(),
-									Constants::getDataBaseUsername(),
-									Constants::getDataBasePassword()
+									$constantsInstance->getSQLServerConnectionString(),
+									$constantsInstance->getDataBaseUsername(),
+									$constantsInstance->getDataBasePassword()
 									);
 			$IdDocPiece = odbc_exec(
 									$connect,
@@ -220,18 +220,19 @@ class OrdersMonkey implements monkey{
 			$DocPiece = odbc_result($IdDocPiece,1);
 			odbc_close($connect);
 
-			$i = 0;
+			$lineNumber = 0;
 			
 			foreach ($currentOrder['orderRows'] as $key => $currentProduct) {
 				
 				$idProductAndIdProductAttribute = $currentProduct['product_id'] . $currentProduct['product_attribute_id'];
 				
-				$i+= 16;
+				$lineNumber += 16;
+				
 				$priceOfQuantity = $currentProduct['product_price'] * $currentProduct['product_quantity'];
 				
 				$queryForInsertingLines = OrdersConstants::getOrdersLinesInsertionString(
 																					$DocNumero,
-																					$i,
+																					$lineNumber,
 																					$idProductAndIdProductAttribute,
 																					$currentProduct['product_name'],
 																					$currentProduct['product_quantity'],

@@ -8,6 +8,8 @@ class bisAutoloader{
 				'MainMonkey',
 				'Constants',
 				'OrdersConstants',
+				'ProductsConstants',
+				'CustomersConstants',
 				'Utility',
 				'PrestaShopWebservice',
 				'manipulationEngine',
@@ -36,6 +38,10 @@ public static function performRequire($className){
 	}
 	if(file_exists('tools/lib/' . $className . '.php')){
 		require_once('tools/lib/' . $className . '.php');
+		return;
+	}
+	if(file_exists('tools/constants/' . $className . '.php')){
+		require_once('tools/constants/' . $className . '.php');
 		return;
 	}
 	if(file_exists('monkeys/' . $className . '.php')){

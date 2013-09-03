@@ -1,7 +1,7 @@
 <?php
 class AdvancedManipulationEngine implements manipulationEngine {
 	
-	protected PRODUCTS_PSWS_RESOURCE = 'products';
+	const PRODUCTS_PSWS_RESOURCE = 'products';
 
 	protected $prestashopWebService; // PrestaShopWebService object.
 
@@ -12,7 +12,10 @@ class AdvancedManipulationEngine implements manipulationEngine {
 	public function createData($entity, $entityResource){
 
 		try{
-			$resources = $this->getResources($entityResource);
+			$xml = $this->getEntitySchema($entityResource);
+
+			$resources = self::getGrandChildren($xml);
+			
 			foreach ($resources as $nodeKey => $node){
 				if(array_key_exists($nodeKey, $entity)) // PHP >= 4.0.7
 					$resources->$nodeKey = $entity[$nodeKey];
@@ -29,20 +32,22 @@ class AdvancedManipulationEngine implements manipulationEngine {
 
 	public function createProduct($productArray){
 		try{
-			$resources = $this->getResources(PRODUCTS_PSWS_RESOURCE);
-			foreach ($productArray as $insertingAttribute => $insertingAttributeValue) {
-				switch ($insertingAttribute) {
-					case 'referec':
-						# code...
-						break;
-					
-					default:
-						# code...
-						break;
-				}
-			}
+			$xml = $this->getEntitySchema(self::PRODUCTS_PSWS_RESOURCE);
+
+			$resources = self::getGrandChildren($xml);
+
+			$resources->associations->categories = '';
+			$resources = self::getFilledResources($resources, $productArray);
+
+			$opt = array('resource' => self::PRODUCTS_PSWS_RESOURCE);
+			//$xml = new SimpleXMLElement(Utility::getString());
+			$opt['postXml'] = $xml->asXML();
+			$xml = $this->prestashopWebService->add($opt);
+			echo "Successfully added! <br/>";
+			return true;
 		}catch(PrestaShopWebserviceException $e){
-			echo 'Error while creating ' . PRODUCTS_PSWS_RESOURCE . ' data: <br/>' . $e->getMessage();
+			echo 'Error while creating ' . self::PRODUCTS_PSWS_RESOURCE . ' data: <br/>' . $e->getMessage();
+			return false;
 		}
 	}
 
@@ -115,13 +120,38 @@ class AdvancedManipulationEngine implements manipulationEngine {
 					$resources->$nodeKey = $entity[$nodeKey];
 				}
 			}
-			$opt = array('resource' => $entityResource);
 			$opt['putXml'] = $xml->asXML();
 			$opt['id'] = $entity['id'];
 			$xml = $this->prestashopWebService->edit($opt);
 			echo "Successfully updated!  <br/>";
 		}catch(PrestaShopWebserviceException $e){
 			echo 'Error while updating ' . $entityResource . ' data: <br/>' . $e->getMessage();
+		}
+	}
+
+	public function updateProduct($productArray){
+		try{
+			if(!array_key_exists('id', $productArray)){ // PHP >= 4.0.7
+				echo 'You must provide the id of the product you want to update.  <br/>';
+				return;
+			}
+			$opt = array('resource' => self::PRODUCTS_PSWS_RESOURCE);
+			$opt['id'] = $productArray['id'];
+			$xml = $this->prestashopWebService->get($opt);
+			$resources = self::getgRandcHildren($xml);
+			$resources = self::getFilledResources($resources, $productArray);
+			unset($xml->product->id_default_image);
+        	unset($xml->product->position_in_category);
+        	unset($xml->product->manufacturer_name);
+        	unset($xml->product->unity);
+        	unset($xml->product->date_add);
+        	unset($xml->product->date_upd);
+			$opt['putXml'] = $xml->asXML();
+			//$opt['id'] = $productArray['id'];
+			$xml = $this->prestashopWebService->edit($opt);
+			echo "Successfully updated!  <br/>";
+		}catch(PrestaShopWebserviceException $e){
+			echo 'Error while updating ' . self::PRODUCTS_PSWS_RESOURCE . ' data: <br/>' . $e->getMessage();
 		}
 	}
 
@@ -149,8 +179,32 @@ class AdvancedManipulationEngine implements manipulationEngine {
 												);
 	}
 
-	public function getResources($entityResource){
-		return self::getgRandcHildren($this->getEntitySchema($entityResource));
+	public static function getFilledResources($resources, $productArray){
+	
+		foreach ($productArray as $insertingAttribute => $insertingAttributeValue) {
+			switch ($insertingAttribute) {
+				case 'name': 
+				case 'description': 
+				case 'link_rewrite':
+				case 'short_description':
+				case 'meta_title':
+				case 'meta_description': 
+				case 'meta_keywords':
+				case 'available_now':
+				case 'available_later':
+					$resources->$insertingAttribute->language[0] = $insertingAttributeValue; 
+					break;
+				case 'id_category':
+					$resources->associations->categories->addChild('category')->addChild('id', $insertingAttributeValue);
+					break;
+				case 'id':
+					break;
+				default:
+					$resources->$insertingAttribute = $insertingAttributeValue;
+					break;
+			}
+		}
+		return $resources;
 	}
 	function __construct($shopURL, $key){
 		
