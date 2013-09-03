@@ -7,6 +7,7 @@ $myMonkey->finalActionFormListener('syncCustomers');
 $myMonkey->finalActionFormListener('syncOrders');
 $myMonkey->finalActionFormListener('productsPrestashopToGestimum');
 $myMonkey->finalActionFormListener('productsGestimumToPrestashop');
+$myMonkey->finalActionFormListener('newOrderFromPrestashop');
 $myMonkey->render();
 
 /*
