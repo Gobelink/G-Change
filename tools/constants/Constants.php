@@ -167,6 +167,19 @@ class Constants{
                         throw new IniFileNotFoundException("no MexicanMonkey ini file", 2);
                 }
         }
+
+        public static function existsInDB($query, $sqlServerConnection){
+                
+                $checkOnEntity = odbc_exec($sqlServerConnection, $query);                
+                $countArray = odbc_fetch_array($checkOnEntity);
+                                
+                foreach ($countArray as $key => $value) {
+                        $entityExists = $value;
+                }
+
+                return $entityExists > 0;
+        }
+
 }
 
 class EmptyIniFileException extends Exception {}
