@@ -140,8 +140,15 @@ class OrdersConstants{
                                 . '1,' //LIG_NUMMAJ
                                 . '19.6,' //NAT_TVATX
                                 . '\'F\')'
-								. ' UPDATE LIGNES SET ART_CODE = A.ART_CODE FROM LIGNES L INNER JOIN ARTICLES A ON CAST(A.XXX_IDPRES AS VARCHAR(50))+CAST(A.XXX_IDDECL AS VARCHAR(50)) = ' . $productAttributeId
-								. ' UPDATE ART_STOCK SET STK_CMDCLI = STK_CMDCLI + ISNULL('. $productQuantity .',0) FROM ART_STOCK ST INNER JOIN ARTICLES A ON A.ART_CODE = ST.ART_CODE WHERE CAST(A.XXX_IDPRES AS VARCHAR(50))+CAST(A.XXX_IDDECL AS VARCHAR(50)) = ' . $productAttributeId . '\' AND ST.DEP_CODE = \'001\''
+								. ' UPDATE LIGNES 
+                      SET ART_CODE = A.ART_CODE 
+                      FROM LIGNES L 
+                      INNER JOIN ARTICLES A ON CAST(A.XXX_IDPRES AS VARCHAR(50))+CAST(A.XXX_IDDECL AS VARCHAR(50)) = ' . $productAttributeId .'  '
+								. ' UPDATE ART_STOCK 
+                    SET STK_CMDCLI = STK_CMDCLI + '. $productQuantity .'
+                    FROM ART_STOCK ST 
+                    INNER JOIN ARTICLES A ON A.ART_CODE = ST.ART_CODE 
+                    WHERE CAST(A.XXX_IDPRES AS VARCHAR(50))+CAST(A.XXX_IDDECL AS VARCHAR(50)) = ' . $productAttributeId . ' AND ST.DEP_CODE = \'001\''
                 ;
         }
 				
@@ -150,11 +157,11 @@ class OrdersConstants{
                 $invoiceDate,
                 $CodeClient,
                 $DocPiece,
-				$invoiceAdressRs,
+				        $invoiceAddressRs,
                 $invoiceAddressOne,
                 $invoiceAddressPostCode,
                 $invoiceAddressCity,
-				$invoiceAdressRs,
+				        $deliveryAddressRs,
                 $deliveryAddressOne,
                 $deliveryAddressPostCode,
                 $deliveryAddressCity,
@@ -162,7 +169,8 @@ class OrdersConstants{
                 $totalPaidTaxIncl,
                 $Tva,
                 $totalProductsWt,
-                $DocNumero
+                $DocNumero,
+                $psOrderId
                 ){
                 
                 return ' INSERT INTO dbo.DOCUMENTS (
@@ -234,7 +242,8 @@ class OrdersConstants{
                           DOC_POIDSB,
                           DOC_POIDSN, 
                           DOC_NCOLIS,
-                          DOC_VOLUME) VALUES ('
+                          DOC_VOLUME,
+                          XXX_IDORDE) VALUES ('
                                                 . '\'V\',' //DOC_TYPE
                                                 . '\'C\',' //DOC_STYPE
                                                 . '\'\',' //DOC_RPIECE
@@ -303,7 +312,8 @@ class OrdersConstants{
                                                 . $totalProductsWt . ',' //DOC_POIDSB
                                                 . $totalProductsWt . ',' //DOC_POIDSN 
                                                 . '0,' //DOC_NCOLIS
-                                                . '0)'; //DOC_VOLUME
+                                                . '0,'
+                                                . $psOrderId . ')'; //DOC_VOLUME
                                                 //. ' EXEC dbo.CreatEcheances @DocNumero ';
         
         }
@@ -330,12 +340,33 @@ class OrdersConstants{
         }
 		
 		public static function GetCustomers($CodeClient) {
-		 return 'SELECT T.PCF_CODE FROM TIERS T WHERE T.PCF_CODE = \'' . $CodeClient . '\'';
+		 return 'SELECT COUNT(T.PCF_CODE) FROM TIERS T WHERE T.PCF_CODE = ' . $CodeClient ;
 		}
 		public static function GetProducts($productAttributeId) {
-		 return 'SELECT A.ART_CODE FROM ARTICLES A WHERE CAST(A.XXX_IDPRES AS VARCHAR(50))+CAST(A.XXX_IDDECL AS VARCHAR(50)) = \'' . $productAttributeId . '\'';
+		 return 'SELECT COUNT(A.ART_CODE) FROM ARTICLES A WHERE CAST(A.XXX_IDPRES AS VARCHAR(50))+CAST(A.XXX_IDDECL AS VARCHAR(50)) = \'' . $productAttributeId . '\'';
 		}
 		public static function GetOrders($IdOrders) {
-		 return 'SELECT D.XXX_IDORDE FROM DOCUMENTS D WHERE D.XXX_IDORDE = \'' . $IdOrders . '\'';
+		 return 'SELECT COUNT(D.XXX_IDORDE) FROM DOCUMENTS D WHERE D.XXX_IDORDE = '. $IdOrders;
 		}
+
+    public static function getValidAddressRs($firstname, $lastname, $company){
+      if ($company == '') {
+        return $firstname . ' ' . $lastname;
+      }
+      return $company;
+    }
+
+    public static function getValidProductId($productId, $productExists){
+      if(!$productExists){
+        return '\'\'';
+      }
+      return $productId;
+    }
+
+    public static function getValidProductName($productName, $productExists){
+      if(!$productExists){
+        return '(Article à créer) ' . $productName;
+      }
+      return $productName;
+    }
 }

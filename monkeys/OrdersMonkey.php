@@ -24,7 +24,7 @@ class OrdersMonkey implements monkey{
 		$address = $this->myAdvancedManipulationEngine->retrieveData(
 			'addresses', 
 			NULL,
-			array('id', 'address1', 'address2', 'postcode', 'city'), 
+			array('id', 'address1', 'address2', 'postcode', 'city', 'company', 'lastname', 'firstname'), 
 			array('id' => '[' . Utility::getOrPrestashopQueryStringFromArray($ordersAddressesIds) . ']')
 			);
 
@@ -196,81 +196,114 @@ class OrdersMonkey implements monkey{
 			//$CodeClient = '\'W\'+'.$currentOrder['id_customer'];
 		 	$CodeClient = '\'W'.$currentOrder['id_customer'].'\'';
 		 	$Tva = $currentOrder['total_paid_tax_incl'] - $currentOrder['total_paid_tax_excl'];
-		
-			$IdDocGestimum = odbc_exec(
-										$this->sqlServerConnection,
-										OrdersConstants::getExecG2GetNewNumeroProcedureString()
-										) 
-			or die ("<p>" . odbc_errormsg() . "</p>"); 
-			
-			$DocNumero = substr (str_repeat("0",10).odbc_result($IdDocGestimum,1),-10);
-			odbc_close($this->sqlServerConnection);
-			$constantsInstance = new Constants();
-			$connect = odbc_connect(
-									$constantsInstance->getSQLServerConnectionString(),
-									$constantsInstance->getDataBaseUsername(),
-									$constantsInstance->getDataBasePassword()
-									);
-			$IdDocPiece = odbc_exec(
-									$connect,
-									OrdersConstants::getExecG2GetNewPiece()
-									)
-			or die ("<p>" . odbc_errormsg() . "</p>");
-			
-			$DocPiece = odbc_result($IdDocPiece,1);
-			odbc_close($connect);
+				
+		if (
+				Constants::existsInDB(
+					OrdersConstants::GetCustomers($CodeClient),
+					$this->sqlServerConnection
+					) 
+				&& 
+				!Constants::existsInDB(
+					OrdersConstants::GetOrders($orderID),
+					$this->sqlServerConnection
+					) 
+			){
 
-			$lineNumber = 0;
-			
-			foreach ($currentOrder['orderRows'] as $key => $currentProduct) {
+				$IdDocGestimum = odbc_exec(
+											$this->sqlServerConnection,
+											OrdersConstants::getExecG2GetNewNumeroProcedureString()
+											) 
+				or die ("<p>" . odbc_errormsg() . "</p>"); 
 				
-				$idProductAndIdProductAttribute = $currentProduct['product_id'] . $currentProduct['product_attribute_id'];
+				$DocNumero = substr (str_repeat("0",10).odbc_result($IdDocGestimum,1),-10);
+				odbc_close($this->sqlServerConnection);
+				$constantsInstance = new Constants();
+				$connect = odbc_connect(
+										$constantsInstance->getSQLServerConnectionString(),
+										$constantsInstance->getDataBaseUsername(),
+										$constantsInstance->getDataBasePassword()
+										);
+				$IdDocPiece = odbc_exec(
+										$connect,
+										OrdersConstants::getExecG2GetNewPiece()
+										)
+				or die ("<p>" . odbc_errormsg() . "</p>");
 				
-				$lineNumber += 16;
+				$DocPiece = odbc_result($IdDocPiece,1);
+				odbc_close($connect);
+
+				$lineNumber = 0;
 				
-				$priceOfQuantity = $currentProduct['product_price'] * $currentProduct['product_quantity'];
+				foreach ($currentOrder['orderRows'] as $key => $currentProduct) {
+					
+					$idProductAndIdProductAttribute = $currentProduct['product_id'] . $currentProduct['product_attribute_id'];
+					
+					$lineNumber += 16;
+					
+					$priceOfQuantity = $currentProduct['product_price'] * $currentProduct['product_quantity'];
+
+					$productCount = OrdersConstants::GetProducts($idProductAndIdProductAttribute);
+					$productExists = Constants::existsInDB($productCount, $this->sqlServerConnection);
+
+					$queryForInsertingLines = OrdersConstants::getOrdersLinesInsertionString(
+																						$DocNumero,
+																						$lineNumber,
+																						OrdersConstants::getValidProductId(
+																							$idProductAndIdProductAttribute,
+																							$productExists
+																						),
+																						OrdersConstants::getValidProductName(
+																							$currentProduct['product_name'],
+																							$productExists
+																						),
+																						$currentProduct['product_quantity'],
+																						$currentProduct['product_price'],
+																						$currentOrder['invoice_date'],
+																						$priceOfQuantity,
+																						$DocPiece
+																						);
+					odbc_exec($this->sqlServerConnection,$queryForInsertingLines)
+						or die ("<p>" . odbc_errormsg() . "</p>");
+					odbc_close($this->sqlServerConnection); 
+				}
+
+				$queryForInsertingDocuments = OrdersConstants::getOrdersDocumentsInsertionString(
+																							$currentOrder['invoice_number'],
+																							$currentOrder['invoice_date'],
+																							$CodeClient,
+																							$DocPiece,
+																							OrdersConstants::getValidAddressRs(
+																								$currentOrder['invoice_address']['firstname'],
+																								$currentOrder['invoice_address']['lastname'],
+																								$currentOrder['invoice_address']['company']
+																							),
+																							$currentOrder['invoice_address']['address1'],
+																							$currentOrder['invoice_address']['postcode'],
+																							$currentOrder['invoice_address']['city'],
+																							OrdersConstants::getValidAddressRs(
+																								$currentOrder['delivery_address']['firstname'],
+																								$currentOrder['delivery_address']['lastname'],
+																								$currentOrder['delivery_address']['company']
+																							),
+																							$currentOrder['delivery_address']['address1'],
+																							$currentOrder['delivery_address']['postcode'],
+																							$currentOrder['delivery_address']['city'],
+																							$currentOrder['total_paid_tax_excl'],
+																							$currentOrder['total_paid_tax_incl'],
+																							$Tva,
+																							$currentOrder['total_products_wt'],
+																							$DocNumero,
+																							$orderID
+																							);
 				
-				$queryForInsertingLines = OrdersConstants::getOrdersLinesInsertionString(
-																					$DocNumero,
-																					$lineNumber,
-																					$idProductAndIdProductAttribute,
-																					$currentProduct['product_name'],
-																					$currentProduct['product_quantity'],
-																					$currentProduct['product_price'],
-																					$currentOrder['invoice_date'],
-																					$priceOfQuantity,
-																					$DocPiece
-																					);
-				odbc_exec($this->sqlServerConnection,$queryForInsertingLines)
-					or die ("<p>" . odbc_errormsg() . "</p>");
+				odbc_exec(
+						  $this->sqlServerConnection,
+						  $queryForInsertingDocuments
+						) 
+				or die ("<p>" . odbc_errormsg() . "</p>");  
+				
 				odbc_close($this->sqlServerConnection); 
 			}
-
-			$queryForInsertingDocuments = OrdersConstants::getOrdersDocumentsInsertionString(
-																						$currentOrder['invoice_number'],
-																						$currentOrder['invoice_date'],
-																						$CodeClient,
-																						$DocPiece,
-																						$currentOrder['invoice_address']['address1'],
-																						$currentOrder['invoice_address']['postcode'],
-																						$currentOrder['invoice_address']['city'],
-																						$currentOrder['delivery_address']['address1'],
-																						$currentOrder['delivery_address']['postcode'],
-																						$currentOrder['delivery_address']['city'],
-																						$currentOrder['total_paid_tax_excl'],
-																						$currentOrder['total_paid_tax_incl'],
-																						$Tva,
-																						$currentOrder['total_products_wt'],
-																						$DocNumero
-																						);
-			
-			odbc_exec(
-					  $this->sqlServerConnection,
-					  $queryForInsertingDocuments
-					) 
-			or die ("<p>" . odbc_errormsg() . "</p>");  
-			
-			odbc_close($this->sqlServerConnection); 
 		}
 	}
 
