@@ -84,7 +84,7 @@ class OrdersConstants{
                                 . '\'P\',' //LIG_TYPE -- 6
                                 . '\''. $productAttributeId . '\',' // ART_CODE -- 7
                                 . '\'\',' //ART_TGAMME -- 8
-                                . '\'\',' //ART_GAMME -- 9
+                                . '\'\',' //ART_GAMME -- 9 Id_declinaison
                                 . '\'\',' //ART_REFFRS -- 10
                                 . '\'\',' //ART_REFCLI -- 11
                                 . '\''. preg_replace('/\'/','\'\'', $productName) . '\',' //LIG_LIB -- 12
@@ -326,4 +326,14 @@ class OrdersConstants{
                         
                         SELECT @Resultat';
         }
+		
+		public static function GetCustomers($CodeClient) {
+		 return 'SELECT T.PCF_CODE FROM TIERS T WHERE T.PCF_CODE = \'' . $CodeClient . '\'';
+		}
+		public static function GetProducts($productAttributeId) {
+		 return 'SELECT A.ART_CODE FROM ARTICLES A WHERE A.ART_CODE = \'' . $productAttributeId . '\'';
+		}
+		public static function GetOrders($IdOrders) {
+		 return 'SELECT D.XXX_IDORDE FROM DOCUMENTS D WHERE D.XXX_IDORDE = \'' . $IdOrders . '\'';
+		}
 }
