@@ -84,8 +84,7 @@ class CustomersConstants{
  		$dateAdd,
  		$dateUpd
  		){
-
-    	return	'INSERT INTO dbo.TIERS (
+    	return	'INSERT INTO TIERS (
 								[PCF_CODE]
 							   ,[PCF_TYPE]
 							   ,[CPT_NUMERO]
