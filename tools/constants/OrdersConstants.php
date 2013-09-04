@@ -82,7 +82,7 @@ class OrdersConstants{
                                 . '001,' // DEP_CODE -- 4
                                 . '0,' //LIG_NLOT -- 5
                                 . '\'P\',' //LIG_TYPE -- 6
-                                . '\''. $productAttributeId . '\',' // ART_CODE -- 7
+                                . '\''. preg_replace('/\'/','', $productAttributeId) . '\',' // ART_CODE -- 7
                                 . '\'\',' //ART_TGAMME -- 8
                                 . '\'\',' //ART_GAMME -- 9 Id_declinaison
                                 . '\'\',' //ART_REFFRS -- 10
@@ -170,7 +170,9 @@ class OrdersConstants{
                 $Tva,
                 $totalProductsWt,
                 $DocNumero,
-                $psOrderId
+                $psOrderId,
+                $totalShippingTaxExcluded,
+                $carrierTaxRate
                 ){
                 
                 return ' INSERT INTO dbo.DOCUMENTS (
@@ -283,9 +285,9 @@ class OrdersConstants{
                                                 . '\'WEB\',' //TAR_CODE
                                                 . '\'\',' //PRJ_CODE
                                                 . '\'\',' //TRP_CODE
-                                                . '\'\',' //DOC_CPORT
-                                                . '0,' //DOC_PORT
-                                                . '\'\',' //DOC_PPORT
+                                                . '\'PRT\',' //DOC_CPORT
+                                                . $totalShippingTaxExcluded . ',' //DOC_PORT
+                                                . '\'\',' //DOC_PPORT,
                                                 . '\'\',' //DOC_CFRAIS
                                                 . '0,' //DOC_FRAIS
                                                 . '\'\',' //DOC_CSUPPL
@@ -301,13 +303,13 @@ class OrdersConstants{
                                                 . '0,' //DOC_CONTRME
                                                 . '\'EUR\',' //DEV_CODE
                                                 . '1,' //DOC_TX_DEV
-                                                . $totalPaidTaxExcl . ',' //DOC_BRUT
+                                                . ((double)$totalPaidTaxExcl - (double)$totalShippingTaxExcluded) . ',' //DOC_BRUT
                                                 . $totalPaidTaxExcl . ',' //DOC_MT_HT
                                                 . $Tva. ',' //DOC_MT_TVA
                                                 . $totalPaidTaxIncl . ',' //DOC_MT_TTC
                                                 . $totalPaidTaxIncl . ',' //DOC_MT_NET
                                                 . $totalPaidTaxExcl . ',' //DOC_TVA_B1
-                                                . '19.6,' //DOC_TVA_T1
+                                                . $carrierTaxRate . ',' //DOC_TVA_T1
                                                 . '\'F\',' //DOC_TVA_C1
                                                 . $totalProductsWt . ',' //DOC_POIDSB
                                                 . $totalProductsWt . ',' //DOC_POIDSN 

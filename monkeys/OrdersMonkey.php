@@ -197,7 +197,7 @@ class OrdersMonkey implements monkey{
 		 	$CodeClient = '\'W'.$currentOrder['id_customer'].'\'';
 		 	$Tva = $currentOrder['total_paid_tax_incl'] - $currentOrder['total_paid_tax_excl'];
 				
-		if (
+		/*if (
 				Constants::existsInDB(
 					OrdersConstants::GetCustomers($CodeClient),
 					$this->sqlServerConnection
@@ -207,7 +207,7 @@ class OrdersMonkey implements monkey{
 					OrdersConstants::GetOrders($orderID),
 					$this->sqlServerConnection
 					) 
-			){
+			){*/
 
 				$IdDocGestimum = odbc_exec(
 											$this->sqlServerConnection,
@@ -293,7 +293,9 @@ class OrdersMonkey implements monkey{
 																							$Tva,
 																							$currentOrder['total_products_wt'],
 																							$DocNumero,
-																							$orderID
+																							$orderID,
+																							$currentOrder['total_shipping_tax_excl'],
+																							$currentOrder['carrier_tax_rate']
 																							);
 				
 				odbc_exec(
@@ -303,7 +305,7 @@ class OrdersMonkey implements monkey{
 				or die ("<p>" . odbc_errormsg() . "</p>");  
 				
 				odbc_close($this->sqlServerConnection); 
-			}
+			//}
 		}
 	}
 
