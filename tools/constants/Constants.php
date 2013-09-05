@@ -169,7 +169,6 @@ class Constants{
         }
 
         public static function existsInDB($query, $sqlServerConnection){
-                
                 $checkOnEntity = odbc_exec($sqlServerConnection, $query);                
                 $countArray = odbc_fetch_array($checkOnEntity);
                                 

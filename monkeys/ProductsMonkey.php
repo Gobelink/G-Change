@@ -639,14 +639,15 @@ class productsMonkey implements monkey{
 			$dateUpd = $dateUpd->format('Y-m-d H:i:s');
 
 			foreach ($productOptionValues as $key => $declension) {
+
 				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$key)),-5);
 				$CodeArticle = $reference . $IdDeclinaison;
 				
 				if (Constants::existsInDB(
-					ProductsConstants::getSelectARTCODEString($this->origin, $idProduct),
+					ProductsConstants::getSelectARTCODEString($this->origin, $idProduct, $IdDeclinaison),
 					$this->sqlServerConnection
 					)){
-					odbc_exec($this->sqlServerConnection, ProductsConstants::getProductUpdatingString(
+					$query = ProductsConstants::getProductUpdatingString(
 																						$productArray['name'],
  																						$declension,
  																						$minimalQuantit,
@@ -658,11 +659,11 @@ class productsMonkey implements monkey{
 																				 		$CodeArticle,
 																				 		$this->origin,
 																				 		$idProduct,
-																				 		$categories)
-					)or die ("<p>" . odbc_errormsg() . "</p>");	
+																				 		$categories);
+					odbc_exec($this->sqlServerConnection, $query) or die ("<p>" . odbc_errormsg() . "</p>");	
 				}
-				else{	
-					odbc_exec($this->sqlServerConnection, ProductsConstants::getProductInsertingString(
+				else{
+					$query = ProductsConstants::getProductInsertingString(
 																						$CodeArticle,
 																						$productArray['name'],
 																						$declension,
@@ -676,8 +677,8 @@ class productsMonkey implements monkey{
 																						$idProduct,
 																						$IdDeclinaison,
 																						$this->origin,
-																						$categories)
-						) or die ("<p>" . odbc_errormsg() . "</p>");
+																						$categories);
+					odbc_exec($this->sqlServerConnection, $query) or die ("<p>" . odbc_errormsg() . "</p>");
 				}
 			}
 		}

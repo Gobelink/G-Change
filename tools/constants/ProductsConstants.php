@@ -9,9 +9,9 @@ class ProductsConstants{
 		return ' EXEC dbo.Presta_Synchro_Get_Articles_For_Update ' . $siteOrigin . ',' . $limit . ',\'' . $gestimumProductId . '\'';
 	}
 
-	public static function getSelectARTCODEString($siteOrigin, $idPres){
+	public static function getSelectARTCODEString($siteOrigin, $idPres, $IdDeclinaison){
 		return 
-			'SELECT COUNT(*) FROM ARTICLES A WHERE A.XXX_ORIGIN = \''. $siteOrigin . '\' AND A.XXX_IDPRES = \'' .  $idPres . '\'';
+			'SELECT COUNT(*) FROM ARTICLES A WHERE A.XXX_ORIGIN = \''. $siteOrigin . '\' AND A.XXX_IDPRES = \'' .  $idPres . '\'AND [XXX_IDDECL] =\'' . $IdDeclinaison . '\'';
 	}
 
 	public static function getProductUpdatingString(
@@ -46,11 +46,10 @@ class ProductsConstants{
 		. ' ,[ART_DTMAJ] = \'' . Utility::getNoZeroDate($dateUpd) . '\''
 		. ' ,[ART_USRMAJ] = \'WEB\''
 		. ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
-		. '	,[XXX_IDDECL] =' . $IdDeclinaison
 		. '	,[XXX_IDCATE] =\'' . $categories . '\''
 		. '	,XXX_S'. $origin .'DSYN = GETDATE() '
 		. '	,XXX_S'. $origin .'CSYN = 1 '
-		. 'WHERE XXX_ORIGIN = \''. $origin . '\' AND XXX_IDPRES = \'' .  $idProduct . '\'';
+		. 'WHERE XXX_ORIGIN = \''. $origin . '\' AND XXX_IDPRES = \'' .  $idProduct . '\' AND [XXX_IDDECL] =' . $IdDeclinaison;
 	}
 
 	public static function getProductInsertingString(
