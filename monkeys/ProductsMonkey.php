@@ -641,18 +641,11 @@ class productsMonkey implements monkey{
 				if ($CodeArticle == '0') {
 					throw new ProductWithoutReferenceException("Merci de donner une référence valide à votre produit", 1);
 				}
-				
-				$verif = odbc_exec($this->sqlServerConnection, ProductsConstants::getSelectARTCODEString($this->origin, $idProduct));
-				
-				$countArray = odbc_fetch_array($verif);
-				
-				foreach ($countArray as $key => $value) {
-					$exists = $value;
-				}
-				
-				$exists = $exists > 0;
 
-				if ($exists){
+				if (Constants::existsInDB(
+					ProductsConstants::getSelectARTCODEString($this->origin, $idProduct),
+					$this->sqlServerConnection
+					)){
 					odbc_exec($this->sqlServerConnection, ProductsConstants::getProductUpdatingString(
 																						$productArray['name'],
  																						$declension,
