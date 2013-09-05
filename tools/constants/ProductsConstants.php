@@ -49,6 +49,7 @@ class ProductsConstants{
 		. '	,[XXX_IDDECL] =' . $IdDeclinaison
 		. '	,[XXX_IDCATE] =\'' . $categories . '\''
 		. '	,XXX_S'. $origin .'DSYN = GETDATE() '
+		. '	,XXX_S'. $origin .'CSYN = 1 '
 		. 'WHERE XXX_ORIGIN = \''. $origin . '\' AND XXX_IDPRES = \'' .  $idProduct . '\'';
 	}
 
@@ -116,6 +117,7 @@ class ProductsConstants{
 	   ,XXX_IDPRES
 	   ,XXX_DECLIN
 	   ,XXX_S'. $origin .'DSYN
+	   ,XXX_S'. $origin .'CSYN
 	   ,XXX_ORIGIN
 	   ,XXX_S1RFAR
 	   ,XXX_S2RFAR
@@ -165,7 +167,8 @@ class ProductsConstants{
 		. $IdDeclinaison .',' //XXX_IDDECL
 		. $idProduct .',' //XXX_IDPRES
 		. '\'' . preg_replace('/\'/','\'\'', $declension) . '\',' //XXX_DECLIN
-		. 'GETDATE() ,'
+		. 'GETDATE() ,' // XXX_S(1|2)DSYN
+		. '1 ,' // XXX_S(1|2)CSYN
 		. $origin  .',' //XXX_ORIGIN
 		. '\'' . self::getOriginId($reference, $origin, 1) . '\','//XXX_S1RFAR
 	   	. '\'' . self::getOriginId($reference, $origin, 2) . '\''//XXX_S2RFAR
