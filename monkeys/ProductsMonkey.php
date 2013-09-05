@@ -638,6 +638,10 @@ class productsMonkey implements monkey{
 				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$key)),-5);
 				$CodeArticle = $reference . $IdDeclinaison;
 				
+				if ($CodeArticle == '0') {
+					throw new ProductWithoutReferenceException("Merci de donner une référence valide à votre produit", 1);
+				}
+				
 				$verif = odbc_exec($this->sqlServerConnection, ProductsConstants::getSelectARTCODEString($this->origin, $idProduct));
 				
 				$countArray = odbc_fetch_array($verif);
@@ -691,3 +695,5 @@ class productsMonkey implements monkey{
 		//$this->synchronizeGestimumToPrestashop();
 	}
 }
+
+class ProductWithoutReferenceException extends Exception{} 
