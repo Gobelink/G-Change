@@ -627,7 +627,7 @@ class productsMonkey implements monkey{
 
 			if(sizeof($productOptionValues) == 0){
 				// The product has no declension (option value)
-				$productOptionValues[] = 'NULL';
+				$productOptionValues[] = '';
 			}
 			$originInt = (int) $this->origin;
 			
