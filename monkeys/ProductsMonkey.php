@@ -450,7 +450,7 @@ class productsMonkey implements monkey{
 		$unity = 'NULL';
 		$unitPriceRatio = 'NULL';
 		$additionalShippingCost = 'NULL';
-		$reference = 'NULL';
+		$reference;
 		$supplierReference = 'NULL';
 		$location = 'NULL';
 		$width = '0';
@@ -625,6 +625,10 @@ class productsMonkey implements monkey{
 				}
 			}
 
+			if ($reference == '') {
+				throw new ProductWithoutReferenceException("Merci de donner une référence valide à votre produit", 1);
+			}
+
 			if(sizeof($productOptionValues) == 0){
 				// The product has no declension (option value)
 				$productOptionValues[] = '';
@@ -638,10 +642,6 @@ class productsMonkey implements monkey{
 				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$key)),-5);
 				$CodeArticle = $reference . $IdDeclinaison;
 				
-				if ($CodeArticle == '0') {
-					throw new ProductWithoutReferenceException("Merci de donner une référence valide à votre produit", 1);
-				}
-
 				if (Constants::existsInDB(
 					ProductsConstants::getSelectARTCODEString($this->origin, $idProduct),
 					$this->sqlServerConnection
@@ -689,4 +689,4 @@ class productsMonkey implements monkey{
 	}
 }
 
-class ProductWithoutReferenceException extends Exception{} 
+class ProductWithoutReferenceException extends Exception {} 
