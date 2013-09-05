@@ -14,6 +14,11 @@ class ProductsConstants{
 			'SELECT COUNT(*) FROM ARTICLES A WHERE A.XXX_ORIGIN = \''. $siteOrigin . '\' AND A.XXX_IDPRES = \'' .  $idPres . '\'AND [XXX_IDDECL] =\'' . $IdDeclinaison . '\'';
 	}
 
+	public static function getSelectArticleByPrestashopReference($reference){
+		return 
+			'SELECT COUNT(*) FROM ARTICLES A WHERE A.ART_CODE = \'' . $reference . '\'';
+	}
+
 	public static function getProductUpdatingString(
  		$productName,
  		$declension,
@@ -51,6 +56,46 @@ class ProductsConstants{
 		. '	,XXX_S'. $origin .'CSYN = 1 '
 		. 'WHERE XXX_ORIGIN = \''. $origin . '\' AND XXX_IDPRES = \'' .  $idProduct . '\' AND [XXX_IDDECL] =' . $IdDeclinaison;
 	}
+
+		public static function getProductUpdatingByReferenceString(
+ 		$productName,
+ 		$declension,
+ 		$minimalQuantit,
+ 		$weight,
+ 		$width,
+ 		$height,
+ 		$dateUpd,
+ 		$IdDeclinaison,
+ 		$CodeArticle,
+ 		$origin,
+ 		$idProduct,
+ 		$categories,
+ 		$psRefence){
+ 		
+ 		return 'UPDATE ARTICLES SET '
+		. ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $productName) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
+		. ' ,[ART_QTEDFT] = ' . $minimalQuantit
+		. ' ,[ART_POIDSB] = ' . $weight
+		. ' ,[ART_POIDST] = 0' 
+		. ' ,[ART_POIDSN] = ' . $weight
+		. ' ,[ART_LONG] = ' . $width
+		. ' ,[ART_LARG] = '. $height
+		. ' ,[ART_DORT] = 0'
+		. ' ,[ART_P_ACH] = 0'
+		. ' ,[ART_P_PRV] = 0'
+		. ' ,[ART_P_COEF] = 0'
+		. ' ,[ART_P_VTEB] = 0'
+		. ' ,[ART_P_VTE] = 0'
+		. ' ,[ART_P_EURO] = 0'
+		. ' ,[ART_DTMAJ] = \'' . Utility::getNoZeroDate($dateUpd) . '\''
+		. ' ,[ART_USRMAJ] = \'WEB\''
+		. ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
+		. '	,[XXX_IDCATE] =\'' . $categories . '\''
+		. '	,XXX_S'. $origin .'DSYN = GETDATE() '
+		. '	,XXX_S'. $origin .'CSYN = 1 '
+		. 'WHERE ART_CODE = \''. $psRefence . '\'';
+	}
+
 
 	public static function getProductInsertingString(
 		$CodeArticle,

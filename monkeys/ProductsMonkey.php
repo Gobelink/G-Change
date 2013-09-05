@@ -647,7 +647,7 @@ class productsMonkey implements monkey{
 					ProductsConstants::getSelectARTCODEString($this->origin, $idProduct, $IdDeclinaison),
 					$this->sqlServerConnection
 					)){
-					$query = ProductsConstants::getProductUpdatingString(
+					$updateProductSqlQuery = ProductsConstants::getProductUpdatingString(
 																						$productArray['name'],
  																						$declension,
  																						$minimalQuantit,
@@ -660,10 +660,28 @@ class productsMonkey implements monkey{
 																				 		$this->origin,
 																				 		$idProduct,
 																				 		$categories);
-					odbc_exec($this->sqlServerConnection, $query) or die ("<p>" . odbc_errormsg() . "</p>");	
+					odbc_exec($this->sqlServerConnection, $updateProductSqlQuery) or die ("<p>" . odbc_errormsg() . "</p>");	
 				}
-				else{
-					$query = ProductsConstants::getProductInsertingString(
+				elseif (Constants::existsInDB(
+					ProductsConstants::getSelectArticleByPrestashopReference($reference),
+					$this->sqlServerConnection
+					)) {
+					$updateProductSqlQuery = ProductsConstants::getProductUpdatingByReferenceString($productArray['name'],
+ 																						$declension,
+ 																						$minimalQuantit,
+ 																						$weight,
+ 																						$width,
+ 																						$height,
+ 																						$dateUpd,
+						 																$IdDeclinaison,
+																				 		$CodeArticle,
+																				 		$this->origin,
+																				 		$idProduct,
+																				 		$categories,
+																				 		$reference);
+				odbc_exec($this->sqlServerConnection, $updateProductSqlQuery) or die ("<p>" . odbc_errormsg() . "</p>");
+				}else{
+					$insertProductQuery = ProductsConstants::getProductInsertingString(
 																						$CodeArticle,
 																						$productArray['name'],
 																						$declension,
@@ -678,7 +696,7 @@ class productsMonkey implements monkey{
 																						$IdDeclinaison,
 																						$this->origin,
 																						$categories);
-					odbc_exec($this->sqlServerConnection, $query) or die ("<p>" . odbc_errormsg() . "</p>");
+					odbc_exec($this->sqlServerConnection, $insertProductQueryy) or die ("<p>" . odbc_errormsg() . "</p>");
 				}
 			}
 		}
