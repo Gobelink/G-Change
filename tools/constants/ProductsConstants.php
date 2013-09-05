@@ -25,7 +25,8 @@ class ProductsConstants{
  		$IdDeclinaison,
  		$CodeArticle,
  		$origin,
- 		$idProduct){
+ 		$idProduct,
+ 		$categories){
  		
  		return 'UPDATE ARTICLES SET '
 		. ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $productName) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
@@ -46,6 +47,7 @@ class ProductsConstants{
 		. ' ,[ART_USRMAJ] = \'WEB\''
 		. ' ,[ART_NUMMAJ] = [ART_NUMMAJ]+1 '
 		. '	,[XXX_IDDECL] =' . $IdDeclinaison
+		. '	,[XXX_IDCATE] =\'' . $categories . '\''
 		. '	,XXX_S'. $origin .'DSYN = GETDATE() '
 		. 'WHERE XXX_ORIGIN = \''. $origin . '\' AND XXX_IDPRES = \'' .  $idProduct . '\'';
 	}
@@ -63,7 +65,8 @@ class ProductsConstants{
 		$idCategoryDefault,
 		$idProduct,
 		$IdDeclinaison,
-		$origin
+		$origin,
+		$categories
 		){
 
 		return 'INSERT INTO dbo.ARTICLES
@@ -158,7 +161,7 @@ class ProductsConstants{
 		. '\''. Utility::getNoZeroDate($dateUpd) .'\',' //ART_DTMAJ
 		. '\'WEB\',' //ART_USRMAJ
 		. '1,' //ART_NUMMAJ
-		. '\'' . $idCategoryDefault . '\',' //XXX_IDCATE
+		. '\'' . $categories . '\',' //XXX_IDCATE
 		. $IdDeclinaison .',' //XXX_IDDECL
 		. $idProduct .',' //XXX_IDPRES
 		. '\'' . preg_replace('/\'/','\'\'', $declension) . '\',' //XXX_DECLIN

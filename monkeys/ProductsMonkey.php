@@ -71,6 +71,7 @@ class productsMonkey implements monkey{
 
 		$productOptionsValuesNames = $this->getProductOptionsValuesNames();
 		foreach ($product as $key => $singleProductAttributes) {
+			$categories = '';
 			foreach ($singleProductAttributes as $key => $value) {
 
 				switch ($key) {
@@ -219,6 +220,16 @@ class productsMonkey implements monkey{
  											$productOptionsValuesNames[(int)$productsOptionValuesIdvalue];
 									}
 								}
+							}elseif ((string)$keyOfAssociation == 'categories') {
+								foreach ($valueOfAssociation as $keyOfCategories => $valueOfCategories) {
+									foreach ($valueOfCategories as $keyOfCategory => $valueOfCategory) {
+										if($keyOfCategory == 'id'){
+											$categories .= ';' . $valueOfCategory;
+										}
+									}		 
+								}
+								$categories = trim($categories, ';');
+								$productsArray['categories'] = $categories;
 							}
 						}
 						break;
@@ -466,6 +477,7 @@ class productsMonkey implements monkey{
 		$dateUpd = NULL;
 		$advancedStockManagement = 'NULL';
 		$productOptionValues = array();
+		$categories = 'NULL';
 
 		foreach ($products as $idProduct => $productArray) {
 			foreach ($productArray as $attribute => $value) {
@@ -605,6 +617,9 @@ class productsMonkey implements monkey{
 					case 'product_option_values':
 						$productOptionValues = $value;
 						break;
+					case 'categories':
+						$categories = $value;
+						break;
 					default:
 						break;
 				}
@@ -645,7 +660,8 @@ class productsMonkey implements monkey{
 						 																$IdDeclinaison,
 																				 		$CodeArticle,
 																				 		$this->origin,
-																				 		$idProduct)
+																				 		$idProduct,
+																				 		$categories)
 					)or die ("<p>" . odbc_errormsg() . "</p>");	
 				}
 				else{	
@@ -662,7 +678,8 @@ class productsMonkey implements monkey{
 																						$idCategoryDefault,
 																						$idProduct,
 																						$IdDeclinaison,
-																						$this->origin)
+																						$this->origin,
+																						$categories)
 						) or die ("<p>" . odbc_errormsg() . "</p>");
 				}
 			}
