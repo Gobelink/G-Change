@@ -25,6 +25,7 @@ class CustomersConstants{
  		$lastname,
  		$email
  		){
+ 		echo $phoneMobile . '<br/>';
  		return 'UPDATE TIERS SET '
 													  . ' [PCF_RS] = UPPER(\'' . $company . '\')'
 												      . ' ,[PCF_RS2] = UPPER(\'' . $Rs2 . '\')'
@@ -35,8 +36,8 @@ class CustomersConstants{
 												      . ' ,[PCF_EMAIL] = \'' . preg_replace('/\'/','\'\'',$email) . '\''
 												      . ' ,[PCF_SIRET] = \'' . $siret . '\''
 												      . ' ,[PCF_APE] = \'' . $ape . '\''
-													  . ' ,[PCF_TEL1] = REPLACE(\'' . $phone . '\',\'NULL\',NULL)'
-													  . ' ,[PCF_TEL2] = REPLACE(\'' . $phoneMobile . '\',\'NULL\',NULL)'
+													  . ' ,[PCF_TEL1] = \'' . preg_replace('/\'/','\'\'',$phone) . '\''
+													  . ' ,[PCF_TEL2] = \'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\''
 												      . ' ,[PCF_NUMMAJ] = [PCF_NUMMAJ]+1 ' 
 													  . ' ,[XXX_MPAYDA] = ' . $maxPaymentDays
 													  . ' ,[XXX_IDGEND] = ' . $idGender 

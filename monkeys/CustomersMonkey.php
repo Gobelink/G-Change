@@ -28,7 +28,7 @@ class CustomersMonkey implements monkey{
 		$address = $this->myAdvancedManipulationEngine->retrieveData(
 			'addresses', 
 			NULL,
-			array('id_customer, address1', 'address2', 'postcode','city'), 
+			array('id_customer, address1', 'address2', 'postcode','city', 'phone', 'phone_mobile'), 
 			array('id_customer' => '[' . $this->from . ',' . $this->to . ']')
 			);
 
@@ -40,21 +40,11 @@ class CustomersMonkey implements monkey{
 			foreach ($values as $key => $value) {
 					switch ($key) {
 						case  'id_customer':
-						$customersAddressesHashmapKey = $value;
-						case 'address1':
-							$addressesArray['address1'] = $value;
-							break;
-						case 'address2':
-							$addressesArray['address2'] = $value;
-							break;
-						case 'postcode':
-							$addressesArray['postcode'] = $value;
-							break;
-						case 'city':
-							$addressesArray['city'] = $value;
-							break;
+							$customersAddressesHashmapKey = $value;
+						break;
 						default:
-							break;
+							$addressesArray[$key] = $value;
+						break;
 				}
 			}
 			$customersAddressesHashmap[(string)$customersAddressesHashmapKey] = $addressesArray;
@@ -231,7 +221,7 @@ class CustomersMonkey implements monkey{
 						break;					
 					case 'date_upd':
 						$dateUpd = $value;
-						break;					
+						break;
 					default:
 						break;					
 				}	
@@ -249,6 +239,9 @@ class CustomersMonkey implements monkey{
 				
 				$city = $customerAddresses['city'] ;
 				
+				$phoneMobile = $customerAddresses['phone_mobile'];
+
+				$phone = $customerAddresses['phone'];
 				$PcfCode = 'W'.$idCustomer;
 				$CptNumero = '411'.$PcfCode;
 				$Rs2 = '';
