@@ -25,7 +25,6 @@ class CustomersConstants{
  		$lastname,
  		$email
  		){
- 		echo $phoneMobile . '<br/>';
  		return 'UPDATE TIERS SET '
 													  . ' [PCF_RS] = UPPER(\'' . $company . '\')'
 												      . ' ,[PCF_RS2] = UPPER(\'' . $Rs2 . '\')'

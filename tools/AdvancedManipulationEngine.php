@@ -145,7 +145,8 @@ class AdvancedManipulationEngine implements manipulationEngine {
         	unset($xml->product->manufacturer_name);
         	unset($xml->product->unity);
         	unset($xml->product->date_add);
-        	unset($xml->product->date_upd);
+        	unset($xml->product->quantity);
+        	unset($xml->product->type);
 			$opt['putXml'] = $xml->asXML();
 			//$opt['id'] = $productArray['id'];
 			$xml = $this->prestashopWebService->edit($opt);

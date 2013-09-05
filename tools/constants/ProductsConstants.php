@@ -164,7 +164,7 @@ class ProductsConstants{
 	   ,XXX_S'. $origin .'CSYN
 	   ,XXX_ORIGIN
 	   ,XXX_S1RFAR
-	   ,XXX_S2RFAR
+	   ,XXX_S2RFAR 
 	   ) VALUES ('
 		. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_CODE
 		. '\'' . preg_replace('/\'/','\'\'',$CodeArticle) . '\',' //ART_REF

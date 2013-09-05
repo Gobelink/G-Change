@@ -230,9 +230,29 @@ class productsMonkey implements monkey{
 								}
 								$categories = trim($categories, ';');
 								$productsArray['categories'] = $categories;
-							}
+
+							}elseif ((string)$keyOfAssociation == 'stock_availables') {
+								/*$idStock ='';
+								foreach ($valueOfAssociation as $keyOfStockAvailables => $valueOfStockAvailables) {
+									foreach ($valueOfStockAvailables as $keyOfStockAvailable => $valueOfStockAvailable) {
+										if($keyOfStockAvailable == 'id'){
+											foreach ($valueOfStockAvailable as $key => $value) {
+												$idStock = $value;
+												var_dump($value);
+											}
+											var_dump($idStock);
+										}elseif ($keyOfStockAvailable == 'id_product_attribute') {
+											var_dump($valueOfStockAvailable);
+											$productsArray['stock_availables'][$valueOfStockAvailable] = $idStock;
+										}
+										$idStock = '';
+									}
+									var_dump($productsArray['stock_availables']);
+								}
+							}*/
 						}
-						break;
+					}
+					break;
 					default:
 						break;
 				}
@@ -373,6 +393,16 @@ class productsMonkey implements monkey{
 			if($this->myAdvancedManipulationEngine->updateProduct($productToUpdateIntoPrestashop)){
 				$successfullyUpdatedProducts[] = $product['reference'];
 			}
+			/*if($product['stock_available'] > (-1)){
+				echo $product['stock_available'] . "<br/>";
+				$this->myAdvancedManipulationEngine->updateData(
+						array(
+							  'id' => '912',
+							  'quantity' => $product['stock_available']
+							  ),
+						'stock_availables'
+					 );
+			}*/
 		}
 		return $successfullyUpdatedProducts;
 	}
@@ -403,11 +433,11 @@ class productsMonkey implements monkey{
 				)
 			);
 		$this->updateGestimumProductLastSyncDate($successfullyInsertedProducts);
-		/*
+		
 		$successfullyUpdatedProducts = $this->updateProductsIntoPrestashop(
 			$this->getProductsFromGestimum(
-					false, 
-					$limit, 
+					false,
+					$limit,
 					$gestimumProductId
 				)
 			);
