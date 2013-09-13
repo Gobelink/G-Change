@@ -28,12 +28,13 @@ class CustomersMonkey implements monkey{
 		$address = $this->myAdvancedManipulationEngine->retrieveData(
 			'addresses', 
 			NULL,
-			array('id_customer, address1', 'address2', 'postcode','city', 'phone', 'phone_mobile'), 
+			array('id','id_customer', 'address1', 'address2', 'postcode','city', 'phone', 'phone_mobile'), 
 			array('id_customer' => '[' . $this->from . ',' . $this->to . ']')
 			);
 
 		$customersAddressesHashmap;
 		$customersAddressesHashmapKey;
+
 		$addressesArray;
 		
 		foreach ($address as $key => $values) {
@@ -131,6 +132,7 @@ class CustomersMonkey implements monkey{
 			$city = 'NULL';
 			$phone = 'NULL';
 			$phoneMobile = 'NULL';
+			$IdAddress = 0;
 
 			foreach ($valueCus as $key => $value) {
 				
@@ -148,7 +150,7 @@ class CustomersMonkey implements monkey{
 						$idGender = $value;
 						break;
 					case 'company':
-						if ($value) $company = $value;
+						if ($value) $company = Constants::upperString($value);
 						break;
 					case 'siret':
 						if ($value) $siret = $value;
@@ -157,10 +159,10 @@ class CustomersMonkey implements monkey{
 						if ($value) $ape = $value;
 						break;
 					case 'firstname':
-						$firstname = $value;
+						$firstname = Constants::upperString($value);
 						break;
 					case 'lastname':
-						$lastname = $value;
+						$lastname = Constants::upperString($value);
 						break;
 					case 'email':
 						$email = $value;
@@ -230,14 +232,14 @@ class CustomersMonkey implements monkey{
 			if($this->hasAConfirmedOrder((int) $idCustomer, $customersHavingClosedOrdersArray)){
 
 				$customerAddresses = $customersAdresses[(int)$idCustomer];
-				
-				$address1 = $customerAddresses['address1'] ;
+			
+				$address1 = Constants::upperString($customerAddresses['address1']) ;
 
-				$address2 = $customerAddresses['address2'] ;
+				$address2 = Constants::upperString($customerAddresses['address2']) ;
 				
 				$postcode = $customerAddresses['postcode'] ;
 				
-				$city = $customerAddresses['city'] ;
+				$city = Constants::upperString($customerAddresses['city']) ;
 				
 				$phoneMobile = $customerAddresses['phone_mobile'];
 
@@ -245,6 +247,8 @@ class CustomersMonkey implements monkey{
 				$PcfCode = 'W'.$idCustomer;
 				$CptNumero = '411'.$PcfCode;
 				$Rs2 = '';
+
+				echo $customerAddresses['id'];
 				
 				if ($company='NULL'){
 					$company= $firstname.' '. $lastname;

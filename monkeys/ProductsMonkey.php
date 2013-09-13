@@ -672,7 +672,7 @@ class productsMonkey implements monkey{
 
 				$IdDeclinaison = substr(strtoupper(str_replace(' ','',$key)),-5);
 				$CodeArticle = $reference . $IdDeclinaison;
-				
+
 				if (Constants::existsInDB(
 					ProductsConstants::getSelectARTCODEString($this->origin, $idProduct, $IdDeclinaison),
 					$this->sqlServerConnection
@@ -726,8 +726,8 @@ class productsMonkey implements monkey{
 																						$IdDeclinaison,
 																						$this->origin,
 																						$categories);
-					odbc_exec($this->sqlServerConnection, $insertProductQueryy) or die ("<p>" . odbc_errormsg() . "</p>");
-				}
+					odbc_exec($this->sqlServerConnection, $insertProductQuery) or die ("<p>" . odbc_errormsg() . "</p>");
+				} 
 			}
 		}
 	}

@@ -196,6 +196,10 @@ class OrdersMonkey implements monkey{
 			//$CodeClient = '\'W\'+'.$currentOrder['id_customer'];
 		 	$CodeClient = '\'W'.$currentOrder['id_customer'].'\'';
 		 	$Tva = $currentOrder['total_paid_tax_incl'] - $currentOrder['total_paid_tax_excl'];
+		 	if ($totalShippingTaxExcluded = 0) 
+		 		{ $portCode =  '\'\'';} 
+		 		else 
+		 	    {$portCode = '\'PRT\'';}
 				
 		if (
 				/*Constants::existsInDB(
@@ -252,10 +256,10 @@ class OrdersMonkey implements monkey{
 																							$idProductAndIdProductAttribute,
 																							$productExists
 																						),
-																						OrdersConstants::getValidProductName(
+																						Constants::upperString(OrdersConstants::getValidProductName(
 																							$currentProduct['product_name'],
 																							$productExists
-																						),
+																						)),
 																						$currentProduct['product_quantity'],
 																						$currentProduct['product_price'],
 																						$currentOrder['invoice_date'],
@@ -272,22 +276,34 @@ class OrdersMonkey implements monkey{
 																							$currentOrder['invoice_date'],
 																							$CodeClient,
 																							$DocPiece,
-																							OrdersConstants::getValidAddressRs(
+																							Constants::upperString(OrdersConstants::getValidAddressRs(
 																								$currentOrder['invoice_address']['firstname'],
 																								$currentOrder['invoice_address']['lastname'],
 																								$currentOrder['invoice_address']['company']
-																							),
-																							$currentOrder['invoice_address']['address1'],
+																							)),
+																							Constants::upperString(OrdersConstants::getAddressRs2(
+																								$currentOrder['invoice_address']['firstname'],
+																								$currentOrder['invoice_address']['lastname'],
+																								$currentOrder['invoice_address']['company']
+																							)),
+																							Constants::upperString($currentOrder['invoice_address']['address1']),
+																							Constants::upperString($currentOrder['invoice_address']['address2']),
 																							$currentOrder['invoice_address']['postcode'],
-																							$currentOrder['invoice_address']['city'],
-																							OrdersConstants::getValidAddressRs(
+																							Constants::upperString($currentOrder['invoice_address']['city']),
+																							Constants::upperString(OrdersConstants::getValidAddressRs(
 																								$currentOrder['delivery_address']['firstname'],
 																								$currentOrder['delivery_address']['lastname'],
 																								$currentOrder['delivery_address']['company']
-																							),
-																							$currentOrder['delivery_address']['address1'],
+																							)),
+																							Constants::upperString(OrdersConstants::getAddressRs2(
+																								$currentOrder['delivery_address']['firstname'],
+																								$currentOrder['delivery_address']['lastname'],
+																								$currentOrder['delivery_address']['company']
+																							)),
+																							Constants::upperString($currentOrder['delivery_address']['address1']),
+																							Constants::upperString($currentOrder['delivery_address']['address2']),
 																							$currentOrder['delivery_address']['postcode'],
-																							$currentOrder['delivery_address']['city'],
+																							Constants::upperString($currentOrder['delivery_address']['city']),
 																							$currentOrder['total_paid_tax_excl'],
 																							$currentOrder['total_paid_tax_incl'],
 																							$Tva,
@@ -295,7 +311,8 @@ class OrdersMonkey implements monkey{
 																							$DocNumero,
 																							$orderID,
 																							$currentOrder['total_shipping_tax_excl'],
-																							$currentOrder['carrier_tax_rate']
+																							$currentOrder['carrier_tax_rate'],
+																							$portCode
 																							);
 				
 				odbc_exec(

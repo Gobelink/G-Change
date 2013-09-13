@@ -78,7 +78,7 @@ class OrdersConstants{
                                                                  ) VALUES ('
                                 . '\'' . $DocNumero . '\','//DOC_NUMERO -- 1
                                 . 'RIGHT(REPLICATE(\'0\',5)+CAST(' . $lineNumber . ' AS VARCHAR(5)),5),' //LIG_NUMERO -- 2
-                                . '00000,' //LIG_SUBNUM -- 3
+                                . '\'00000\',' //LIG_SUBNUM -- 3
                                 . '001,' // DEP_CODE -- 4
                                 . '0,' //LIG_NLOT -- 5
                                 . '\'P\',' //LIG_TYPE -- 6
@@ -158,11 +158,15 @@ class OrdersConstants{
                 $CodeClient,
                 $DocPiece,
 				        $invoiceAddressRs,
+                $invoiceAddressRsTwo,
                 $invoiceAddressOne,
+                $invoiceAddressTwo,
                 $invoiceAddressPostCode,
                 $invoiceAddressCity,
 				        $deliveryAddressRs,
+                $deliveryAddressRsTwo,
                 $deliveryAddressOne,
+                $deliveryAddressTwo,
                 $deliveryAddressPostCode,
                 $deliveryAddressCity,
                 $totalPaidTaxExcl,
@@ -172,7 +176,8 @@ class OrdersConstants{
                 $DocNumero,
                 $psOrderId,
                 $totalShippingTaxExcluded,
-                $carrierTaxRate
+                $carrierTaxRate,
+                $portCode
                 ){
                 
                 return ' INSERT INTO dbo.DOCUMENTS (
@@ -252,7 +257,7 @@ class OrdersConstants{
                                                 . '0,'//DOC_FACTRA
                                                 . '\'E\',' //DOC_ETAT
                                                 . '0,' //DOC_EN_TTC
-                                                . '\'Commande Web : ' . $invoiceNumber . ' \','//DOC_REFPCF
+                                                . '\'Commande Web\','//DOC_REFPCF
                                                 . '\'\',' //DOC_MEMO
                                                 . '\'' . $DocNumero . '\',' //DOC_NUMERO
                                                 . '\'' . Utility::getNoZeroDate($invoiceDate) . '\','//DOC_DATE -- A voir !!!
@@ -263,19 +268,19 @@ class OrdersConstants{
                                                 . $CodeClient . ','//. '\'W'.$currentOrder['id_customer']. '\',' //PCF_PAYEUR
                                                 . '\'' . $DocPiece . '\',' //DOC_PIECE
                                                 . '\'FR\',' //PAY_CODE
-                                                . '\' ' . preg_replace('/\'/','\'\'',$invoiceAddressRs)  . ' \','  //DOC_F_RS
-                                                . '\'\',' //DOC_F_RS2
-                                                . '\' ' . preg_replace('/\'/','\'\'',$invoiceAddressOne)  . ' \',' //DOC_F_RUE
-                                                . '\'\',' //DOC_F_COMP
-                                                . '\' '. preg_replace('/\'/','\'\'',$invoiceAddressPostCode) . ' \',' //DOC_F_CP
-                                                . '\' ' . preg_replace('/\'/','\'\'',$invoiceAddressCity) . '\',' //DOC_F_VILL
+                                                . '\'' . preg_replace('/\'/','\'\'',$invoiceAddressRs)  . ' \','  //DOC_F_RS
+                                                . '\'' . preg_replace('/\'/','\'\'',$invoiceAddressRsTwo)  . ' \',' //DOC_F_RS2
+                                                . '\'' . preg_replace('/\'/','\'\'',$invoiceAddressOne)  . ' \',' //DOC_F_RUE
+                                                . '\'' . preg_replace('/\'/','\'\'',$invoiceAddressTwo)  . ' \',' //DOC_F_COMP
+                                                . '\'' . preg_replace('/\'/','\'\'',$invoiceAddressPostCode) . ' \',' //DOC_F_CP
+                                                . '\'' . preg_replace('/\'/','\'\'',$invoiceAddressCity) . '\',' //DOC_F_VILL
                                                 . '\'\',' //DOC_F_CBAR
-                                                . '\''  . preg_replace('/\'/','\'\'',$deliveryAddressRs) . '\',' //DOC_L_RS
-                                                . '\'\',' //DOC_L_RS2
-                                                . '\''  . preg_replace('/\'/','\'\'',$deliveryAddressOne) . '\',' //DOC_L_RUE
-                                                . '\'\',' //DOC_L_COMP
+                                                . '\'' . preg_replace('/\'/','\'\'',$deliveryAddressRs) . '\',' //DOC_L_RS
+                                                . '\'' . preg_replace('/\'/','\'\'',$deliveryAddressRsTwo) . '\',' //DOC_L_RS2
+                                                . '\'' . preg_replace('/\'/','\'\'',$deliveryAddressOne) . '\',' //DOC_L_RUE
+                                                . '\'' . preg_replace('/\'/','\'\'',$deliveryAddressTwo) . '\','  //DOC_L_COMP
                                                 . '\'' . preg_replace('/\'/','\'\'',$deliveryAddressPostCode)  . '\',' //DOC_L_CP
-                                                . '\' ' . preg_replace('/\'/','\'\'',$deliveryAddressCity)  . ' \',' //DOC_L_VILL
+                                                . '\'' . preg_replace('/\'/','\'\'',$deliveryAddressCity)  . ' \',' //DOC_L_VILL
                                                 . '\'FR\',' //DOC_L_PAYS
                                                 . '\'\',' //DOC_L_CBAR
                                                 . '\'COMPT\',' //REG_CODE
@@ -285,7 +290,7 @@ class OrdersConstants{
                                                 . '\'WEB\',' //TAR_CODE
                                                 . '\'\',' //PRJ_CODE
                                                 . '\'\',' //TRP_CODE
-                                                . '\'PRT\',' //DOC_CPORT
+                                                . $portCode . ',' //DOC_CPORT
                                                 . $totalShippingTaxExcluded . ',' //DOC_PORT
                                                 . '\'\',' //DOC_PPORT,
                                                 . '\'\',' //DOC_CFRAIS
@@ -315,8 +320,8 @@ class OrdersConstants{
                                                 . $totalProductsWt . ',' //DOC_POIDSN 
                                                 . '0,' //DOC_NCOLIS
                                                 . '0,'
-                                                . $psOrderId . ')'; //DOC_VOLUME
-                                                //. ' EXEC dbo.CreatEcheances @DocNumero ';
+                                                . $psOrderId . ')' //DOC_VOLUME
+                                                . ' EXEC dbo.CreatEcheances \'' . $DocNumero . '\'';
         
         }
 
@@ -355,7 +360,14 @@ class OrdersConstants{
       if ($company == '') {
         return $firstname . ' ' . $lastname;
       }
-      return $company;
+      return $firstname . ' ' . $lastname . ' - '. $company;
+    }
+
+    public static function getAddressRs2($firstname, $lastname, $company){
+      if ($company == '') {
+        return $firstname . ' ' . $lastname;
+      }
+      return '';
     }
 
     public static function getValidProductId($productId, $productExists){

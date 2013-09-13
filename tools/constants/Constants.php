@@ -148,6 +148,10 @@ class Constants{
                 return $this->plateformNames;
         }
 
+        public static function upperString($stringToUpper){
+                return mb_strtoupper($stringToUpper, 'UTF-8');
+        } 
+
         public function isKnown($key)
         {
                 return in_array($key, array_values($this->getPlatformNames()));

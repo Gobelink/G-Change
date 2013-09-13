@@ -11,7 +11,7 @@ class ProductsConstants{
 
 	public static function getSelectARTCODEString($siteOrigin, $idPres, $IdDeclinaison){
 		return 
-			'SELECT COUNT(*) FROM ARTICLES A WHERE A.XXX_ORIGIN = \''. $siteOrigin . '\' AND A.XXX_IDPRES = \'' .  $idPres . '\'AND [XXX_IDDECL] =\'' . $IdDeclinaison . '\'';
+			'SELECT COUNT(*) FROM ARTICLES A WHERE A.XXX_IDPRES = \'' .  $idPres . '\' AND [XXX_IDDECL] =\'' . $IdDeclinaison . '\'';
 	}
 
 	public static function getSelectArticleByPrestashopReference($reference){
@@ -34,7 +34,7 @@ class ProductsConstants{
  		$categories){
  		
  		return 'UPDATE ARTICLES SET '
-		. ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $productName) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
+		. ' XXX_ARTLIB = \'' . preg_replace('/\'/','\'\'', $productName) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
 		. ' ,[ART_QTEDFT] = ' . $minimalQuantit
 		. ' ,[ART_POIDSB] = ' . $weight
 		. ' ,[ART_POIDST] = 0' 
@@ -54,7 +54,7 @@ class ProductsConstants{
 		. '	,[XXX_IDCATE] =\'' . $categories . '\''
 		. '	,XXX_S'. $origin .'DSYN = GETDATE() '
 		. '	,XXX_S'. $origin .'CSYN = 1 '
-		. 'WHERE XXX_ORIGIN = \''. $origin . '\' AND XXX_IDPRES = \'' .  $idProduct . '\' AND [XXX_IDDECL] =' . $IdDeclinaison;
+		. 'WHERE  XXX_IDPRES = \'' .  $idProduct . '\' AND [XXX_IDDECL] =' . $IdDeclinaison;
 	}
 
 		public static function getProductUpdatingByReferenceString(
@@ -73,7 +73,7 @@ class ProductsConstants{
  		$psRefence){
  		
  		return 'UPDATE ARTICLES SET '
-		. ' [ART_LIB] = \'' . preg_replace('/\'/','\'\'', $productName) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
+		. ' XXX_ARTLIB = \'' . preg_replace('/\'/','\'\'', $productName) . ' ' . preg_replace('/\'/','\'\'', $declension) . '\''
 		. ' ,[ART_QTEDFT] = ' . $minimalQuantit
 		. ' ,[ART_POIDSB] = ' . $weight
 		. ' ,[ART_POIDST] = 0' 
@@ -121,7 +121,7 @@ class ProductsConstants{
 	   ,ART_TYPE
 	   ,ART_CATEG
 	   ,ART_TGAMME
-	   ,ART_LIB
+	   ,XXX_ARTLIB
        ,ART_LIBC
 	   ,ART_QTEDFT
 	   ,ART_POIDSB
