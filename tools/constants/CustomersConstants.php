@@ -5,7 +5,12 @@ class CustomersConstants{
  		'SELECT COUNT(*) FROM TIERS T WHERE T.PCF_CODE = \''. $PcfCode .'\'';
  	}
 
- 	public static function getCustomersContactsAdressesUpdateString(
+	public static function getSelectADRNUMEROString($PcfCode, $noAdress){
+ 		return 
+ 		'SELECT COUNT(*) FROM ADRESSES A WHERE A.ADR_CODE = \''. $PcfCode .'\' AND A.ADR_NUMERO = \'' . $noAdress . '\'';
+ 	}
+
+ 	public static function getCustomersUpdateString(
  		$company,
  		$Rs2,
  		$address1,
@@ -26,44 +31,88 @@ class CustomersConstants{
  		$email
  		){
  		return 'UPDATE TIERS SET '
-													  . ' [PCF_RS] = UPPER(\'' . $company . '\')'
-												      . ' ,[PCF_RS2] = UPPER(\'' . $Rs2 . '\')'
-													  . ' ,[PCF_RUE] = \'' . preg_replace('/\'/','\'\'',$address1) . '\''
-													  . ' ,[PCF_COMP] = \'' . preg_replace('/\'/','\'\'',$address2) . '\''
-													  . ' ,[PCF_CP] = \'' . preg_replace('/\'/','\'\'',$postcode) . '\''
-													  . ' ,[PCF_VILLE] = \'' . preg_replace('/\'/','\'\'',$city) . '\''
-												      . ' ,[PCF_EMAIL] = \'' . preg_replace('/\'/','\'\'',$email) . '\''
-												      . ' ,[PCF_SIRET] = \'' . $siret . '\''
-												      . ' ,[PCF_APE] = \'' . $ape . '\''
-													  . ' ,[PCF_TEL1] = \'' . preg_replace('/\'/','\'\'',$phone) . '\''
-													  . ' ,[PCF_TEL2] = \'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\''
-												      . ' ,[PCF_NUMMAJ] = [PCF_NUMMAJ]+1 ' 
-													  . ' ,[XXX_MPAYDA] = ' . $maxPaymentDays
-													  . ' ,[XXX_IDGEND] = ' . $idGender 
-													  . ' ,[XXX_PROVEN] = \'' . $origin . '\''
-													  . 'WHERE [PCF_CODE] = \'' . $PcfCode . '\''
-													  
-  			                                          . 'UPDATE CONTACTS SET '
-													  . ' [CCT_PRENOM] = \'' . preg_replace('/\'/','\'\'',$firstname) . '\''
-												      . ' ,[CCT_NOM] = \'' . preg_replace('/\'/','\'\'',$lastname) . '\''
-													  . ' ,[CCT_EMAIL] = \'' . preg_replace('/\'/','\'\'',$email) . '\''
-													  . 'WHERE [CCT_ORIGIN] = \'' . $PcfCode . '\''
-													  
-													  . 'UPDATE ADRESSES SET '
-													  . ' [ADR_RS] = UPPER(\'' . $company . '\')'
-												      . ' ,[ADR_RS2] = UPPER(\'' . $Rs2 . '\')'
-													  . ' ,[ADR_RUE] = \'' . preg_replace('/\'/','\'\'',$address1) . '\''
-													  . ' ,[ADR_COMP] = \'' . preg_replace('/\'/','\'\'',$address2) . '\''
-													  . ' ,[ADR_CP] = \'' . preg_replace('/\'/','\'\'',$postcode) . '\''
-													  . ' ,[ADR_VILLE] = \'' . preg_replace('/\'/','\'\'',$city) . '\''
-													  . ' ,[ADR_TEL1] = \'' . preg_replace('/\'/','\'\'',$phone) . '\''
-													  . ' ,[ADR_TEL2] = \'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\''
-													  . 'WHERE [ADR_CODE] = \'' . $PcfCode . '\'';
+				. ' [PCF_RS] = UPPER(\'' . $company . '\')'
+				. ' ,[PCF_RS2] = UPPER(\'' . $Rs2 . '\')'
+				. ' ,[PCF_RUE] = \'' . preg_replace('/\'/','\'\'',$address1) . '\''
+				. ' ,[PCF_COMP] = \'' . preg_replace('/\'/','\'\'',$address2) . '\''
+				. ' ,[PCF_CP] = \'' . preg_replace('/\'/','\'\'',$postcode) . '\''
+				. ' ,[PCF_VILLE] = \'' . preg_replace('/\'/','\'\'',$city) . '\''
+				. ' ,[PCF_EMAIL] = \'' . preg_replace('/\'/','\'\'',$email) . '\''
+				. ' ,[PCF_SIRET] = \'' . $siret . '\''
+				. ' ,[PCF_APE] = \'' . $ape . '\''
+				. ' ,[PCF_TEL1] = \'' . preg_replace('/\'/','\'\'',$phone) . '\''
+				. ' ,[PCF_TEL2] = \'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\''
+				. ' ,[PCF_NUMMAJ] = [PCF_NUMMAJ]+1 ' 
+				. ' ,[XXX_MPAYDA] = ' . $maxPaymentDays
+				. ' ,[XXX_IDGEND] = ' . $idGender 
+				. ' ,[XXX_PROVEN] = \'' . $origin . '\''
+				. 'WHERE [PCF_CODE] = \'' . $PcfCode . '\'';
+		}
+
+	public static function getAdressesUpdateString(
+ 		$company,
+ 		$Rs2,
+ 		$noAdress,
+ 		$address1,
+ 		$address2,
+ 		$postcode,
+ 		$city,
+ 		$email,
+ 		$siret,
+ 		$ape,
+ 		$phone,
+ 		$phoneMobile,
+ 		$maxPaymentDays,
+ 		$idGender,
+ 		$origin,
+ 		$PcfCode,
+ 		$firstname,
+ 		$lastname,
+ 		$email
+ 		){
+ 		return 'UPDATE ADRESSES SET '
+				. ' [ADR_RS] = UPPER(\'' . $company . '\')'
+				. ' ,[ADR_RS2] = UPPER(\'' . $Rs2 . '\')'
+				. ' ,[ADR_RUE] = \'' . preg_replace('/\'/','\'\'',$address1) . '\''
+				. ' ,[ADR_COMP] = \'' . preg_replace('/\'/','\'\'',$address2) . '\''
+				. ' ,[ADR_CP] = \'' . preg_replace('/\'/','\'\'',$postcode) . '\''
+				. ' ,[ADR_VILLE] = \'' . preg_replace('/\'/','\'\'',$city) . '\''
+				. ' ,[ADR_TEL1] = \'' . preg_replace('/\'/','\'\'',$phone) . '\''
+				. ' ,[ADR_TEL2] = \'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\''
+				. 'WHERE ADR_TBL = \'PCF\' AND [ADR_CODE] = \'' . $PcfCode . '\' AND ADR_NUMERO =  \'' . $noAdress .'\'';
+		}
+
+	public static function getContactsUpdateString(
+ 		$company,
+ 		$Rs2,
+ 		$address1,
+ 		$address2,
+ 		$postcode,
+ 		$city,
+ 		$email,
+ 		$siret,
+ 		$ape,
+ 		$phone,
+ 		$phoneMobile,
+ 		$maxPaymentDays,
+ 		$idGender,
+ 		$origin,
+ 		$PcfCode,
+ 		$firstname,
+ 		$lastname,
+ 		$email
+ 		){
+ 		return 'UPDATE CONTACTS SET '
+				. ' [CCT_PRENOM] = \'' . preg_replace('/\'/','\'\'',$firstname) . '\''
+				. ' ,[CCT_NOM] = \'' . preg_replace('/\'/','\'\'',$lastname) . '\''
+				. ' ,[CCT_EMAIL] = \'' . preg_replace('/\'/','\'\'',$email) . '\''
+				. 'WHERE [CCT_ORIGIN] = \'' . $PcfCode . '\'';
 		}
 
 	public function getCustomersContactsAdressesInsertString(
 		$company,
  		$Rs2,
+ 		$noAdress,
  		$address1,
  		$address2,
  		$postcode,
@@ -179,24 +228,25 @@ class CustomersConstants{
 								. '\'\' ,' //CCT_CIVILE
 								. '\'' . preg_replace('/\'/','\'\'',$firstname) . '\','//CCT_PRENOM
 								. '\'' . preg_replace('/\'/','\'\'',$lastname) . '\','//CCT_NOM
-								. '\'' . preg_replace('/\'/','\'\'',$email) . '\')' . //CCT_EMAIL
+								. '\'' . preg_replace('/\'/','\'\'',$email) . '\')' .
 
 								'INSERT INTO ADRESSES (
-															  ADR_TBL,
-															  ADR_CODE,
-															  ADR_NUMERO,
-															  ADR_RS,
-															  ADR_RS2,
-															  ADR_RUE,
-															  ADR_COMP,
-															  ADR_CP,
-															  ADR_VILLE,
-															  ADR_TEL1,
-															  ADR_TEL2
-															 ) VALUES ('
+										ADR_TBL,
+										ADR_CODE,
+										ADR_NUMERO,
+										ADR_RS,
+										ADR_RS2,
+										ADR_RUE,
+										ADR_COMP,
+										ADR_CP,
+										ADR_VILLE,
+										ADR_TEL1,
+										ADR_TEL2,
+										ADR_EMAIL
+								) VALUES ('
 								. '\'PCF\' ,' //ADR_TBL
-								. '\'' . $PcfCode. '\',' //ADR_CODE
-								. '\'001\' ,' //ADR_NUMERO
+								. '\'' . $PcfCode . '\',' //ADR_CODE
+								. '\'' . $noAdress .'\' ,' //ADR_NUMERO
 								. 'UPPER(\'' . $company . '\'),' //ADR_RS
 								. 'UPPER(\'' . $Rs2 . '\'),' //ADR_RS2
 								. '\'' . preg_replace('/\'/','\'\'',$address1) . '\',' //ADR_RUE
@@ -204,7 +254,49 @@ class CustomersConstants{
 								. '\'' . preg_replace('/\'/','\'\'',$postcode) . '\',' //ADR_CP
 								. '\'' . preg_replace('/\'/','\'\'',$city) . '\',' //ADR_VILLE
 								. '\'' . preg_replace('/\'/','\'\'',$phone) . '\',' //ADR_TEL1
-								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\')'; //ADR_TEL2
-	}
+								. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\','
+								. '\'' . preg_replace('/\'/','\'\'',$email) . '\')';//CCT_EMAIL
+		}
+								 
+	public function getAdressesInsertString(
+		$company,
+ 		$Rs2,
+ 		$noAdress,
+ 		$address1,
+ 		$address2,
+ 		$postcode,
+ 		$city,
+ 		$email,
+  		$phone,
+ 		$phoneMobile,
+ 		$PcfCode
+ 		){
+    	return	'INSERT INTO ADRESSES (
+										ADR_TBL,
+										ADR_CODE,
+										ADR_NUMERO,
+										ADR_RS,
+										ADR_RS2,
+										ADR_RUE,
+										ADR_COMP,
+										ADR_CP,
+										ADR_VILLE,
+										ADR_TEL1,
+										ADR_TEL2,
+										ADR_EMAIL
+				) VALUES ('
+				. '\'PCF\' ,' //ADR_TBL
+				. '\'' . $PcfCode . '\',' //ADR_CODE
+				. '\'' . $noAdress .'\' ,' //ADR_NUMERO
+				. 'UPPER(\'' . $company . '\'),' //ADR_RS
+				. 'UPPER(\'' . $Rs2 . '\'),' //ADR_RS2
+				. '\'' . preg_replace('/\'/','\'\'',$address1) . '\',' //ADR_RUE
+				. '\'' . preg_replace('/\'/','\'\'',$address2) . '\',' //ADR_COMP
+				. '\'' . preg_replace('/\'/','\'\'',$postcode) . '\',' //ADR_CP
+				. '\'' . preg_replace('/\'/','\'\'',$city) . '\',' //ADR_VILLE
+				. '\'' . preg_replace('/\'/','\'\'',$phone) . '\',' //ADR_TEL1
+				. '\'' . preg_replace('/\'/','\'\'',$phoneMobile) . '\','
+				. '\'' . preg_replace('/\'/','\'\'',$email) . '\')'; //ADR_TEL2
+		}
 
 }

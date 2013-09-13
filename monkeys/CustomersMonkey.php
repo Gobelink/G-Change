@@ -23,7 +23,7 @@ class CustomersMonkey implements monkey{
 		$this->origin = $origin; // To see from where does the client come from
 	}
 
-	public function getCustomerAddress(){
+	public function getCustomersAddresses(){
 		
 		$address = $this->myAdvancedManipulationEngine->retrieveData(
 			'addresses', 
@@ -32,24 +32,29 @@ class CustomersMonkey implements monkey{
 			array('id_customer' => '[' . $this->from . ',' . $this->to . ']')
 			);
 
+
 		$customersAddressesHashmap;
 		$customersAddressesHashmapKey;
 
-		$addressesArray;
+		$addressesArray = array();
 		
 		foreach ($address as $key => $values) {
+			$addressArray = array();
 			foreach ($values as $key => $value) {
-					switch ($key) {
-						case  'id_customer':
-							$customersAddressesHashmapKey = $value;
+				switch ($key) {
+					case 'id':
+						$id = $value;
 						break;
-						default:
-							$addressesArray[$key] = $value;
+					case 'id_customer':
+						$customersAddressesHashmapKey = $value;
 						break;
-				}
+					default:
+						$addressArray[$key] = $value;
+						break;
+				} 
+				$addressesArray[(string)$id] = $addressArray;
 			}
-			$customersAddressesHashmap[(string)$customersAddressesHashmapKey] = $addressesArray;
-			$addressesArray = array();
+			$customersAddressesHashmap[(string)$customersAddressesHashmapKey] = $addressesArray;			
 		}
 		return $customersAddressesHashmap;
 	}
@@ -91,7 +96,7 @@ class CustomersMonkey implements monkey{
 
 		$customer = $this->getCustomersFromPrestashop();
 
-		$customersAdresses = $this->getCustomerAddress();
+		$customersAdresses = $this->getCustomersAddresses();
 		$customersHavingClosedOrdersArray = $this->customersConfirmedOrders();
 
 		foreach ($customer as $keyCus => $valueCus){
@@ -132,7 +137,7 @@ class CustomersMonkey implements monkey{
 			$city = 'NULL';
 			$phone = 'NULL';
 			$phoneMobile = 'NULL';
-			$IdAddress = 0;
+			$id = NULL;
 
 			foreach ($valueCus as $key => $value) {
 				
@@ -231,89 +236,136 @@ class CustomersMonkey implements monkey{
 
 			if($this->hasAConfirmedOrder((int) $idCustomer, $customersHavingClosedOrdersArray)){
 
-				$customerAddresses = $customersAdresses[(int)$idCustomer];
+				$customerAddresses = $customersAdresses[(int) $idCustomer];
+
+				$noAddress = 0;
+
+				foreach($customerAddresses as $id => $address){
+
+					$noAddress += 1;
 			
-				$address1 = Constants::upperString($customerAddresses['address1']) ;
+					$address1 = Constants::upperString($customerAddresses[$id]['address1']) ;
 
-				$address2 = Constants::upperString($customerAddresses['address2']) ;
-				
-				$postcode = $customerAddresses['postcode'] ;
-				
-				$city = Constants::upperString($customerAddresses['city']) ;
-				
-				$phoneMobile = $customerAddresses['phone_mobile'];
+					$address2 = Constants::upperString($customerAddresses[$id]['address2']) ;
+					
+					$postcode = $customerAddresses[$id]['postcode'] ;
+					
+					$city = Constants::upperString($customerAddresses[$id]['city']) ;
+					
+					$phoneMobile = $customerAddresses[$id]['phone_mobile'];
 
-				$phone = $customerAddresses['phone'];
-				$PcfCode = 'W'.$idCustomer;
-				$CptNumero = '411'.$PcfCode;
-				$Rs2 = '';
+					$phone = $customerAddresses[$id]['phone'];
 
-				echo $customerAddresses['id'];
-				
-				if ($company='NULL'){
-					$company= $firstname.' '. $lastname;
-				}else{
-					$Rs2= $firstname .' '.$lastname;
-				} 
+					$PcfCode = 'W'.$idCustomer;
+					$CptNumero = '411'.$PcfCode;
+					$Rs2 = '';
+					
+					if ($company='NULL'){
+						$company= $firstname.' '. $lastname;
+					}else{
+						$Rs2= $firstname .' '.$lastname;
+					} 
 
-				if (
-						Constants::existsInDB(
-							CustomersConstants::getSelectPCFCODEString($PcfCode),
-							$this->sqlServerConnection
-						)
-					){
-
-					odbc_exec(
-						$this->sqlServerConnection,
-						CustomersConstants::getCustomersContactsAdressesUpdateString(
-							$company,
-					 		$Rs2,
-					 		$address1,
-					 		$address2,
-					 		$postcode,
-					 		$city,
-					 		$email,
-					 		$siret,
-					 		$ape,
-					 		$phone,
-					 		$phoneMobile,
-					 		$maxPaymentDays,
-					 		$idGender,
-					 		$this->origin,
-					 		$PcfCode,
-					 		$firstname,
-					 		$lastname,
-					 		$email
-					 	)
-					) or die ("<p>" . odbc_errormsg() . "</p>");
-				}else{
-
-					odbc_exec(
-						$this->sqlServerConnection,
-						CustomersConstants::getCustomersContactsAdressesInsertString(
-							$company,
-					 		$Rs2,
-					 		$address1,
-					 		$address2,
-					 		$postcode,
-					 		$city,
-					 		$email,
-					 		$siret,
-					 		$ape,
-					 		$phone,
-					 		$phoneMobile,
-					 		$maxPaymentDays,
-					 		$idGender,
-					 		$this->origin,
-					 		$PcfCode,
-					 		$firstname,
-					 		$lastname,
-					 		$email,
-					 		$CptNumero,
-					 		$dateAdd,
-					 		$dateUpd
-					 	)
-					) or die("<p>" . odbc_errormsg() . "</p>");
+					if (Constants::existsInDB(
+						CustomersConstants::getSelectPCFCODEString($PcfCode),
+						$this->sqlServerConnection)){
+						if (Constants::existsInDB(
+							CustomersConstants::getSelectADRNUMEROString($PcfCode, str_pad($noAddress, 3, "0", STR_PAD_LEFT)),
+							$this->sqlServerConnection)){
+							odbc_exec(
+								$this->sqlServerConnection,
+								CustomersConstants::getAdressesUpdateString(
+									$company,
+							 		$Rs2,
+							 		str_pad($noAddress, 3, "0", STR_PAD_LEFT),
+							 		$address1,
+							 		$address2,
+							 		$postcode,
+							 		$city,
+							 		$email,
+							 		$siret,
+							 		$ape,
+							 		$phone,
+							 		$phoneMobile,
+							 		$maxPaymentDays,
+							 		$idGender,
+							 		$this->origin,
+							 		$PcfCode,
+							 		$firstname,
+							 		$lastname,
+							 		$email)
+							) or die ("<p>" . odbc_errormsg() . "</p>");
+						}else{
+						odbc_exec(
+									$this->sqlServerConnection,
+									CustomersConstants::getAdressesInsertString(
+										$company,
+								 		$Rs2,
+								 		str_pad($noAddress, 3, "0", STR_PAD_LEFT),
+								 		$address1,
+								 		$address2,
+								 		$postcode,
+								 		$city,
+								 		$email,
+								  		$phone,
+								 		$phoneMobile,
+								 		$PcfCode)
+								) or die ("<p>" . odbc_errormsg() . "</p>");
+						}
+						odbc_exec(
+									$this->sqlServerConnection,
+									CustomersConstants::getContactsUpdateString(
+										$company,
+								 		$Rs2,
+								 		$address1,
+								 		$address2,
+								 		$postcode,
+								 		$city,
+								 		$email,
+								 		$siret,
+								 		$ape,
+								 		$phone,
+								 		$phoneMobile,
+								 		$maxPaymentDays,
+								 		$idGender,
+								 		$this->origin,
+								 		$PcfCode,
+								 		$firstname,
+								 		$lastname,
+								 		$email,
+								 		$CptNumero,
+								 		$dateAdd,
+								 		$dateUpd)
+								 	) or die ("<p>" . odbc_errormsg() . "</p>");
+					}else{
+							odbc_exec(
+								$this->sqlServerConnection,
+								CustomersConstants::getCustomersContactsAdressesInsertString(
+									$company,
+							 		$Rs2,
+							 		str_pad($noAddress, 3, "0", STR_PAD_LEFT),
+							 		$address1,
+							 		$address2,
+							 		$postcode,
+							 		$city,
+							 		$email,
+							 		$siret,
+							 		$ape,
+							 		$phone,
+							 		$phoneMobile,
+							 		$maxPaymentDays,
+							 		$idGender,
+							 		$this->origin,
+							 		$PcfCode,
+							 		$firstname,
+							 		$lastname,
+							 		$email,
+							 		$CptNumero,
+							 		$dateAdd,
+							 		$dateUpd
+							 	)
+							) or die ("<p>" . odbc_errormsg() . "</p>");
+						}					
 				}
 			}
 		}
